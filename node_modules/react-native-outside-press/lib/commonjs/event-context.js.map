@@ -1,0 +1,1 @@
+{"version":3,"names":["_react","require","EventContext","createContext","_default","exports","default"],"sourceRoot":"../../src","sources":["event-context.ts"],"mappings":";;;;;;AAAA,IAAAA,MAAA,GAAAC,OAAA;AAWA,MAAMC,YAAY,gBAAG,IAAAC,oBAAa,EAA0B,IAAI,CAAC;AAAC,IAAAC,QAAA,GAEnDF,YAAY;AAAAG,OAAA,CAAAC,OAAA,GAAAF,QAAA"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"use-event-store.d.ts","sourceRoot":"","sources":["../../../src/hooks/use-event-store.ts"],"names":[],"mappings":"AAEA,MAAM,WAAW,MAAM;IACrB,EAAE,EAAE,MAAM,CAAC;IACX,cAAc,EAAE,MAAM,IAAI,CAAC;IAC3B,QAAQ,EAAE,OAAO,CAAC;CACnB;AAED,MAAM,CAAC,OAAO,UAAU,aAAa;;4BAMP,MAAM;sBAEZ,MAAM;;4BAGA,MAAM;EASnC"}

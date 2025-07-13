@@ -1,0 +1,1 @@
+{"version":3,"names":["useContext","EventContext","useEvent","eventContext"],"sourceRoot":"../../../src","sources":["hooks/use-event.ts"],"mappings":"AAAA,SAASA,UAAU,QAAQ,OAAO;AAClC,OAAOC,YAAY,MAAM,kBAAkB;AAG3C,eAAe,SAASC,QAAQA,CAAA,EAAG;EACjC,MAAMC,YAAY,GAAGH,UAAU,CAACC,YAAY,CAAqB;EAEjE,OAAOE,YAAY;AACrB"}
