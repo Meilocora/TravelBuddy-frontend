@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/appIcon.jpg",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "androidNavigationBar": {
       "visible": "immersive"
     },
@@ -20,14 +20,19 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#dee2e6"
-      }
+      },
+      "package": "com.meilocora.travelbuddy"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c02b6a9a-2450-44c4-bfe2-685858789bf9"
+      }
     }
   }
 }
