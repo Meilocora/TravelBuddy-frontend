@@ -1,12 +1,5 @@
-import { GOOGLE_API_KEY } from '@env';
 import { LatLng, Region } from 'react-native-maps';
-import { Alert } from 'react-native';
-import {
-  useForegroundPermissions,
-  PermissionStatus,
-  getCurrentPositionAsync,
-} from 'expo-location';
-
+import * as ExpoLocation from 'expo-location';
 import { generateColorsSet } from './generator';
 import {
   Journey,
@@ -18,6 +11,8 @@ import {
   TransportationType,
 } from '../models';
 import { parseDate, parseDateAndTime } from './formatting';
+
+const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 
 export function getMapPreview({ latitude, longitude }: LatLng) {
   const imagePreviewUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:S%7C${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
@@ -55,38 +50,23 @@ export async function getPlaceDetails(place: any): Promise<LatLng> {
   return latLng;
 }
 
-/**
- * Hook to manage location permissions.
- */
-export function useLocationPermissions() {
-  const [locationPermissionInformation, requestPermission] =
-    useForegroundPermissions();
+export const useLocationPermissions = () => {
+  const verifyPermissions = async () => {
+    // Check current status
+    const { status } = await ExpoLocation.getForegroundPermissionsAsync();
 
-  /**
-   * Verifies if the app has the necessary location permissions.
-   * @returns {Promise<boolean>} Whether the permissions are granted.
-   */
-  async function verifyPermissions(): Promise<boolean> {
-    if (
-      locationPermissionInformation?.status === PermissionStatus.UNDETERMINED
-    ) {
-      const permissionResponse = await requestPermission();
-      return permissionResponse.granted;
-    }
-
-    if (locationPermissionInformation?.status === PermissionStatus.DENIED) {
-      Alert.alert(
-        'Insufficient Permissions!',
-        'You need to grant location permissions to use this app.'
-      );
-      return false;
+    if (status !== 'granted') {
+      // Request permissions
+      const { status: requestStatus } =
+        await ExpoLocation.requestForegroundPermissionsAsync();
+      return requestStatus === 'granted';
     }
 
     return true;
-  }
+  };
 
   return { verifyPermissions };
-}
+};
 
 /**
  * Gets the current location of the user.
@@ -96,7 +76,7 @@ export async function getCurrentLocation(): Promise<{
   latitude: number;
   longitude: number;
 }> {
-  const location = await getCurrentPositionAsync();
+  const location = await ExpoLocation.getCurrentPositionAsync();
   return {
     latitude: location.coords.latitude,
     longitude: location.coords.longitude,

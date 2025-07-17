@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { PlaceFormValues, PlaceToVisit } from '../../models';
 import api from './api';
 
@@ -12,7 +11,8 @@ export interface FetchPlacesProps {
   error?: string;
 }
 
-const prefix = `${BACKEND_URL}/place-to-visit`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/place-to-visit`;
 
 export const fetchPlaces = async (): Promise<FetchPlacesProps> => {
   try {

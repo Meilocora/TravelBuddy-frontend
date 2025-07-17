@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 8,
-    backgroundColor: 'black',
   },
   errorText: {
     fontSize: 16,

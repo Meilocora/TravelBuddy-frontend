@@ -1,11 +1,11 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { BACKEND_URL } from '@env';
 import { refreshAuthToken } from './common';
 
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const api = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: REACT_APP_BACKEND_URL,
 });
 
 api.interceptors.request.use(

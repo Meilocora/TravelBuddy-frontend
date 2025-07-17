@@ -24,7 +24,6 @@ import {
   getRegionForLocations,
 } from '../../utils/location';
 import MapLocationList from '../../components/Maps/MapLocationList';
-import { GOOGLE_API_KEY } from '@env';
 import Popup from '../../components/UI/Popup';
 import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
@@ -60,6 +59,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     { button: true, list: false },
   ]);
 
+  const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
   const userCtx = useContext(UserContext);
   const stagesCtx = useContext(StagesContext);
   const journeyId = stagesCtx.selectedJourneyId!;

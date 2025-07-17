@@ -1,7 +1,7 @@
-import { BACKEND_URL } from '@env';
 import axios, { AxiosResponse } from 'axios';
 
-const prefix = `${BACKEND_URL}/auth`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/auth`;
 
 interface RefreshTokenProps {
   token?: string;

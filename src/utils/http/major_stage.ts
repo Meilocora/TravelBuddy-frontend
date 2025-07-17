@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { MajorStage, MajorStageFormValues } from '../../models';
 import api from './api';
 
-const prefix = `${BACKEND_URL}/major_stage`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/major_stage`;
 
 interface ManageMajorStageProps {
   majorStage?: MajorStage;

@@ -19,7 +19,6 @@ import MapView, {
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
 
 import { ColorScheme, PlaceToVisit, StackParamList } from '../models';
-import { GOOGLE_API_KEY } from '@env';
 import Modal from '../components/UI/Modal';
 import { GlobalStyles } from '../constants/styles';
 import Button from '../components/UI/Button';
@@ -49,6 +48,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     lat: route.params.initialLat,
     lng: route.params.initialLng,
   };
+  const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
   const initialColorScheme = route.params.colorScheme || ColorScheme.primary;
 
   const minorStageId = route.params.minorStageId;

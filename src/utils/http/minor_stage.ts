@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { MinorStage, MinorStageFormValues } from '../../models';
 import api from './api';
 
-const prefix = `${BACKEND_URL}/minor_stage`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/minor_stage`;
 
 interface ManageMinorStageProps {
   minorStage?: MinorStage;

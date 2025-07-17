@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { CurrencyInfo, Spending, SpendingFormValues } from '../../models';
 import api from './api';
 
-const prefix = `${BACKEND_URL}/spending`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/spending`;
 
 interface ManageSpendingProps {
   spending?: Spending;

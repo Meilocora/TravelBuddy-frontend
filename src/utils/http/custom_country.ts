@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { CustomCountry, CustomCountryFormValues } from '../../models';
 import api from './api';
 
@@ -16,7 +15,8 @@ export interface FetchCountriesResponseProps {
   error?: string;
 }
 
-const prefix = `${BACKEND_URL}/country`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/country`;
 
 export const fetchCountries = async (
   countryName: string

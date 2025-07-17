@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import api from './api';
 import { LatLng } from 'react-native-maps';
 
@@ -12,7 +11,8 @@ export interface FetchUserDataProps {
   error?: string;
 }
 
-const prefix = `${BACKEND_URL}/user`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/user`;
 
 export const fetchUsersData = async (
   currentLocation: LatLng | undefined

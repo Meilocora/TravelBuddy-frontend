@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/appIcon.jpg",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "androidNavigationBar": {
       "visible": "immersive"
     },
@@ -20,6 +20,11 @@
       "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.REACT_APP_GOOGLE_API_KEY"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#dee2e6"
@@ -35,7 +40,8 @@
       }
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-dev-client"
     ]
   }
 }

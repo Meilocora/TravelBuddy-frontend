@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { BACKEND_URL } from '@env';
 import { Transportation, TransportationFormValues } from '../../models';
 import api from './api';
 
-const prefix = `${BACKEND_URL}/transportation`;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const prefix = `${REACT_APP_BACKEND_URL}/transportation`;
 
 interface ManageTransportProps {
   transportation?: Transportation;
