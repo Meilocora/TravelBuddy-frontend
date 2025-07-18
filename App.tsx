@@ -53,7 +53,11 @@ import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
-// TODO: Add Animations
+// TODO: Create Icon and loading screen
+// TODO: check full doc of eas configurations
+// TODO: Improve colors
+// TODO: Map => Add functionality to get route between all minorStages Accommodations
+
 // TODO: Fix custom progress bar
 // TODO: Add Chatbot, thats translates into local language
 

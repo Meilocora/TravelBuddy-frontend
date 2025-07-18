@@ -1,4 +1,5 @@
 import { LatLng, Region } from 'react-native-maps';
+import Constants from 'expo-constants';
 import * as ExpoLocation from 'expo-location';
 import { generateColorsSet } from './generator';
 import {
@@ -12,7 +13,9 @@ import {
 } from '../models';
 import { parseDate, parseDateAndTime } from './formatting';
 
-const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const GOOGLE_API_KEY =
+  Constants.expoConfig?.extra?.googleApiKey ||
+  process.env.REACT_APP_GOOGLE_API_KEY;
 
 export function getMapPreview({ latitude, longitude }: LatLng) {
   const imagePreviewUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:S%7C${latitude},${longitude}&key=${GOOGLE_API_KEY}`;

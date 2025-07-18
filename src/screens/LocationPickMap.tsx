@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Constants from 'expo-constants';
 import { RouteProp } from '@react-navigation/native';
 import MapView, {
   LatLng,
@@ -48,7 +49,10 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     lat: route.params.initialLat,
     lng: route.params.initialLng,
   };
-  const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+  const GOOGLE_API_KEY =
+    Constants.expoConfig?.extra?.googleApiKey ||
+    process.env.REACT_APP_GOOGLE_API_KEY;
+
   const initialColorScheme = route.params.colorScheme || ColorScheme.primary;
 
   const minorStageId = route.params.minorStageId;

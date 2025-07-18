@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/appIcon.jpg",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "androidNavigationBar": {
       "visible": "immersive"
     },
@@ -17,12 +17,15 @@
     },
     "ios": {
       "buildNumber": "1.0.0",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
+      }
     },
     "android": {
       "config": {
         "googleMaps": {
-          "apiKey": "process.env.REACT_APP_GOOGLE_API_KEY"
+          "apiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
         }
       },
       "adaptiveIcon": {
@@ -37,11 +40,11 @@
     "extra": {
       "eas": {
         "projectId": "c02b6a9a-2450-44c4-bfe2-685858789bf9"
-      }
+      },
+      "googleApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
     },
     "plugins": [
-      "expo-font",
-      "expo-dev-client"
+      "expo-font"
     ]
   }
 }

@@ -2,6 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ReactElement, useCallback, useContext, useState } from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import Constants from 'expo-constants';
 import MapView, { LatLng, Region } from 'react-native-maps';
 import MapViewDirections, {
   MapViewDirectionsMode,
@@ -59,7 +60,9 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     { button: true, list: false },
   ]);
 
-  const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+  const GOOGLE_API_KEY =
+    Constants.expoConfig?.extra?.googleApiKey ||
+    process.env.REACT_APP_GOOGLE_API_KEY;
   const userCtx = useContext(UserContext);
   const stagesCtx = useContext(StagesContext);
   const journeyId = stagesCtx.selectedJourneyId!;
