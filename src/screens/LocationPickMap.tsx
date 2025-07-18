@@ -58,6 +58,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   const minorStageId = route.params.minorStageId;
   const customCountryId = route.params.customCountryId || undefined;
 
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasLocation, setHasLocation] = useState(route.params.hasLocation);
   const [region, setRegion] = useState<Region>({
     latitude: initialLocation.lat,
@@ -90,24 +91,22 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     }
   }
 
+  // Update the useEffect
   useEffect(() => {
     async function calculateAverageRegion() {
-      if (!placesToVisit || placesToVisit.length === 0) return;
+      // Only calculate average region on initial load
+      if (!placesToVisit || placesToVisit.length === 0 || !isInitialLoad)
+        return;
+
       const locationsToVisit = placesToVisit.map(formatPlaceToLocation);
       const newRegion = await getRegionForLocations(locationsToVisit);
 
-      // Only update if region actually changes
-      if (
-        !region ||
-        region.latitude !== newRegion.latitude ||
-        region.longitude !== newRegion.longitude
-      ) {
-        setRegion(newRegion);
-      }
+      setRegion(newRegion);
+      setIsInitialLoad(false); // Mark initial load as complete
     }
 
     calculateAverageRegion();
-  }, [placesToVisit]);
+  }, [placesToVisit, isInitialLoad]);
 
   function selectLocationHandler(event: MapPressEvent) {
     const lat = event.nativeEvent.coordinate.latitude;
@@ -119,6 +118,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       longitudeDelta: 0.04,
     });
     setHasLocation(true);
+    setIsInitialLoad(false); // Prevent future auto-calculations
     setShowModal(true);
   }
 
@@ -132,6 +132,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     });
     setTitle(name.substring(0, 20));
     setHasLocation(true);
+    setIsInitialLoad(false); // Prevent future auto-calculations
     setShowModal(true);
   }
 
@@ -146,6 +147,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       });
       setTitle(place.structuredFormat.mainText.text.substring(0, 20));
       setHasLocation(true);
+      setIsInitialLoad(false); // Prevent future auto-calculations
       setShowModal(true);
     }
     return;

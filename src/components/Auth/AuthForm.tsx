@@ -121,6 +121,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       <View style={styles.formRow}>
         <Input
           label='E-Mail'
+          maxLength={100}
           invalid={!credentials.email.isValid}
           errors={credentials.email.errors}
           textInputConfig={{
@@ -132,6 +133,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       <View style={styles.formRow}>
         <Input
           label='Password'
+          maxLength={100}
           invalid={!credentials.password.isValid}
           errors={credentials.password.errors}
           textInputConfig={{
@@ -155,6 +157,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         <View style={styles.formRow}>
           <Input
             label='Username'
+            maxLength={100}
             invalid={!credentials.username.isValid}
             errors={credentials.username.errors}
             textInputConfig={{

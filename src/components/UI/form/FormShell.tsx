@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
-    borderRadius: 8,
+    borderRadius: 45,
     borderColor: GlobalStyles.colors.gray100,
     backgroundColor: GlobalStyles.colors.gray400,
     elevation: 5,
