@@ -53,13 +53,27 @@ import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
-// TODO: Create Icon and loading screen
-// TODO: check full doc of eas configurations
-// TODO: Improve colors
+// PRIO 1 \\
+// TODO: Validierung bei Vergleich Datum Beginn & Ende rausnehmen => dadurch mehr Felxibilität … Sortierung entweder nach Datum oder alphabetisch
+// TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
+// TODO: MajorStage name can't be name of the journey => Map won't work in that case
 // TODO: Map => Add functionality to get route between all minorStages Accommodations
+// TODO: ShowMap for countries um alle Orte einfach anzeigen zu lassen bei Location
+// TODO: Create Icon and loading screen
+// TODO: Top Bar in weiß
 
+// PRIO 2 \\
+// TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
+// => Slide in from Bottom + runterwischbar
+// TODO: MaxHeight for ValidationLog
+// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
+// TODO: Adjust frontsize and width + wrap for PlacesList
+// TODO: Improve colors (dezenter)
+
+// PRIO 3 \\
 // TODO: Fix custom progress bar
-// TODO: Add Chatbot, thats translates into local language
+// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
+// TODO: Chatbot, that interacts with the app?! => that can make journeys
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();

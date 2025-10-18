@@ -4,7 +4,7 @@
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/appIcon.jpg",
+    "icon": "./assets/icon.jpg",
     "newArchEnabled": false,
     "androidNavigationBar": {
       "visible": "immersive"
@@ -23,6 +23,7 @@
       }
     },
     "android": {
+      "icon": "./assets/icon.jpg",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
