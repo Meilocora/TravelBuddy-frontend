@@ -17,6 +17,7 @@ import { GlobalStyles } from '../../../constants/styles';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { PlaceContext } from '../../../store/place-context';
 import InfoText from '../../UI/InfoText';
+import LocationPicker from '../../UI/form/LocationPicker';
 
 interface PlacesListProps {
   onCancel: () => void;
