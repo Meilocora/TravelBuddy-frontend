@@ -54,18 +54,17 @@ import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
 // PRIO 1 \\
-// TODO: Map => Add functionality to get route between all minorStages Accommodations
-
 // TODO: Validierung bei Vergleich Datum Beginn & Ende rausnehmen => dadurch mehr Felxibilität … Sortierung entweder nach Datum oder alphabetisch
 // TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
+// TODO: Überall Sortierung der Stages nach sequence ändern (z.B. Map, )
 // TODO: MajorStage name can't be name of the journey => Map won't work in that case
 
 // PRIO 2 \\
+// TODO: Adjust frontsize and width + wrap for PlacesList
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
 // => Slide in from Bottom + runterwischbar
 // TODO: MaxHeight for ValidationLog
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
-// TODO: Adjust frontsize and width + wrap for PlacesList
 // TODO: Improve colors (dezenter)
 
 // PRIO 3 \\

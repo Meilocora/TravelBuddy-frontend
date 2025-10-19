@@ -229,14 +229,13 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       />
       <RoutePlanner
         locations={shownLocations}
-        mapScope={mapScope.name}
+        mapScope={mapScope}
         mode={directionsMode}
         setMode={handleChangeDirectionsMode}
         toggleButtonVisibility={() => handleHideButtons('routePlanner')}
         showContent={showContent[1]}
         setRoutePoints={setRoutePoints}
       />
-      {/* TODO: Add Button, that shows the currently planned route (Accommodation -> Accommodation) */}
       <MapView
         style={styles.map}
         initialRegion={region!}

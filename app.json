@@ -23,7 +23,7 @@
       }
     },
     "android": {
-      "icon": "./assets/icon.jpg",
+      "icon": "./assets/adaptive-icon.png",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"

@@ -145,7 +145,8 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
         <Button
           onPress={handlePressButton}
           colorScheme={ColorScheme.neutral}
-          style={styles.icon}
+          style={styles.stopoverButton}
+          textStyle={styles.stopoverButtonText}
         >
           Add Stopover
         </Button>
@@ -205,6 +206,13 @@ const styles = StyleSheet.create({
   icon: {
     justifyContent: 'center',
     marginHorizontal: 'auto',
+  },
+  stopoverButton: {
+    marginHorizontal: 'auto',
+    marginTop: 12,
+  },
+  stopoverButtonText: {
+    fontSize: 14,
   },
 });
 

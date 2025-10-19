@@ -128,6 +128,7 @@ export function getMapLocationsFromJourney(
   const locations: Location[] = [];
   const currentDate = new Date();
 
+  // TODO: Add sequence numbers to locations for ordering on map
   if (!journey || !journey.majorStages || journey.majorStages.length === 0) {
     return undefined;
   }
@@ -560,4 +561,29 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
     done: placeToVisit.visited,
     description: placeToVisit.description || '',
   };
+}
+
+export function getRouteLocationsNamesFromLocations(
+  locations: Location[]
+): string[] {
+  const filteredLocations = locations.filter(
+    (location) =>
+      location.locationType === LocationType.accommodation ||
+      location.locationType === LocationType.transportation_arrival
+  );
+  return filteredLocations.map((location) => location.data.name);
+}
+
+export function compareRouteLocations(
+  locs1: string[],
+  locs2: string[]
+): boolean {
+  if (locs1.length !== locs2.length) return false;
+
+  // Check if all elements are the same
+  for (let i = 0; i < locs1.length; i++) {
+    if (locs1[i] !== locs2[i]) return false;
+  }
+
+  return true;
 }
