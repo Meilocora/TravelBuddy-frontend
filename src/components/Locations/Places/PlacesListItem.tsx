@@ -80,6 +80,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: majorStageId ? 'complementary' : 'primary',
+      customCountryId: place.countryId,
     });
   }
 

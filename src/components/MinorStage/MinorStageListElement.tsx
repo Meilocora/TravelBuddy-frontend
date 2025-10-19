@@ -100,7 +100,10 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
       <ElementComment content={`${startDate} - ${endDate}`} />
       <DetailArea elementDetailInfo={elementDetailInfo} />
       {minorStage.accommodation.place !== '' && (
-        <AccommodationBox minorStage={minorStage} />
+        <AccommodationBox
+          minorStage={minorStage}
+          customCountryId={majorStage?.country.id!}
+        />
       )}
       <ContentBox
         journeyId={journeyId}

@@ -37,6 +37,7 @@ interface ActivityListElementProps {
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
   isOver: boolean;
+  customCountryId: number;
 }
 
 const ActivityListElement: React.FC<ActivityListElementProps> = ({
@@ -45,6 +46,7 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
   handleEdit,
   handleDelete,
   isOver,
+  customCountryId,
 }) => {
   const [isOpened, setIsOpened] = useState(false);
 
@@ -65,6 +67,7 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: 'complementary',
+      customCountryId: customCountryId,
     });
   }
 
@@ -220,6 +223,7 @@ interface ActivityElementProps {
   handleAdd: () => void;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
+  customCountryId: number;
 }
 
 const ActivityElement: React.FC<ActivityElementProps> = ({
@@ -227,6 +231,7 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
   handleAdd,
   handleEdit,
   handleDelete,
+  customCountryId,
 }) => {
   const screenHeight = Dimensions.get('window').height;
   const isOver = validateIsOver(minorStage.scheduled_end_time);
@@ -247,6 +252,7 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
               handleDelete={handleDelete}
               key={generateRandomString()}
               isOver={isOver}
+              customCountryId={customCountryId}
             />
           ))}
         </ScrollView>

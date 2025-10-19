@@ -16,10 +16,12 @@ import TextLink from '../UI/TextLink';
 
 interface AccommodationBoxProps {
   minorStage: MinorStage;
+  customCountryId: number;
 }
 
 const AccommodationBox: React.FC<AccommodationBoxProps> = ({
   minorStage,
+  customCountryId,
 }): ReactElement => {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
@@ -38,6 +40,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: 'complementary',
+      customCountryId: customCountryId,
     });
   }
 

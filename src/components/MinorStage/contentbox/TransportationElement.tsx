@@ -31,11 +31,20 @@ interface TransportElementInfopointProps {
   colorScheme: 'accent' | 'complementary';
   transportationType: TransportationType;
   done?: boolean;
+  customCountryId: number;
 }
 
 export const TransportElementInfopoint: React.FC<
   TransportElementInfopointProps
-> = ({ subtitle, data, location, colorScheme, transportationType, done }) => {
+> = ({
+  subtitle,
+  data,
+  location,
+  colorScheme,
+  transportationType,
+  done,
+  customCountryId,
+}) => {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
   function handleShowLocation() {
@@ -54,6 +63,7 @@ export const TransportElementInfopoint: React.FC<
     navigation.navigate('ShowMap', {
       location: mapLocation,
       colorScheme: colorScheme,
+      customCountryId: customCountryId,
     });
   }
 
@@ -109,6 +119,7 @@ interface TransportationElementProps {
   handleAdd: () => void;
   handleEdit: (id: number) => void;
   minorStageIsOver?: boolean;
+  customCountryId: number;
 }
 
 const TransportationElement: React.FC<TransportationElementProps> = ({
@@ -116,6 +127,7 @@ const TransportationElement: React.FC<TransportationElementProps> = ({
   handleAdd,
   handleEdit,
   minorStageIsOver,
+  customCountryId,
 }) => {
   const userCtx = useContext(UserContext);
   if (transportation === undefined) {
@@ -195,6 +207,7 @@ const TransportationElement: React.FC<TransportationElementProps> = ({
           location={infoPoint.location}
           colorScheme='complementary'
           transportationType={transportation.type as TransportationType}
+          customCountryId={customCountryId}
         />
       ))}
       {transportation.link && (
