@@ -54,14 +54,11 @@ import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
 // PRIO 1 \\
-// TODO: ShowMap for countries um alle Orte einfach anzeigen zu lassen bei Location
 // TODO: Map => Add functionality to get route between all minorStages Accommodations
 
 // TODO: Validierung bei Vergleich Datum Beginn & Ende rausnehmen => dadurch mehr Felxibilität … Sortierung entweder nach Datum oder alphabetisch
 // TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
 // TODO: MajorStage name can't be name of the journey => Map won't work in that case
-// TODO: Create Icon and loading screen
-// TODO: Statusbar in weiß
 
 // PRIO 2 \\
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten

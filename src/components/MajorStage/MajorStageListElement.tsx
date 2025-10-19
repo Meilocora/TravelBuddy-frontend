@@ -174,6 +174,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
                 majorStageIsOver={isOver}
                 transportation={majorStage.transportation}
                 onPressEdit={handleEditTransportation}
+                customCountryId={majorStage.country.id!}
               />
             )}
             {!majorStage.transportation && !isOver && (

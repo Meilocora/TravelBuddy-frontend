@@ -4,7 +4,7 @@
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.jpg",
+    "icon": "./assets/adaptive-icon.png",
     "newArchEnabled": false,
     "androidNavigationBar": {
       "visible": "immersive"

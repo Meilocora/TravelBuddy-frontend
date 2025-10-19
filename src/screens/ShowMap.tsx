@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import MapView, { Region } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
 
 import { StackParamList } from '../models';
 import { GlobalStyles } from '../constants/styles';
@@ -42,13 +42,6 @@ const ShowMap: React.FC<ShowMapProps> = ({
     latitudeDelta: 0.1,
     longitudeDelta: 0.04,
   });
-
-  console.log(customCountryId);
-  console.log('Hey');
-  useEffect(() => {
-    console.warn('__DEV__ =', __DEV__, 'customCountryId:', customCountryId);
-    console.warn('ShowMap mounted');
-  }, [customCountryId]);
 
   // Update the useEffect
   useEffect(() => {
@@ -96,6 +89,16 @@ const ShowMap: React.FC<ShowMapProps> = ({
             />
           );
         })}
+        {location && (
+          <Marker
+            title={location.data.name}
+            coordinate={{
+              latitude: location.data.latitude,
+              longitude: location.data.longitude,
+            }}
+            description={location.description}
+          />
+        )}
       </MapView>
     </View>
   );

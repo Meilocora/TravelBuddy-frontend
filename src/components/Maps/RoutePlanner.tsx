@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import OutsidePressHandler from 'react-native-outside-press';
 import { MapViewDirectionsMode } from 'react-native-maps-directions';
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     maxHeight: Dimensions.get('window').height * 0.7,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderColor: 'black',
     borderWidth: 1,
     borderTopRightRadius: 15,
@@ -181,15 +181,15 @@ const styles = StyleSheet.create({
   button: {
     padding: 2,
     borderWidth: 1,
-    borderRadius: '100%',
+    borderRadius: 10,
     borderColor: 'black',
   },
   activeButton: {
     padding: 2,
     borderWidth: 1,
-    borderRadius: '100%',
+    borderRadius: 10,
     borderColor: 'black',
-    backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.accent50,
   },
   buttonText: {
     color: 'black',

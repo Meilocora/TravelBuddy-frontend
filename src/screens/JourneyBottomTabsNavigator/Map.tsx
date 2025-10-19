@@ -236,6 +236,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         showContent={showContent[1]}
         setRoutePoints={setRoutePoints}
       />
+      {/* TODO: Add Button, that shows the currently planned route (Accommodation -> Accommodation) */}
       <MapView
         style={styles.map}
         initialRegion={region!}

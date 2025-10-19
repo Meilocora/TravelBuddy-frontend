@@ -19,12 +19,14 @@ interface TransportationBoxProps {
   transportation: Transportation;
   majorStageIsOver: boolean;
   onPressEdit: () => void;
+  customCountryId: number;
 }
 
 const TransportationBox: React.FC<TransportationBoxProps> = ({
   transportation,
   majorStageIsOver,
   onPressEdit,
+  customCountryId,
 }): ReactElement => {
   const userCtx = useContext(UserContext);
   const [openInfoBox, setOpenInfoBox] = useState(false);
@@ -120,6 +122,7 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
               location={infoPoint.location}
               colorScheme='accent'
               transportationType={transportation.type as TransportationType}
+              customCountryId={customCountryId}
             />
           ))}
         {transportation.link && (
