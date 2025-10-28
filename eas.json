@@ -1,24 +1,27 @@
 {
+  "cli": {
+    "version": ">= 16.15.0",
+    "appVersionSource": "remote"
+  },
   "build": {
-    "dev": {
+    "development": {
+      "developmentClient": true,
       "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      }
+    },
+    "preview": {
       "android": {
         "buildType": "apk"
       },
-      "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "http://192.168.178.32:5001"
-      },
-      "channel": "dev"
+      "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://travelbuddy-backend-luuc.onrender.com"
-      },
-      "channel": "production"
+      "autoIncrement": true
     }
   },
-  "cli": {
-    "appVersionSource": "remote"
+  "submit": {
+    "production": {}
   }
 }
