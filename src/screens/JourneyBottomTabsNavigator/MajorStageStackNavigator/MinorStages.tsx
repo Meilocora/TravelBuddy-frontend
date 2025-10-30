@@ -93,49 +93,30 @@ const MinorStages: React.FC<MinorStagesProps> = ({
   }
 
   useLayoutEffect(() => {
-    if (!isOver) {
-      navigation.setOptions({
-        headerTitle: () => <HeaderTitle title={majorStage!.title} />,
-        headerRight: () => (
-          <IconButton
-            icon={Icons.add}
-            onPress={handleAddMinorStage}
-            color={'white'}
-            size={32}
-          />
-        ),
-        headerLeft: ({ tintColor }) => (
-          <IconButton
-            color={tintColor}
-            size={24}
-            icon={Icons.arrowBack}
-            onPress={() => {
-              planningNavigation.navigate('Planning', {
-                journeyId: journeyId!,
-              });
-            }}
-          />
-        ),
-        headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
-      });
-    } else {
-      navigation.setOptions({
-        headerTitle: () => <HeaderTitle title={majorStage!.title} />,
-        headerLeft: ({ tintColor }) => (
-          <IconButton
-            color={tintColor}
-            size={24}
-            icon={Icons.arrowBack}
-            onPress={() => {
-              planningNavigation.navigate('Planning', {
-                journeyId: journeyId!,
-              });
-            }}
-          />
-        ),
-        headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
-      });
-    }
+    navigation.setOptions({
+      headerTitle: () => <HeaderTitle title={majorStage!.title} />,
+      headerRight: () => (
+        <IconButton
+          icon={Icons.add}
+          onPress={handleAddMinorStage}
+          color={'white'}
+          size={32}
+        />
+      ),
+      headerLeft: ({ tintColor }) => (
+        <IconButton
+          color={tintColor}
+          size={24}
+          icon={Icons.arrowBack}
+          onPress={() => {
+            planningNavigation.navigate('Planning', {
+              journeyId: journeyId!,
+            });
+          }}
+        />
+      ),
+      headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
+    });
   }, [navigation, majorStage]);
 
   let content;

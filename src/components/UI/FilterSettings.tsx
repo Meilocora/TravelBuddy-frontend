@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { StageFilter } from '../../models';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 
 interface FilterSettingsProps {
@@ -16,8 +16,8 @@ const FilterSettings: React.FC<FilterSettingsProps> = ({
   return (
     <Animated.View
       style={styles.container}
-      entering={FadeInDown}
-      exiting={FadeOutDown}
+      entering={FadeInUp}
+      exiting={FadeOutUp}
     >
       <Pressable
         style={[
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 120,
+    marginVertical: 10,
     marginHorizontal: 10,
     paddingVertical: 3,
     paddingHorizontal: 5,

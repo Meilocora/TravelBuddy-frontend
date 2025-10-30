@@ -104,7 +104,8 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     }
 
     getData();
-  }, [refresh]);
+    // }, [refresh]);
+  }, []);
 
   function handleClosePopup() {
     setPopupText(null);

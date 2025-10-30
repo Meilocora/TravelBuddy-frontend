@@ -64,9 +64,13 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         const journeyCountries = journey!.countries!.map(
           (country) => country.name
         );
-        const leftOverCountries = journeyCountries?.filter(
-          (country) => !countriesList.includes(country)
-        );
+
+        // TODO: Einfügen, wenn bereits enthaltene Länder nicht erneut ausgewählt werden dürfen sollen
+        // const leftOverCountries = journeyCountries?.filter(
+        //   (country) => !countriesList.includes(country)
+        // );
+
+        const leftOverCountries = journeyCountries;
 
         setSelectableCountries(leftOverCountries || []);
       }

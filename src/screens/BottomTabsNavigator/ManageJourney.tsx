@@ -1,7 +1,6 @@
-import { ReactElement, useContext, useState, useCallback } from 'react';
+import { ReactElement, useContext, useState, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { useFocusEffect } from '@react-navigation/native';
 
 import {
   ManageJourneyRouteProp,
@@ -13,7 +12,11 @@ import {
 import JourneyForm from '../../components/Journeys/ManageJourney/JourneyForm';
 import IconButton from '../../components/UI/IconButton';
 import { GlobalStyles } from '../../constants/styles';
-import { formatCountrynamesToString, formatDateString } from '../../utils';
+import {
+  formatCountrynamesToString,
+  formatDateString,
+  generateRandomString,
+} from '../../utils';
 import { deleteJourney } from '../../utils/http';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../../components/UI/Modal';
@@ -45,58 +48,24 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
   const selectedJourney = stagesCtx.findJourney(editedJourneyId!);
 
   // Empty, when no default values provided
-  const [journeyValues, setJourneyValues] = useState<JourneyValues>({
-    name: selectedJourney?.name || '',
-    description: selectedJourney?.description || '',
-    scheduled_start_time: selectedJourney?.scheduled_start_time
-      ? formatDateString(selectedJourney.scheduled_start_time)!
-      : null,
-    scheduled_end_time: selectedJourney?.scheduled_end_time
-      ? formatDateString(selectedJourney.scheduled_end_time)!
-      : null,
-    budget: selectedJourney?.costs.budget || 0,
-    spent_money: selectedJourney?.costs.spent_money || 0,
-    countries: selectedJourney?.countries
-      ? formatCountrynamesToString(selectedJourney!.countries)
-      : '',
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      // JourneyValues set, when screen is focused
-      setJourneyValues({
-        name: selectedJourney?.name || '',
-        description: selectedJourney?.description || '',
-        scheduled_start_time: selectedJourney?.scheduled_start_time
-          ? formatDateString(selectedJourney.scheduled_start_time)!
-          : null,
-        scheduled_end_time: selectedJourney?.scheduled_end_time
-          ? formatDateString(selectedJourney.scheduled_end_time)!
-          : null,
-        budget: selectedJourney?.costs.budget || 0,
-        spent_money: selectedJourney?.costs.spent_money || 0,
-        countries: selectedJourney?.countries
-          ? formatCountrynamesToString(selectedJourney!.countries)
-          : '',
-      });
-
-      return () => {
-        // Clean up function, when screen is unfocused
-        // reset JourneyValues
-        setJourneyValues({
-          name: '',
-          description: '',
-          scheduled_start_time: null,
-          scheduled_end_time: null,
-          budget: 0,
-          spent_money: 0,
-          countries: '',
-        });
-        // reset journeyId in navigation params for BottomTab
-        navigation.setParams({ journeyId: undefined });
-      };
-    }, [selectedJourney])
-  );
+  const defaultValues = useMemo<JourneyValues | undefined>(() => {
+    if (!selectedJourney) return undefined;
+    return {
+      name: selectedJourney?.name || '',
+      description: selectedJourney?.description || '',
+      scheduled_start_time: selectedJourney?.scheduled_start_time
+        ? formatDateString(selectedJourney.scheduled_start_time)!
+        : null,
+      scheduled_end_time: selectedJourney?.scheduled_end_time
+        ? formatDateString(selectedJourney.scheduled_end_time)!
+        : null,
+      budget: selectedJourney?.costs.budget || 0,
+      spent_money: selectedJourney?.costs.spent_money || 0,
+      countries: selectedJourney?.countries
+        ? formatCountrynamesToString(selectedJourney!.countries)
+        : '',
+    };
+  }, [selectedJourney]);
 
   async function deleteJourneyHandler() {
     try {
@@ -159,7 +128,9 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       {isDeleting && (
         <Modal
           title='Are you sure?'
-          content={`If you delete ${journeyValues.name}, all related Major and Minor Stages will also be deleted permanently`}
+          content={`If you delete ${
+            defaultValues!.name
+          }, all related Major and Minor Stages will also be deleted permanently`}
           onConfirm={deleteJourneyHandler}
           onCancel={closeModalHandler}
         />
@@ -167,10 +138,11 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown}>
         <JourneyForm
+          key={isEditing ? String(editedJourneyId) : generateRandomString()}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}
-          defaultValues={isEditing ? journeyValues : undefined}
+          defaultValues={isEditing ? defaultValues : undefined}
           isEditing={isEditing}
           editJourneyId={editedJourneyId}
         />

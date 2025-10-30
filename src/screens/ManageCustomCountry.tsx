@@ -26,6 +26,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import PlacesList from '../components/Locations/Places/PlacesList';
 import MainGradient from '../components/UI/LinearGradients/MainGradient';
 import HeaderTitle from '../components/UI/HeaderTitle';
+import { generateRandomString } from '../utils';
 
 interface ManageCustomCountryProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManageCustomCountry'>;
@@ -109,6 +110,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
 
         {country && (
           <CustomCountryForm
+            key={isEditing ? String(countryId) : generateRandomString()}
             country={country}
             isEditing={isEditing}
             onUpdate={handleUpdateCountry}

@@ -17,6 +17,7 @@ import InfoText from '../../components/UI/InfoText';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { parseDate, validateIsOver } from '../../utils';
 import { StagesContext } from '../../store/stages-context';
+import { GlobalStyles } from '../../constants/styles';
 
 interface PlanningProps {
   navigation: NativeStackNavigationProp<
@@ -67,23 +68,17 @@ const Planning: React.FC<PlanningProps> = ({
   }
 
   useLayoutEffect(() => {
-    if (!isOver) {
-      navigation.setOptions({
-        title: journey?.name,
-        headerRight: () => (
-          <IconButton
-            icon={Icons.add}
-            onPress={handleAddMajorStage}
-            color={'white'}
-            size={32}
-          />
-        ),
-      });
-    } else {
-      navigation.setOptions({
-        title: journey?.name,
-      });
-    }
+    navigation.setOptions({
+      title: journey?.name,
+      headerRight: () => (
+        <IconButton
+          icon={Icons.add}
+          onPress={handleAddMajorStage}
+          color={GlobalStyles.colors.gray500}
+          size={32}
+        />
+      ),
+    });
   }, [navigation, journey]);
 
   let content;

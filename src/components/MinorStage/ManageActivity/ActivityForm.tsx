@@ -100,67 +100,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     },
   });
 
-  // Redefine inputs, when defaultValues change
-  useEffect(() => {
-    setInputs({
-      name: { value: defaultValues?.name || '', isValid: true, errors: [] },
-      description: {
-        value: defaultValues?.description || '',
-        isValid: true,
-        errors: [],
-      },
-      costs: {
-        value: 0,
-        isValid: true,
-        errors: [],
-      },
-      unconvertedAmount: {
-        value: defaultValues?.costs.toString() || '',
-        isValid: true,
-        errors: [],
-      },
-      booked: {
-        value: defaultValues?.booked || false,
-        isValid: true,
-        errors: [],
-      },
-      place: {
-        value: defaultValues?.place || '',
-        isValid: true,
-        errors: [],
-      },
-      latitude: {
-        value: defaultValues?.latitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      longitude: {
-        value: defaultValues?.longitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      link: {
-        value: defaultValues?.link || '',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }, [defaultValues]);
-
-  function resetValues() {
-    setInputs({
-      name: { value: '', isValid: true, errors: [] },
-      description: { value: '', isValid: true, errors: [] },
-      costs: { value: 0, isValid: true, errors: [] },
-      unconvertedAmount: { value: '', isValid: true, errors: [] },
-      booked: { value: false, isValid: true, errors: [] },
-      place: { value: '', isValid: true, errors: [] },
-      latitude: { value: undefined, isValid: true, errors: [] },
-      longitude: { value: undefined, isValid: true, errors: [] },
-      link: { value: '', isValid: true, errors: [] },
-    });
-  }
-
   function inputChangedHandler(
     inputIdentifier: string,
     enteredValue: string | boolean | number
@@ -217,7 +156,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
       response!;
 
     if (!error && activity) {
-      resetValues();
       onSubmit({ activity, status, backendJourneyId });
     } else if (error) {
       onSubmit({ error, status });

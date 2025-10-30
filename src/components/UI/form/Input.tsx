@@ -36,12 +36,17 @@ const Input: React.FC<InputProps> = ({
   mandatory = false,
   customInputStyles,
 }): ReactElement => {
+  const safeTextInputConfig: TextInputProps = {
+    ...(textInputConfig || {}),
+    value: textInputConfig?.value ?? '',
+  };
+
   const inputStyles: StyleProp<TextStyle>[] = [styles.input];
 
   // this boolean is used later to give not multiline inputs tha numberOfLines={1} prop
-  const isMultiline = textInputConfig?.multiline || false;
+  const isMultiline = safeTextInputConfig?.multiline || false;
 
-  if (textInputConfig && textInputConfig.multiline) {
+  if (safeTextInputConfig && safeTextInputConfig.multiline) {
     inputStyles.push(styles.inputMultiline);
   }
 
@@ -50,10 +55,10 @@ const Input: React.FC<InputProps> = ({
   }
 
   if (
-    textInputConfig &&
-    (textInputConfig.value === undefined || !textInputConfig.value)
+    safeTextInputConfig &&
+    (safeTextInputConfig.value === undefined || !safeTextInputConfig.value)
   ) {
-    textInputConfig.value = '';
+    safeTextInputConfig.value = '';
   }
 
   return (
@@ -65,11 +70,11 @@ const Input: React.FC<InputProps> = ({
       {isMultiline ? (
         <TextInput
           style={[inputStyles, customInputStyles]}
-          readOnly={!isEditing}
+          editable={!!isEditing}
           autoCorrect={false}
           autoCapitalize='none'
           autoComplete='off'
-          {...textInputConfig}
+          {...safeTextInputConfig}
           selectionColor='white'
           underlineColorAndroid='transparent'
           maxLength={maxLength}
@@ -77,12 +82,12 @@ const Input: React.FC<InputProps> = ({
       ) : (
         <TextInput
           style={[inputStyles, customInputStyles]}
-          readOnly={!isEditing}
+          editable={!!isEditing}
           autoCorrect={false}
           autoCapitalize='none'
           autoComplete='off'
           numberOfLines={1}
-          {...textInputConfig}
+          {...safeTextInputConfig}
           selectionColor='white'
           underlineColorAndroid='transparent'
           maxLength={maxLength}
@@ -144,10 +149,13 @@ const styles = StyleSheet.create({
 
 // Make sure the compoennt is only reexecuted by the Form, when the errors or editing state change
 function areEqual(prevProps: InputProps, nextProps: InputProps): boolean {
+  const prevVal = prevProps.textInputConfig?.value;
+  const nextVal = nextProps.textInputConfig?.value;
+
   return (
     prevProps.errors === nextProps.errors &&
-    prevProps.isEditing === nextProps.isEditing
+    prevProps.isEditing === nextProps.isEditing &&
+    prevVal === nextVal
   );
 }
-
 export default memo(Input, areEqual);

@@ -102,16 +102,14 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
             <ElementTitle style={styles.title}>Transportation</ElementTitle>
             <Text style={styles.comment}>Starts in: {countdown}</Text>
           </View>
-          {!majorStageIsOver && (
-            <View style={styles.buttonContainer}>
-              <IconButton
-                icon={Icons.edit}
-                color={GlobalStyles.colors.accent800}
-                onPress={onPressEdit}
-                style={styles.button}
-              />
-            </View>
-          )}
+          <View style={styles.buttonContainer}>
+            <IconButton
+              icon={Icons.edit}
+              color={GlobalStyles.colors.accent800}
+              onPress={onPressEdit}
+              style={styles.button}
+            />
+          </View>
         </View>
         {openInfoBox &&
           infoPointsData.map((infoPoint, index) => (

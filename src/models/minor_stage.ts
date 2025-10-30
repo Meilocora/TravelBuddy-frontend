@@ -7,7 +7,7 @@ export interface MinorStage {
   scheduled_start_time: string;
   scheduled_end_time: string;
   costs: Costs;
-  // TODO: sequence: number;
+  order: number;
   transportation?: Transportation;
   accommodation: Accommodation;
   activities?: Activity[];
@@ -27,7 +27,7 @@ export interface MinorStageValues {
   accommodation_latitude: number | undefined;
   accommodation_longitude: number | undefined;
   accommodation_link: string;
-  // TODO: sequence: number;
+  order: number | null;
 }
 
 export interface MinorStageFormValues {
@@ -43,7 +43,7 @@ export interface MinorStageFormValues {
   accommodation_latitude: Validable<number | undefined>;
   accommodation_longitude: Validable<number | undefined>;
   accommodation_link: Validable<string>;
-  // TODO: sequence: Validable<number>;
+  order: Validable<number>;
 }
 
 export interface Accommodation {

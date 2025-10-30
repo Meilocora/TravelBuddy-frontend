@@ -47,6 +47,8 @@ export enum Icons {
   arrowLeft = 'chevron-back',
   activity = 'flash',
   routePlanner = 'git-merge-outline',
+  openDetails = 'caret-down-outline',
+  closeDetails = 'caret-up-outline',
 }
 
 export enum ButtonMode {

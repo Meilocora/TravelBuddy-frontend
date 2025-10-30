@@ -1,15 +1,17 @@
+import { parse } from 'dotenv';
 import { Journey, MajorStage, MinorStage } from '../models';
 import { parseDate, parseDateAndTime } from './formatting';
 
 export function validateIsOver(date: string): boolean {
-  const now = new Date();
-  const tomorrow = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1
-  );
+  const d = parseDate(date);
 
-  return parseDate(date) < tomorrow;
+  const day = new Date(d);
+  day.setHours(0, 0, 0, 0);
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  return day.getTime() < startOfToday.getTime();
 }
 
 export function validateIsOverDateTime(

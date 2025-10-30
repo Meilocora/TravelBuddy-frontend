@@ -134,15 +134,13 @@ const TransportationElement: React.FC<TransportationElementProps> = ({
     return (
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>No transportation found.</Text>
-        {!minorStageIsOver && (
-          <Button
-            onPress={handleAdd}
-            colorScheme={ColorScheme.complementary}
-            mode={ButtonMode.flat}
-          >
-            Add Transportation
-          </Button>
-        )}
+        <Button
+          onPress={handleAdd}
+          colorScheme={ColorScheme.complementary}
+          mode={ButtonMode.flat}
+        >
+          Add Transportation
+        </Button>
       </View>
     );
   }
@@ -213,16 +211,14 @@ const TransportationElement: React.FC<TransportationElementProps> = ({
       {transportation.link && (
         <Link link={transportation.link} style={styles.link} />
       )}
-      {!minorStageIsOver && (
-        <View style={styles.buttonContainer}>
-          <Button
-            onPress={() => handleEdit(transportation.id)}
-            colorScheme={ColorScheme.complementary}
-          >
-            Edit
-          </Button>
-        </View>
-      )}
+      <View style={styles.buttonContainer}>
+        <Button
+          onPress={() => handleEdit(transportation.id)}
+          colorScheme={ColorScheme.complementary}
+        >
+          Edit
+        </Button>
+      </View>
     </View>
   );
 };

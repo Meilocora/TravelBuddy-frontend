@@ -91,14 +91,12 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
                 containerStyle={listElementStyles.button}
               />
             )}
-            {!isOver && (
-              <IconButton
-                icon={Icons.editFilled}
-                onPress={handleEdit.bind(null, activity.id!)}
-                color={GlobalStyles.colors.edit}
-                containerStyle={listElementStyles.button}
-              />
-            )}
+            <IconButton
+              icon={Icons.editFilled}
+              onPress={handleEdit.bind(null, activity.id!)}
+              color={GlobalStyles.colors.edit}
+              containerStyle={listElementStyles.button}
+            />
             <IconButton
               icon={Icons.remove}
               onPress={handleDelete.bind(null, activity.id!)}

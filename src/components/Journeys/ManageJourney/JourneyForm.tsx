@@ -13,9 +13,9 @@ import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import { createJourney, updateJourney } from '../../../utils/http';
 import { formatAmount, formatDate, parseDate } from '../../../utils';
-import DatePicker from '../../UI/form/DatePicker';
 import Modal from '../../UI/Modal';
 import CountriesSelectionForm from './CountriesSelectionForm';
+import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 
 type InputValidationResponse = {
   journey?: Journey;
@@ -42,8 +42,6 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
   editJourneyId,
 }): ReactElement => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
   const [deletedCountries, setDeletedCountries] = useState<string[]>([]);
   const [inputs, setInputs] = useState<JourneyFormValues>({
     name: { value: defaultValues?.name || '', isValid: true, errors: [] },
@@ -194,8 +192,6 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
         errors: [],
       },
     }));
-    setOpenStartDatePicker(false);
-    setOpenEndDatePicker(false);
   }
 
   function closeModalHandler() {
@@ -215,7 +211,6 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
         />
       )}
       <View style={styles.formContainer}>
-        <Text style={styles.header}>Your Journey</Text>
         <View>
           <Input
             label='Name'
@@ -262,11 +257,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <DatePicker
-              openDatePicker={openStartDatePicker}
-              setOpenDatePicker={() =>
-                setOpenStartDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_start_time'
               invalid={!inputs.scheduled_start_time.isValid}
@@ -279,11 +270,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
                   : undefined
               }
             />
-            <DatePicker
-              openDatePicker={openEndDatePicker}
-              setOpenDatePicker={() =>
-                setOpenEndDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_end_time'
               invalid={!inputs.scheduled_end_time.isValid}
@@ -340,12 +327,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     shadowOpacity: 0.26,
-  },
-  header: {
-    fontSize: 22,
-    textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
-    fontWeight: 'bold',
   },
   formRow: {
     flexDirection: 'row',

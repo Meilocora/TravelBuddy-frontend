@@ -104,3 +104,8 @@ export enum StageFilter {
   'current',
   'all',
 }
+
+export interface StagesOrderDict {
+  id: number;
+  order: number;
+}

@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     marginHorizontal: 'auto',
     width: '100%',
-    backgroundColor: 'rgba(252, 196, 228, 0.75)',
+    backgroundColor: 'rgba(252, 196, 228, 1)',
     borderColor: GlobalStyles.colors.error200,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,

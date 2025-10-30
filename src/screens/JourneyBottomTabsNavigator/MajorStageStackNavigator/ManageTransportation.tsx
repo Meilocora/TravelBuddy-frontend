@@ -26,6 +26,7 @@ import ComplementaryGradient from '../../../components/UI/LinearGradients/Comple
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
+import { generateRandomString } from '../../../utils';
 
 interface ManageTransportationProps {
   navigation: NativeStackNavigationProp<
@@ -47,9 +48,6 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
   route,
   navigation,
 }): ReactElement => {
-  // JourneyBottomTabs.Navigator
-  // const journeyBottomTabsNav = useNavigation<BottomTabNavigationProp
-
   const [error, setError] = useState<string | null>(null);
   const [selectedTransportation, setSelectedTransportation] = useState<
     Transportation | undefined
@@ -191,6 +189,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       <View style={styles.root}>
         <Animated.ScrollView entering={FadeInDown}>
           <TransportationForm
+            key={isEditing ? String(transportationId) : generateRandomString()}
             onCancel={cancelHandler}
             onSubmit={confirmHandler}
             submitButtonLabel={isEditing ? 'Update' : 'Add'}
