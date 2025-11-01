@@ -81,7 +81,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
     >
       <View style={styles.headerContainer}>
         <View style={styles.titleContainer}>
-          <ElementTitle>{`${minorStage.order.toString()}. ${
+          <ElementTitle>{`${minorStage.position.toString()}. ${
             minorStage.title
           }`}</ElementTitle>
         </View>

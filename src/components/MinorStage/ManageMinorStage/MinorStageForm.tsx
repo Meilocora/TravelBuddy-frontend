@@ -23,8 +23,8 @@ import {
 import LocationPicker from '../../UI/form/LocationPicker';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
-import OrderSelector from '../../UI/form/OrderSelector';
 import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
+import PositionSelector from '../../UI/form/PositionSelector';
 
 type InputValidationResponse = {
   minorStage?: MinorStage;
@@ -64,21 +64,21 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     maxAvailableMoney -= ms.costs.budget;
   });
 
-  let orders: number[];
-  if (defaultValues?.order) {
-    orders = Array.from(
+  let positions: number[];
+  if (defaultValues?.position) {
+    positions = Array.from(
       { length: minorStages?.length ?? 0 }, // if no stages -> length = 1
       (_, i) => i + 1
     );
   } else {
-    orders = Array.from(
+    positions = Array.from(
       { length: (minorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
       (_, i) => i + 1
     );
   }
-  const initialOrder = isEditing
-    ? defaultValues?.order ?? 1
-    : orders[orders.length - 1];
+  const initialPosition = isEditing
+    ? defaultValues?.position ?? 1
+    : positions[positions.length - 1];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -139,8 +139,8 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       isValid: true,
       errors: [],
     },
-    order: {
-      value: initialOrder,
+    position: {
+      value: initialPosition,
       isValid: true,
       errors: [],
     },
@@ -284,15 +284,15 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
                 }}
               />
             </View>
-            <View style={styles.orderWrapper}>
-              <OrderSelector
-                defaultOrder={inputs.order.value}
-                errors={inputs.order.errors}
-                invalid={!inputs.order.isValid}
-                onChangeOrder={(newOrder: number) =>
-                  inputChangedHandler('order', newOrder)
+            <View style={styles.positionWrapper}>
+              <PositionSelector
+                defaultPosition={inputs.position.value}
+                errors={inputs.position.errors}
+                invalid={!inputs.position.isValid}
+                onChangePosition={(newPosition: number) =>
+                  inputChangedHandler('position', newPosition)
                 }
-                orders={orders}
+                positions={positions}
                 colorScheme={ColorScheme.complementary}
               />
             </View>
@@ -496,9 +496,9 @@ const styles = StyleSheet.create({
   titleWrapper: {
     flex: 4, // 75% of the row (3 parts)
   },
-  orderWrapper: {
+  positionWrapper: {
     flex: 1, // 25% of the row (1 part)
-    justifyContent: 'center', // vertically center if OrderSelector has fixed height
+    justifyContent: 'center', // vertically center if PositionSelector has fixed height
   },
   buttonsContainer: {
     flexDirection: 'row',

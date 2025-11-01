@@ -10,7 +10,7 @@ export interface MajorStage {
   additional_info: string;
   country: CustomCountry;
   costs: Costs;
-  order: number;
+  position: number;
   transportation?: Transportation;
   minorStages?: MinorStage[];
   currentMajorStage?: boolean;
@@ -24,7 +24,7 @@ export interface MajorStageValues {
   budget: number;
   spent_money: number;
   country: string;
-  order: number | null;
+  position: number | null;
 }
 
 export interface MajorStageFormValues {
@@ -35,5 +35,5 @@ export interface MajorStageFormValues {
   budget: Validable<number>;
   spent_money: Validable<number>;
   country: Validable<string>;
-  order: Validable<number>;
+  position: Validable<number>;
 }

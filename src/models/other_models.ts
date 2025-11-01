@@ -105,7 +105,7 @@ export enum StageFilter {
   'all',
 }
 
-export interface StagesOrderDict {
+export interface StagesPositionDict {
   id: number;
-  order: number;
+  position: number;
 }

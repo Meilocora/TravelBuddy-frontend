@@ -79,7 +79,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       accommodation_longitude:
         selectedMinorStage?.accommodation.longitude || undefined,
       accommodation_link: selectedMinorStage?.accommodation.link || '',
-      order: selectedMinorStage.order ?? 0,
+      position: selectedMinorStage.position ?? 0,
     };
   }, [selectedMinorStage]);
 

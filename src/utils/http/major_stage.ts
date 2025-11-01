@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import {
   MajorStage,
   MajorStageFormValues,
-  StagesOrderDict,
+  StagesPositionDict,
 } from '../../models';
 import api from './api';
 
@@ -103,12 +103,12 @@ export const deleteMajorStage = async (
 };
 
 export const swapMajorStages = async (
-  stagesOrderList: StagesOrderDict[]
+  stagesPositionList: StagesPositionDict[]
 ): Promise<ManageMajorStageProps> => {
   try {
     const response: AxiosResponse<ManageMajorStageProps> = await api.post(
       `${prefix}/swap-major-stages`,
-      { stagesOrderList }
+      { stagesPositionList }
     );
 
     // Error from backend

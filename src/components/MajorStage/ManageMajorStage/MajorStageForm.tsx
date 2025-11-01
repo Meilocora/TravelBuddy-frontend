@@ -21,7 +21,7 @@ import Modal from '../../UI/Modal';
 import CountrySelector from './CountrySelector';
 import { createMajorStage, updateMajorStage } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
-import OrderSelector from '../../UI/form/OrderSelector';
+import PositionSelector from '../../UI/form/PositionSelector';
 import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 
 type InputValidationResponse = {
@@ -61,21 +61,21 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     maxAvailableMoney -= ms.costs.budget;
   });
 
-  let orders: number[];
-  if (defaultValues?.order) {
-    orders = Array.from(
+  let positions: number[];
+  if (defaultValues?.position) {
+    positions = Array.from(
       { length: majorStages?.length ?? 0 }, // if no stages -> length = 1
       (_, i) => i + 1
     );
   } else {
-    orders = Array.from(
+    positions = Array.from(
       { length: (majorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
       (_, i) => i + 1
     );
   }
-  const initialOrder = isEditing
-    ? defaultValues?.order ?? 1
-    : orders[orders.length - 1];
+  const initialPosition = isEditing
+    ? defaultValues?.position ?? 1
+    : positions[positions.length - 1];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [changeCountry, setChangeCountry] = useState(false);
@@ -113,8 +113,8 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
       isValid: true,
       errors: [],
     },
-    order: {
-      value: initialOrder,
+    position: {
+      value: initialPosition,
       isValid: true,
       errors: [],
     },
@@ -239,15 +239,15 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
                 }}
               />
             </View>
-            <View style={styles.orderWrapper}>
-              <OrderSelector
-                defaultOrder={inputs.order.value}
-                errors={inputs.order.errors}
-                invalid={!inputs.order.isValid}
-                onChangeOrder={(newOrder: number) =>
-                  inputChangedHandler('order', newOrder)
+            <View style={styles.positionWrapper}>
+              <PositionSelector
+                defaultPosition={inputs.position.value}
+                errors={inputs.position.errors}
+                invalid={!inputs.position.isValid}
+                onChangePosition={(newPosition: number) =>
+                  inputChangedHandler('position', newPosition)
                 }
-                orders={orders}
+                positions={positions}
               />
             </View>
           </View>
@@ -382,9 +382,9 @@ const styles = StyleSheet.create({
   titleWrapper: {
     flex: 4, // 75% of the row (3 parts)
   },
-  orderWrapper: {
+  positionWrapper: {
     flex: 1, // 25% of the row (1 part)
-    justifyContent: 'center', // vertically center if OrderSelector has fixed height
+    justifyContent: 'center', // vertically center if PositionSelector has fixed height
   },
   buttonsContainer: {
     flexDirection: 'row',

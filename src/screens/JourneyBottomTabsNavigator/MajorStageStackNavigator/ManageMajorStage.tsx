@@ -74,7 +74,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
       budget: selectedMajorStage.costs.budget ?? 0,
       spent_money: selectedMajorStage.costs.spent_money ?? 0,
       country: selectedMajorStage.country.name ?? '',
-      order: selectedMajorStage.order ?? null,
+      position: selectedMajorStage.position ?? null,
     };
   }, [selectedMajorStage]);
 

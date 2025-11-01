@@ -55,7 +55,7 @@ import UserContextProvider from './src/store/user-context';
 
 // PRIO 1 \\
 // TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
-// TODO: Überall Sortierung der Stages nach order ändern (z.B. Map, )
+// TODO: Überall Sortierung der Stages nach position ändern (z.B. Map, )
 // TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
 
 // PRIO 2 \\

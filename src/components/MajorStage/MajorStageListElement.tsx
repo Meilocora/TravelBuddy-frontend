@@ -188,7 +188,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
           ]}
         >
           <View style={styles.headerContainer}>
-            <ElementTitle>{`${majorStage.order.toString()}. ${
+            <ElementTitle>{`${majorStage.position.toString()}. ${
               majorStage.title
             }`}</ElementTitle>
           </View>

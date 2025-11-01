@@ -13,25 +13,25 @@ import Input from './Input';
 import OutsidePressHandler from 'react-native-outside-press';
 import { ColorScheme } from '../../../models';
 
-interface OrderSelectorProps {
-  onChangeOrder: (order: number) => void;
+interface PositionSelectorProps {
+  onChangePosition: (position: number) => void;
   invalid: boolean;
-  orders: number[];
-  defaultOrder: number;
+  positions: number[];
+  defaultPosition: number;
   errors: string[];
   colorScheme?: ColorScheme;
 }
 
-const OrderSelector: React.FC<OrderSelectorProps> = ({
-  onChangeOrder,
+const PositionSelector: React.FC<PositionSelectorProps> = ({
+  onChangePosition,
   invalid,
-  orders,
-  defaultOrder,
+  positions,
+  defaultPosition,
   errors,
   colorScheme = ColorScheme.accent,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState(false);
-  const [order, setOrder] = useState<number>(defaultOrder);
+  const [position, setPosition] = useState<number>(defaultPosition);
 
   let activeBg = GlobalStyles.colors.accent200;
   if (colorScheme === ColorScheme.complementary) {
@@ -48,26 +48,28 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
   }
 
   function handlePressListElement(item: number) {
-    setOrder(item);
-    onChangeOrder(item);
+    setPosition(item);
+    onChangePosition(item);
     setOpenSelection(false);
   }
 
   return (
     <>
-      {openSelection && orders.length > 1 && (
+      {openSelection && positions.length > 1 && (
         <OutsidePressHandler
           onOutsidePress={handleCloseModal}
           style={styles.selectionContainer}
         >
           <ScrollView style={styles.listContainer} nestedScrollEnabled={true}>
-            {orders.length > 0 &&
-              orders.map((item) => (
+            {positions.length > 0 &&
+              positions.map((item) => (
                 <ListItem
                   key={item}
                   onPress={() => handlePressListElement(item)}
                   containerStyles={
-                    item === order ? { backgroundColor: activeBg } : undefined
+                    item === position
+                      ? { backgroundColor: activeBg }
+                      : undefined
                   }
                 >
                   {item.toString()}
@@ -81,10 +83,10 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
           <Pressable onPress={handleOpenModal}>
             <Input
               maxLength={3}
-              label='order'
+              label='position'
               errors={errors}
               textInputConfig={{
-                value: order.toString(),
+                value: position.toString(),
                 readOnly: true,
                 textAlign: 'center',
               }}
@@ -140,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderSelector;
+export default PositionSelector;

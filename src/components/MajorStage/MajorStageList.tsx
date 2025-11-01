@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useState } from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import MajorStageListElement from './MajorStageListElement';
@@ -10,7 +10,7 @@ import {
   Journey,
   MajorStage,
   StageFilter,
-  StagesOrderDict,
+  StagesPositionDict,
 } from '../../models';
 import { validateIsOver } from '../../utils';
 import { deleteMajorStage, swapMajorStages } from '../../utils/http';
@@ -71,12 +71,12 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   }
 
   async function handleSwitchElements(data: MajorStage[]) {
-    const stagesOrderList: StagesOrderDict[] = [];
+    const stagesPositionList: StagesPositionDict[] = [];
     data.forEach((stage, index) => {
-      stagesOrderList.push({ id: stage.id, order: index + 1 });
+      stagesPositionList.push({ id: stage.id, position: index + 1 });
     });
 
-    const { status, error } = await swapMajorStages(stagesOrderList);
+    const { status, error } = await swapMajorStages(stagesPositionList);
     if (error) {
       return setError(error);
     } else {
