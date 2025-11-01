@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 10,

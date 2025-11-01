@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -10,12 +10,12 @@ import {
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
-import { formatAmount, formatDate, parseDate } from '../../../utils';
+import { formatDate, parseDate } from '../../../utils';
 import { createSpending, updateSpending } from '../../../utils/http/spending';
-import DatePicker from '../../UI/form/DatePicker';
 import SpendingCategorySelector from './SpendingCategorySelector';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
+import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 
 type InputValidationResponse = {
   spending?: Spending;
@@ -44,7 +44,6 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
   editSpendingId,
   minorStageId,
 }): ReactElement => {
-  const [openDatePicker, setOpenDatePicker] = useState(false);
   const stagesCtx = useContext(StagesContext);
   const minorStage = stagesCtx.findMinorStage(minorStageId);
 
@@ -84,43 +83,6 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
     },
   });
 
-  // Redefine inputs, when defaultValues change
-  useEffect(() => {
-    setInputs({
-      name: { value: defaultValues?.name || '', isValid: true, errors: [] },
-      amount: {
-        value: 0,
-        isValid: true,
-        errors: [],
-      },
-      unconvertedAmount: {
-        value: defaultValues?.amount.toString() || '',
-        isValid: true,
-        errors: [],
-      },
-      date: {
-        value: defaultValues?.date || '',
-        isValid: true,
-        errors: [],
-      },
-      category: {
-        value: defaultValues?.category || 'Other',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }, [defaultValues]);
-
-  function resetValues() {
-    setInputs({
-      name: { value: '', isValid: true, errors: [] },
-      amount: { value: 0, isValid: true, errors: [] },
-      unconvertedAmount: { value: '', isValid: true, errors: [] },
-      date: { value: '', isValid: true, errors: [] },
-      category: { value: 'Other', isValid: true, errors: [] },
-    });
-  }
-
   function inputChangedHandler(
     inputIdentifier: string,
     enteredValue: string | boolean | number
@@ -152,7 +114,6 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
       response!;
 
     if (!error && spending) {
-      resetValues();
       onSubmit({ spending, status, backendJourneyId });
     } else if (error) {
       onSubmit({ error, status });
@@ -190,7 +151,6 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
         errors: [],
       },
     }));
-    setOpenDatePicker(false);
   }
 
   return (
@@ -231,11 +191,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
           </View>
           <View style={styles.formRow}>
             <View style={styles.rowElement}>
-              <DatePicker
-                openDatePicker={openDatePicker}
-                setOpenDatePicker={() =>
-                  setOpenDatePicker((prevValue) => !prevValue)
-                }
+              <ExpoDatePicker
                 handleChange={handleChangeDate}
                 inputIdentifier='date'
                 invalid={!inputs.date.isValid}

@@ -1,5 +1,5 @@
-import { ReactElement } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { ReactElement, useState } from 'react';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,6 +32,8 @@ interface MajorStageListElementProps {
   majorStage: MajorStage;
   index: number;
   onDelete: (majorStageId: number) => void;
+  onLongPress: () => void;
+  isActive: boolean;
 }
 
 const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
@@ -39,9 +41,14 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   majorStage,
   index,
   onDelete,
+  onLongPress,
+  isActive,
 }): ReactElement => {
+  // TODO: Delete onDelete and index
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
+
+  const [isopen, setIsOpen] = useState(false);
 
   const moneyAvailable = formatAmount(majorStage.costs.budget);
   const moneyPlanned = formatAmount(majorStage.costs.spent_money);
@@ -141,57 +148,91 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
         majorStage.currentMajorStage && styles.currentOuterContainer,
       ]}
     >
-      <LinearGradient
+      {/* <LinearGradient
         colors={['#f1dfcf', '#b8a671']}
         style={{ height: '100%' }}
+      > */}
+      <View style={styles.buttonsContainer}>
+        <IconButton
+          icon={Icons.edit}
+          color={GlobalStyles.colors.amberAccent}
+          onPress={handleEdit}
+          containerStyle={styles.icon}
+        />
+        {!isopen ? (
+          <IconButton
+            icon={Icons.openDetails}
+            onPress={() => setIsOpen(true)}
+            color={GlobalStyles.colors.amberAccent}
+            containerStyle={styles.icon}
+          />
+        ) : (
+          <IconButton
+            icon={Icons.closeDetails}
+            onPress={() => setIsOpen(false)}
+            color={GlobalStyles.colors.amberAccent}
+            containerStyle={styles.icon}
+          />
+        )}
+      </View>
+      <Pressable
+        style={({ pressed }) => pressed && styles.pressed}
+        android_ripple={{ color: GlobalStyles.colors.accent100 }}
+        onPress={handleOnPress}
+        onLongPress={onLongPress}
       >
-        <Pressable
-          style={({ pressed }) => pressed && styles.pressed}
-          android_ripple={{ color: GlobalStyles.colors.accent100 }}
-          onPress={handleOnPress}
+        <View
+          style={[
+            styles.innerContainer,
+            isActive && styles.activeInnerContainer,
+          ]}
         >
-          <View style={styles.innerContainer}>
-            <View style={styles.headerContainer}>
-              <ElementTitle>{majorStage.title}</ElementTitle>
-              {!isOver ? (
-                <IconButton
-                  icon={Icons.edit}
-                  color={GlobalStyles.colors.accent800}
-                  onPress={handleEdit}
-                />
-              ) : (
-                <IconButton
-                  icon={Icons.delete}
-                  color={GlobalStyles.colors.gray500}
-                  onPress={() => onDelete(majorStage.id)}
+          <View style={styles.headerContainer}>
+            <ElementTitle>{`${majorStage.position.toString()}. ${
+              majorStage.title
+            }`}</ElementTitle>
+          </View>
+          <ElementComment content={`${startDate} - ${endDate}`} />
+          {isopen ? (
+            <>
+              <DetailArea elementDetailInfo={elementDetailInfo} />
+              {majorStage.transportation && (
+                <TransportationBox
+                  majorStageIsOver={isOver}
+                  transportation={majorStage.transportation}
+                  onPressEdit={handleEditTransportation}
+                  customCountryId={majorStage.country.id!}
                 />
               )}
-            </View>
-            <ElementComment content={`${startDate} - ${endDate}`} />
-            <DetailArea elementDetailInfo={elementDetailInfo} />
-            {majorStage.transportation && (
-              <TransportationBox
-                majorStageIsOver={isOver}
-                transportation={majorStage.transportation}
-                onPressEdit={handleEditTransportation}
+              {!majorStage.transportation && !isOver && (
+                <Button
+                  onPress={handleAddTransportation}
+                  mode={ButtonMode.flat}
+                  colorScheme={ColorScheme.accent}
+                >
+                  Add Transportation
+                </Button>
+              )}
+            </>
+          ) : (
+            <View style={styles.roughDetailsContainer}>
+              <IconButton
+                icon={Icons.country}
+                onPress={() => {}}
+                color={GlobalStyles.colors.gray500}
+                size={18}
+                containerStyle={styles.icon}
               />
-            )}
-            {!majorStage.transportation && !isOver && (
-              <Button
-                onPress={handleAddTransportation}
-                mode={ButtonMode.flat}
-                colorScheme={ColorScheme.accent}
-              >
-                Add Transportation
-              </Button>
-            )}
-          </View>
-          {/* <CustomProgressBar
+              <Text>{majorStage.country.name}</Text>
+            </View>
+          )}
+        </View>
+        {/* <CustomProgressBar
             startDate={majorStage.scheduled_start_time}
             endDate={majorStage.scheduled_end_time}
           /> */}
-        </Pressable>
-      </LinearGradient>
+      </Pressable>
+      {/* </LinearGradient> */}
     </View>
   );
 };
@@ -199,38 +240,62 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    borderColor: GlobalStyles.colors.accent800,
+    // borderColor: GlobalStyles.colors.gray700,
+    borderColor: GlobalStyles.colors.amberDark,
     borderWidth: 2,
-    borderRadius: 20,
-    marginVertical: 10,
+    borderTopWidth: 6,
+    borderBottomWidth: 0,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
     marginHorizontal: 20,
     overflow: 'hidden',
     backgroundColor: 'transparent',
-    elevation: 5,
-    shadowColor: GlobalStyles.colors.gray500,
+    elevation: 4,
+    shadowColor: GlobalStyles.colors.gray700,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },
   currentOuterContainer: {
-    borderColor: 'gold',
+    // borderColor: 'gold',
+    borderColor: GlobalStyles.colors.amberAccent,
   },
   inactiveOuterContainer: {
-    borderColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.gray300,
   },
   pressed: {
     opacity: 0.5,
   },
   innerContainer: {
+    // backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.amberSoft,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
   },
+  activeInnerContainer: {
+    opacity: 0.6,
+  },
   headerContainer: {
     flex: 1,
-    width: '85%',
+    width: '80%',
+    marginRight: '15%',
+    justifyContent: 'center',
+  },
+  buttonsContainer: {
+    position: 'absolute',
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'flex-end',
+    zIndex: 1,
+    right: 4,
+    top: 5,
+  },
+  icon: {
+    paddingHorizontal: 0,
+    marginHorizontal: 4,
+  },
+  roughDetailsContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });

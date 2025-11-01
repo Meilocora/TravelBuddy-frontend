@@ -4,7 +4,7 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { Icons, StageFilter } from '../../models';
 import JourneyListElement from './JourneysListElement';
-import { parseDate } from '../../utils';
+import { validateIsOver } from '../../utils';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
 import { deleteJourney } from '../../utils/http';
@@ -19,10 +19,9 @@ const JourneysList: React.FC = ({}): ReactElement => {
 
   const stagesCtx = useContext(StagesContext);
 
-  const now = new Date();
   const shownJourneys = stagesCtx.journeys.filter((journey) => {
     if (filter === StageFilter.current) {
-      return parseDate(journey.scheduled_end_time) >= now; // Only include journeys that haven't ended
+      return !validateIsOver(journey.scheduled_end_time); // Only include journeys that haven't ended
     }
     return true; // Include all journeys for other filters
   });

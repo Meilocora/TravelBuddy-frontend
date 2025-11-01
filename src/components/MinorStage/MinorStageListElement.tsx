@@ -81,26 +81,23 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
     >
       <View style={styles.headerContainer}>
         <View style={styles.titleContainer}>
-          <ElementTitle>{minorStage.title}</ElementTitle>
+          <ElementTitle>{`${minorStage.position.toString()}. ${
+            minorStage.title
+          }`}</ElementTitle>
         </View>
-        {!isOver ? (
-          <IconButton
-            icon={Icons.edit}
-            color={GlobalStyles.colors.accent800}
-            onPress={handleEdit}
-          />
-        ) : (
-          <IconButton
-            icon={Icons.delete}
-            color={GlobalStyles.colors.gray500}
-            onPress={() => onDelete(minorStage.id)}
-          />
-        )}
+        <IconButton
+          icon={Icons.edit}
+          color={GlobalStyles.colors.accent800}
+          onPress={handleEdit}
+        />
       </View>
       <ElementComment content={`${startDate} - ${endDate}`} />
       <DetailArea elementDetailInfo={elementDetailInfo} />
       {minorStage.accommodation.place !== '' && (
-        <AccommodationBox minorStage={minorStage} />
+        <AccommodationBox
+          minorStage={minorStage}
+          customCountryId={majorStage?.country.id!}
+        />
       )}
       <ContentBox
         journeyId={journeyId}

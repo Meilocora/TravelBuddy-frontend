@@ -119,19 +119,11 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
           <View style={styles.innerContainer}>
             <View style={styles.headerContainer}>
               <ElementTitle>{journey.name}</ElementTitle>
-              {!isOver ? (
-                <IconButton
-                  icon={Icons.edit}
-                  color={GlobalStyles.colors.primary500}
-                  onPress={handleEdit}
-                />
-              ) : (
-                <IconButton
-                  icon={Icons.delete}
-                  color={GlobalStyles.colors.gray500}
-                  onPress={() => onDelete(journey.id)}
-                />
-              )}
+              <IconButton
+                icon={Icons.edit}
+                color={GlobalStyles.colors.primary500}
+                onPress={handleEdit}
+              />
             </View>
             <ElementComment content={`${startDate} - ${endDate}`} />
             <DetailArea

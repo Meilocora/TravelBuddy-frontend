@@ -68,8 +68,9 @@ export type StackParamList = {
     minorStageId?: number;
   };
   ShowMap: {
-    location: Location;
-    colorScheme: string;
+    customCountryId: number;
+    colorScheme?: string;
+    location?: Location;
   };
 };
 

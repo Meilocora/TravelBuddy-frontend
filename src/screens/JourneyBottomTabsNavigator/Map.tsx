@@ -229,7 +229,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       />
       <RoutePlanner
         locations={shownLocations}
-        mapScope={mapScope.name}
+        mapScope={mapScope}
         mode={directionsMode}
         setMode={handleChangeDirectionsMode}
         toggleButtonVisibility={() => handleHideButtons('routePlanner')}

@@ -2,8 +2,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
   useContext,
-  useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -59,26 +59,29 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
   const selectedMinorStage = stagesCtx.findMinorStage(editedMinorStageId || 0);
 
   // Empty, when no default values provided
-  const [minorStageValues, setMinorStageValues] = useState<MinorStageValues>({
-    title: selectedMinorStage?.title || '',
-    done: selectedMinorStage?.done || false,
-    scheduled_start_time: selectedMinorStage?.scheduled_start_time
-      ? formatDateString(selectedMinorStage.scheduled_start_time)!
-      : null,
-    scheduled_end_time: selectedMinorStage?.scheduled_end_time
-      ? formatDateString(selectedMinorStage.scheduled_end_time)!
-      : null,
-    budget: selectedMinorStage?.costs.budget || 0,
-    spent_money: selectedMinorStage?.costs.spent_money || 0,
-    accommodation_place: selectedMinorStage?.accommodation.place || '',
-    accommodation_costs: selectedMinorStage?.accommodation.costs || 0,
-    accommodation_booked: selectedMinorStage?.accommodation.booked || false,
-    accommodation_latitude:
-      selectedMinorStage?.accommodation.latitude || undefined,
-    accommodation_longitude:
-      selectedMinorStage?.accommodation.longitude || undefined,
-    accommodation_link: selectedMinorStage?.accommodation.link || '',
-  });
+  const defaultValues = useMemo<MinorStageValues | undefined>(() => {
+    if (!selectedMinorStage) return undefined;
+    return {
+      title: selectedMinorStage?.title || '',
+      scheduled_start_time: selectedMinorStage?.scheduled_start_time
+        ? formatDateString(selectedMinorStage.scheduled_start_time)!
+        : null,
+      scheduled_end_time: selectedMinorStage?.scheduled_end_time
+        ? formatDateString(selectedMinorStage.scheduled_end_time)!
+        : null,
+      budget: selectedMinorStage?.costs.budget || 0,
+      spent_money: selectedMinorStage?.costs.spent_money || 0,
+      accommodation_place: selectedMinorStage?.accommodation.place || '',
+      accommodation_costs: selectedMinorStage?.accommodation.costs || 0,
+      accommodation_booked: selectedMinorStage?.accommodation.booked || false,
+      accommodation_latitude:
+        selectedMinorStage?.accommodation.latitude || undefined,
+      accommodation_longitude:
+        selectedMinorStage?.accommodation.longitude || undefined,
+      accommodation_link: selectedMinorStage?.accommodation.link || '',
+      position: selectedMinorStage.position ?? 0,
+    };
+  }, [selectedMinorStage]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -103,31 +106,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
         />
       ),
     });
-  }, [navigation, isEditing]);
-
-  // Redefine minorStageValues, when selectedMinorStage changes
-  useEffect(() => {
-    setMinorStageValues({
-      title: selectedMinorStage?.title || '',
-      done: selectedMinorStage?.done || false,
-      scheduled_start_time: selectedMinorStage?.scheduled_start_time
-        ? formatDateString(selectedMinorStage.scheduled_start_time)!
-        : null,
-      scheduled_end_time: selectedMinorStage?.scheduled_end_time
-        ? formatDateString(selectedMinorStage.scheduled_end_time)!
-        : null,
-      budget: selectedMinorStage?.costs.budget || 0,
-      spent_money: selectedMinorStage?.costs.spent_money || 0,
-      accommodation_place: selectedMinorStage?.accommodation.place || '',
-      accommodation_costs: selectedMinorStage?.accommodation.costs || 0,
-      accommodation_booked: selectedMinorStage?.accommodation.booked || false,
-      accommodation_latitude:
-        selectedMinorStage?.accommodation.latitude || undefined,
-      accommodation_longitude:
-        selectedMinorStage?.accommodation.longitude || undefined,
-      accommodation_link: selectedMinorStage?.accommodation.link || '',
-    });
-  }, [selectedMinorStage]);
+  }, [navigation, isEditing, selectedMinorStage]);
 
   async function deleteMinorStageHandler() {
     try {
@@ -149,23 +128,6 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
     }
     setIsDeleting(false);
     return;
-  }
-
-  function resetValues() {
-    setMinorStageValues({
-      title: '',
-      done: false,
-      scheduled_start_time: null,
-      scheduled_end_time: null,
-      budget: 0,
-      spent_money: 0,
-      accommodation_place: '',
-      accommodation_costs: 0,
-      accommodation_booked: false,
-      accommodation_latitude: undefined,
-      accommodation_longitude: undefined,
-      accommodation_link: '',
-    });
   }
 
   function deleteHandler() {
@@ -197,7 +159,6 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
           majorStageId: majorStageId,
           popupText: popupText,
         });
-        resetValues();
       }
     } else {
       if (error) {
@@ -211,7 +172,6 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
           majorStageId: majorStageId,
           popupText: popupText,
         });
-        resetValues();
       }
     }
   }
@@ -222,7 +182,9 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       {isDeleting && (
         <Modal
           title='Are you sure?'
-          content={`If you delete ${minorStageValues.title}, all related Activities and Spendings will also be deleted permanently`}
+          content={`If you delete ${
+            defaultValues!.title
+          }, all related Activities and Spendings will also be deleted permanently`}
           onConfirm={deleteMinorStageHandler}
           onCancel={closeModalHandler}
         />
@@ -230,10 +192,11 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <MinorStageForm
+          key={isEditing ? String(editedMinorStageId) : 'new'}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Create'}
-          defaultValues={isEditing ? minorStageValues : undefined}
+          defaultValues={isEditing ? defaultValues : undefined}
           isEditing={isEditing}
           majorStageId={majorStageId}
           editMinorStageId={editedMinorStageId}

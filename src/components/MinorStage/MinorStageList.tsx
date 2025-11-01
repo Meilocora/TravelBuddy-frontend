@@ -11,7 +11,7 @@ import {
   MinorStage,
   StageFilter,
 } from '../../models';
-import { deleteMinorStage, parseDate } from '../../utils';
+import { deleteMinorStage, validateIsOver } from '../../utils';
 import Modal from '../UI/Modal';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
@@ -34,10 +34,9 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   );
 
   const stagesCtx = useContext(StagesContext);
-  const now = new Date();
   const shownMinorStages = minorStages.filter((minorStage) => {
     if (filter === StageFilter.current) {
-      return parseDate(minorStage.scheduled_end_time) >= now; // Only include major stages that haven't ended
+      return !validateIsOver(minorStage.scheduled_end_time); // Only include major stages that haven't ended
     }
     return true; // Include all major stages for other filters
   });

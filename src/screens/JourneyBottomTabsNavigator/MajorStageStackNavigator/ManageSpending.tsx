@@ -2,8 +2,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
   useContext,
-  useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -18,6 +18,7 @@ import { deleteSpending } from '../../../utils/http/spending';
 import SpendingForm from '../../../components/MinorStage/ManageSpending/SpendingForm';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
+import { generateRandomString } from '../../../utils';
 
 interface ManageSpendingProps {
   navigation: NativeStackNavigationProp<
@@ -63,21 +64,14 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
   }, [navigation]);
 
   // Empty, when no default values provided
-  const [spendingValues, setSpendingValues] = useState<Spending>({
-    name: selectedSpending?.name || '',
-    amount: selectedSpending?.amount || 0,
-    date: selectedSpending?.date || '',
-    category: selectedSpending?.category || 'Other',
-  });
-
-  // Redefine spendingValues, when selectedSpending changes
-  useEffect(() => {
-    setSpendingValues({
+  const defaultValues = useMemo<Spending | undefined>(() => {
+    if (!selectedSpending) return undefined;
+    return {
       name: selectedSpending?.name || '',
       amount: selectedSpending?.amount || 0,
       date: selectedSpending?.date || '',
       category: selectedSpending?.category || 'Other',
-    });
+    };
   }, [selectedSpending]);
 
   async function deleteHandler() {
@@ -97,15 +91,6 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
     }
   }
 
-  function resetValues() {
-    setSpendingValues({
-      name: '',
-      amount: 0,
-      date: '',
-      category: 'Other',
-    });
-  }
-
   async function confirmHandler({
     status,
     error,
@@ -119,7 +104,6 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
       } else if (spending && status === 200) {
         stagesCtx.fetchStagesData();
         navigation.goBack();
-        resetValues();
       }
     } else {
       if (error) {
@@ -128,7 +112,6 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
       } else if (spending && status === 201) {
         stagesCtx.fetchStagesData();
         navigation.goBack();
-        resetValues();
       }
     }
   }
@@ -143,11 +126,12 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <SpendingForm
+          key={isEditing ? String(spendingId) : generateRandomString()}
           minorStageId={minorStageId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}
-          defaultValues={isEditing ? spendingValues : undefined}
+          defaultValues={isEditing ? defaultValues : undefined}
           editSpendingId={spendingId}
           isEditing={isEditing}
         />

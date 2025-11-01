@@ -1,17 +1,14 @@
 import React, {
   ReactElement,
-  useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -22,7 +19,7 @@ import {
   Icons,
   MajorStageStackParamList,
 } from '../../../models';
-import { formatDateString } from '../../../utils';
+import { formatDateString, generateRandomString } from '../../../utils';
 import Modal from '../../../components/UI/Modal';
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { GlobalStyles } from '../../../constants/styles';
@@ -63,46 +60,23 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
 
   const selectedMajorStage = stagesCtx.findMajorStage(editedMajorStageId || 0);
 
-  // Empty, when no default values provided
-  const [majorStageValues, setMajorStageValues] = useState<MajorStageValues>({
-    title: selectedMajorStage?.title || '',
-    scheduled_start_time: selectedMajorStage?.scheduled_start_time
-      ? formatDateString(selectedMajorStage.scheduled_start_time)!
-      : null,
-    scheduled_end_time: selectedMajorStage?.scheduled_end_time
-      ? formatDateString(selectedMajorStage.scheduled_end_time)!
-      : null,
-    additional_info: selectedMajorStage?.additional_info || '',
-    budget: selectedMajorStage?.costs.budget || 0,
-    spent_money: selectedMajorStage?.costs.spent_money || 0,
-    country: selectedMajorStage ? selectedMajorStage.country.name : '',
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      // JourneyValues set, when screen is focused
-      setMajorStageValues({
-        title: selectedMajorStage?.title || '',
-        scheduled_start_time: selectedMajorStage?.scheduled_start_time
-          ? formatDateString(selectedMajorStage.scheduled_start_time)!
-          : null,
-        scheduled_end_time: selectedMajorStage?.scheduled_end_time
-          ? formatDateString(selectedMajorStage.scheduled_end_time)!
-          : null,
-        additional_info: selectedMajorStage?.additional_info || '',
-        budget: selectedMajorStage?.costs.budget || 0,
-        spent_money: selectedMajorStage?.costs.spent_money || 0,
-        country: selectedMajorStage ? selectedMajorStage.country.name : '',
-      });
-
-      return () => {
-        // Clean up function, when screen is unfocused
-        resetValues();
-        // reset majorStageId in navigation paramms
-        navigation.setParams({ majorStageId: undefined });
-      };
-    }, [selectedMajorStage])
-  );
+  const defaultValues = useMemo<MajorStageValues | undefined>(() => {
+    if (!selectedMajorStage) return undefined;
+    return {
+      title: selectedMajorStage.title ?? '',
+      scheduled_start_time: selectedMajorStage.scheduled_start_time
+        ? formatDateString(selectedMajorStage.scheduled_start_time)!
+        : null,
+      scheduled_end_time: selectedMajorStage.scheduled_end_time
+        ? formatDateString(selectedMajorStage.scheduled_end_time)!
+        : null,
+      additional_info: selectedMajorStage.additional_info ?? '',
+      budget: selectedMajorStage.costs.budget ?? 0,
+      spent_money: selectedMajorStage.costs.spent_money ?? 0,
+      country: selectedMajorStage.country.name ?? '',
+      position: selectedMajorStage.position ?? null,
+    };
+  }, [selectedMajorStage]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -116,7 +90,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         />
       ),
     });
-  }, [navigation, isEditing]);
+  }, [navigation, isEditing, selectedMajorStage]);
 
   async function deleteMajorStageHandler() {
     try {
@@ -137,18 +111,6 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
     }
     setIsDeleting(false);
     return;
-  }
-
-  function resetValues() {
-    setMajorStageValues({
-      title: '',
-      scheduled_start_time: null,
-      scheduled_end_time: null,
-      additional_info: '',
-      budget: 0,
-      spent_money: 0,
-      country: '',
-    });
   }
 
   function deleteHandler() {
@@ -174,7 +136,6 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         return;
       } else if (majorStage && status === 200) {
         stagesCtx.fetchStagesData();
-        resetValues();
         const popupText = `"${majorStage.title}" successfully updated!`;
         planningNavigation.navigate('Planning', {
           journeyId: journeyId,
@@ -187,7 +148,6 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         return;
       } else if (majorStage && status === 201) {
         stagesCtx.fetchStagesData();
-        resetValues();
         const popupText = `"${majorStage.title}" successfully created!`;
         planningNavigation.navigate('Planning', {
           journeyId: journeyId,
@@ -202,7 +162,9 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
       {isDeleting && (
         <Modal
           title='Are you sure?'
-          content={`If you delete ${majorStageValues.title}, all related Minor Stages will also be deleted permanently`}
+          content={`If you delete ${
+            defaultValues!.title
+          }, all related Minor Stages will also be deleted permanently`}
           onConfirm={deleteMajorStageHandler}
           onCancel={closeModalHandler}
         />
@@ -210,10 +172,11 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <MajorStageForm
+          key={isEditing ? String(editedMajorStageId) : generateRandomString()}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}
-          defaultValues={isEditing ? majorStageValues : undefined}
+          defaultValues={isEditing ? defaultValues : undefined}
           isEditing={isEditing}
           editMajorStageId={editedMajorStageId}
           journeyId={journeyId}

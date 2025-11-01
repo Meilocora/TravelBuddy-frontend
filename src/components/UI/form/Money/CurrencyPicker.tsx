@@ -2,7 +2,6 @@ import { ReactElement, useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ViewStyle } from 'react-native';
 
 import { CurrencyInfo } from '../../../../models';
-import { fetchCurrencies } from '../../../../utils/http/spending';
 import { formatAmount } from '../../../../utils';
 import Input from '../Input';
 import { GlobalStyles } from '../../../../constants/styles';

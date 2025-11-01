@@ -1,6 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { MajorStage, MajorStageFormValues } from '../../models';
+import {
+  MajorStage,
+  MajorStageFormValues,
+  StagesPositionDict,
+} from '../../models';
 import api from './api';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -95,5 +99,29 @@ export const deleteMajorStage = async (
   } catch (error) {
     // Error from frontend
     return { status: 500, error: 'Could not delete major stage!' };
+  }
+};
+
+export const swapMajorStages = async (
+  stagesPositionList: StagesPositionDict[]
+): Promise<ManageMajorStageProps> => {
+  try {
+    const response: AxiosResponse<ManageMajorStageProps> = await api.post(
+      `${prefix}/swap-major-stages`,
+      { stagesPositionList }
+    );
+
+    // Error from backend
+    if (response.data.error) {
+      return { status: response.data.status, error: response.data.error };
+    }
+
+    return { status: response.data.status };
+  } catch (error) {
+    // Error from frontend
+    return {
+      status: 500,
+      error: 'Could not swap major stages! Backend connection error.',
+    };
   }
 };

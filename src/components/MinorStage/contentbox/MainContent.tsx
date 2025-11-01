@@ -40,6 +40,7 @@ const MainContent: React.FC<MainContentProps> = ({
   minorStage,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
+  const customCountryId = stagesCtx.findMajorStage(majorStageId)!.country.id;
   const navigation =
     useNavigation<NativeStackNavigationProp<MajorStageStackParamList>>();
 
@@ -110,6 +111,7 @@ const MainContent: React.FC<MainContentProps> = ({
           handleAdd={handleAddTransportation}
           handleEdit={handleEditTransportation}
           minorStageIsOver={isOver}
+          customCountryId={customCountryId}
         />
       ),
     },
@@ -132,6 +134,7 @@ const MainContent: React.FC<MainContentProps> = ({
           handleAdd={handleAddActivity}
           handleEdit={handleEditActivity}
           handleDelete={handleDeleteActivity}
+          customCountryId={customCountryId}
         />
       ),
     },

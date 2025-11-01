@@ -10,6 +10,7 @@ import Button from '../../UI/Button';
 import {
   ButtonMode,
   ColorScheme,
+  Icons,
   PlaceToVisit,
   StackParamList,
 } from '../../../models';
@@ -18,6 +19,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { PlaceContext } from '../../../store/place-context';
 import InfoText from '../../UI/InfoText';
 import LocationPicker from '../../UI/form/LocationPicker';
+import IconButton from '../../UI/IconButton';
 
 interface PlacesListProps {
   onCancel: () => void;
@@ -74,6 +76,12 @@ const PlacesList: React.FC<PlacesListProps> = ({
     });
   }
 
+  function handleShowOnMap() {
+    navigation.navigate('ShowMap', {
+      customCountryId: countryId,
+    });
+  }
+
   return (
     <BlurView intensity={85} tint='dark' style={styles.blurcontainer}>
       <Animated.View
@@ -81,7 +89,16 @@ const PlacesList: React.FC<PlacesListProps> = ({
         exiting={FadeOutDown}
         style={styles.container}
       >
-        <Text style={styles.header}>Places to Visit</Text>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Places to Visit</Text>
+          <IconButton
+            icon={Icons.map}
+            onPress={handleShowOnMap}
+            size={32}
+            containerStyle={styles.mapButton}
+            color={'white'}
+          />
+        </View>
         {countryPlaces.length > 0 && (
           <ScrollView style={styles.listContainer}>
             {countryPlaces.map((place, index) => (
@@ -140,12 +157,20 @@ const styles = StyleSheet.create({
     backgroundColor: GlobalStyles.colors.gray700,
     borderRadius: 20,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     color: GlobalStyles.colors.gray50,
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 22,
+  },
+  mapButton: {
+    backgroundColor: GlobalStyles.colors.gray300,
   },
   listContainer: {
     width: '100%',

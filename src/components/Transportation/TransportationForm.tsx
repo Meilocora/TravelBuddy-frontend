@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -15,7 +15,7 @@ import Input from '../UI/form/Input';
 import { parseDate } from '../../utils';
 import Button from '../UI/Button';
 import { GlobalStyles } from '../../constants/styles';
-import DateTimePicker from '../UI/form/DateTimePicker';
+
 import TransportTypeSelector from './TransportTypeSelector';
 import {
   createTransportation,
@@ -24,6 +24,7 @@ import {
 import LocationPicker from '../UI/form/LocationPicker';
 import { StagesContext } from '../../store/stages-context';
 import AmountElement from '../UI/form/Money/AmountElement';
+import ExpoDateTimePicker from '../UI/form/ExpoDateTimePicker';
 
 type InputValidationResponse = {
   transportation?: Transportation;
@@ -70,8 +71,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   maxStartDate.setDate(maxStartDate.getDate() + 1);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
 
   const [inputs, setInputs] = useState<TransportationFormValues>({
     type: {
@@ -136,72 +135,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
     },
   });
 
-  // Redefine inputs, when defaultValues change
-  useEffect(() => {
-    setInputs({
-      type: {
-        value: defaultValues?.type || '',
-        isValid: true,
-        errors: [],
-      },
-      start_time: {
-        value: defaultValues?.start_time || null,
-        isValid: true,
-        errors: [],
-      },
-      arrival_time: {
-        value: defaultValues?.arrival_time || null,
-        isValid: true,
-        errors: [],
-      },
-      place_of_departure: {
-        value: defaultValues?.place_of_departure || '',
-        isValid: true,
-        errors: [],
-      },
-      departure_latitude: {
-        value: defaultValues?.departure_latitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      departure_longitude: {
-        value: defaultValues?.departure_longitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      place_of_arrival: {
-        value: defaultValues?.place_of_arrival || '',
-        isValid: true,
-        errors: [],
-      },
-      arrival_latitude: {
-        value: defaultValues?.arrival_latitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      arrival_longitude: {
-        value: defaultValues?.arrival_longitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      transportation_costs: {
-        value: 0,
-        isValid: true,
-        errors: [],
-      },
-      unconvertedAmount: {
-        value: defaultValues?.transportation_costs.toString() || '',
-        isValid: true,
-        errors: [],
-      },
-      link: {
-        value: defaultValues?.link || '',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }, [defaultValues]);
-
   function inputChangedHandler(
     inputIdentifier: string,
     enteredValue: string | boolean | number
@@ -264,71 +197,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
     });
   }
 
-  function resetValues() {
-    setInputs({
-      type: {
-        value: '',
-        isValid: true,
-        errors: [],
-      },
-      start_time: {
-        value: null,
-        isValid: true,
-        errors: [],
-      },
-      arrival_time: {
-        value: null,
-        isValid: true,
-        errors: [],
-      },
-      place_of_departure: {
-        value: '',
-        isValid: true,
-        errors: [],
-      },
-      departure_latitude: {
-        value: undefined,
-        isValid: true,
-        errors: [],
-      },
-      departure_longitude: {
-        value: undefined,
-        isValid: true,
-        errors: [],
-      },
-      place_of_arrival: {
-        value: '',
-        isValid: true,
-        errors: [],
-      },
-      arrival_latitude: {
-        value: undefined,
-        isValid: true,
-        errors: [],
-      },
-      arrival_longitude: {
-        value: undefined,
-        isValid: true,
-        errors: [],
-      },
-      transportation_costs: {
-        value: 0,
-        isValid: true,
-        errors: [],
-      },
-      unconvertedAmount: {
-        value: '',
-        isValid: true,
-        errors: [],
-      },
-      link: {
-        value: '',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }
-
   async function validateInputs(): Promise<void> {
     setIsSubmitting(true);
 
@@ -358,7 +226,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
     } = response!;
 
     if (!error && transportation) {
-      resetValues();
       onSubmit({
         transportation,
         status,
@@ -398,8 +265,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
         errors: [],
       },
     }));
-    setOpenStartDatePicker(false);
-    setOpenEndDatePicker(false);
   }
 
   return (
@@ -490,11 +355,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
           />
         </View>
         <View style={styles.formRow}>
-          <DateTimePicker
-            openDatePicker={openStartDatePicker}
-            setOpenDatePicker={() =>
-              setOpenStartDatePicker((prevValue) => !prevValue)
-            }
+          <ExpoDateTimePicker
             handleChange={handleChangeDate}
             inputIdentifier='start_time'
             invalid={!inputs.start_time.isValid}
@@ -504,9 +365,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
             minimumDate={minStartDate}
             maximumDate={maxStartDate}
           />
-          <DateTimePicker
-            openDatePicker={openEndDatePicker}
-            setOpenDatePicker={() => setOpenEndDatePicker(true)}
+          <ExpoDateTimePicker
             handleChange={handleChangeDate}
             inputIdentifier='arrival_time'
             invalid={!inputs.arrival_time.isValid}

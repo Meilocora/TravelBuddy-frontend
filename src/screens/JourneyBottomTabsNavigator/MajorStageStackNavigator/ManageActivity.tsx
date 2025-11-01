@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -18,6 +19,7 @@ import ActivityForm from '../../../components/MinorStage/ManageActivity/Activity
 import { deleteActivity } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
+import { generateRandomString } from '../../../utils';
 
 interface ManageActivityProps {
   navigation: NativeStackNavigationProp<
@@ -64,20 +66,9 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
   }, [navigation]);
 
   // Empty, when no default values provided
-  const [activityValues, setActivityValues] = useState<Activity>({
-    name: selectedActivity?.name || '',
-    description: selectedActivity?.description || '',
-    costs: selectedActivity?.costs || 0,
-    booked: selectedActivity?.booked || false,
-    place: selectedActivity?.place || '',
-    latitude: selectedActivity?.latitude || undefined,
-    longitude: selectedActivity?.longitude || undefined,
-    link: selectedActivity?.link || '',
-  });
-
-  // Redefine activityValues, when selectedActivity changes
-  useEffect(() => {
-    setActivityValues({
+  const defaultValues = useMemo<Activity | undefined>(() => {
+    if (!selectedActivity) return undefined;
+    return {
       name: selectedActivity?.name || '',
       description: selectedActivity?.description || '',
       costs: selectedActivity?.costs || 0,
@@ -86,7 +77,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
       latitude: selectedActivity?.latitude || undefined,
       longitude: selectedActivity?.longitude || undefined,
       link: selectedActivity?.link || '',
-    });
+    };
   }, [selectedActivity]);
 
   async function deleteHandler() {
@@ -106,19 +97,6 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
     }
   }
 
-  function resetValues() {
-    setActivityValues({
-      name: '',
-      description: '',
-      costs: 0,
-      booked: false,
-      place: '',
-      latitude: undefined,
-      longitude: undefined,
-      link: '',
-    });
-  }
-
   async function confirmHandler({
     status,
     error,
@@ -132,7 +110,6 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
       } else if (activity && status === 200) {
         stagesCtx.fetchStagesData();
         navigation.goBack();
-        resetValues();
       }
     } else {
       if (error) {
@@ -141,7 +118,6 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
       } else if (activity && status === 201) {
         stagesCtx.fetchStagesData();
         navigation.goBack();
-        resetValues();
       }
     }
   }
@@ -156,11 +132,12 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <ActivityForm
+          key={isEditing ? String(activityId) : generateRandomString()}
           minorStageId={minorStageId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}
-          defaultValues={isEditing ? activityValues : undefined}
+          defaultValues={isEditing ? defaultValues : undefined}
           editActivityId={activityId}
           isEditing={isEditing}
         />

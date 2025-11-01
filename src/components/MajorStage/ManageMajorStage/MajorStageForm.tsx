@@ -11,12 +11,18 @@ import {
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
-import { formatAmount, formatDate, parseDate } from '../../../utils';
-import DatePicker from '../../UI/form/DatePicker';
+import {
+  formatAmount,
+  formatDate,
+  generateRandomString,
+  parseDate,
+} from '../../../utils';
 import Modal from '../../UI/Modal';
 import CountrySelector from './CountrySelector';
 import { createMajorStage, updateMajorStage } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
+import PositionSelector from '../../UI/form/PositionSelector';
+import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 
 type InputValidationResponse = {
   majorStage?: MajorStage;
@@ -55,9 +61,23 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     maxAvailableMoney -= ms.costs.budget;
   });
 
+  let positions: number[];
+  if (defaultValues?.position) {
+    positions = Array.from(
+      { length: majorStages?.length ?? 0 }, // if no stages -> length = 1
+      (_, i) => i + 1
+    );
+  } else {
+    positions = Array.from(
+      { length: (majorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
+      (_, i) => i + 1
+    );
+  }
+  const initialPosition = isEditing
+    ? defaultValues?.position ?? 1
+    : positions[positions.length - 1];
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
   const [changeCountry, setChangeCountry] = useState(false);
   const [updateConfirmed, setUpdateConfirmed] = useState(false);
 
@@ -93,60 +113,16 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
       isValid: true,
       errors: [],
     },
+    position: {
+      value: initialPosition,
+      isValid: true,
+      errors: [],
+    },
   });
-
-  // Redefine inputs, when defaultValues change
-  useEffect(() => {
-    setInputs({
-      title: { value: defaultValues?.title || '', isValid: true, errors: [] },
-      scheduled_start_time: {
-        value: defaultValues?.scheduled_start_time || null,
-        isValid: true,
-        errors: [],
-      },
-      scheduled_end_time: {
-        value: defaultValues?.scheduled_end_time || null,
-        isValid: true,
-        errors: [],
-      },
-      additional_info: {
-        value: defaultValues?.additional_info || '',
-        isValid: true,
-        errors: [],
-      },
-      budget: {
-        value: defaultValues?.budget || 0,
-        isValid: true,
-        errors: [],
-      },
-      spent_money: {
-        value: defaultValues?.spent_money || 0,
-        isValid: true,
-        errors: [],
-      },
-      country: {
-        value: defaultValues?.country || '',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }, [defaultValues]);
-
-  function resetValues() {
-    setInputs({
-      title: { value: '', isValid: true, errors: [] },
-      scheduled_start_time: { value: null, isValid: true, errors: [] },
-      scheduled_end_time: { value: null, isValid: true, errors: [] },
-      additional_info: { value: '', isValid: true, errors: [] },
-      budget: { value: 0, isValid: true, errors: [] },
-      spent_money: { value: 0, isValid: true, errors: [] },
-      country: { value: '', isValid: true, errors: [] },
-    });
-  }
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean
+    enteredValue: string | number | boolean
   ) {
     setInputs((currInputs) => {
       return {
@@ -194,7 +170,6 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     const { error, status, majorStage, majorStageFormValues } = response!;
 
     if (!error && majorStage) {
-      resetValues();
       onSubmit({ majorStage, status });
     } else if (error) {
       onSubmit({ error, status });
@@ -225,8 +200,6 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
         errors: [],
       },
     }));
-    setOpenStartDatePicker(false);
-    setOpenEndDatePicker(false);
   }
 
   function confirmModalHandler() {
@@ -253,17 +226,30 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
       <View style={styles.formContainer}>
         <View>
           <View style={styles.formRow}>
-            <Input
-              label='Title'
-              maxLength={15}
-              invalid={!inputs.title.isValid}
-              errors={inputs.title.errors}
-              mandatory
-              textInputConfig={{
-                value: inputs.title.value,
-                onChangeText: inputChangedHandler.bind(this, 'title'),
-              }}
-            />
+            <View style={styles.titleWrapper}>
+              <Input
+                label='Title'
+                maxLength={15}
+                invalid={!inputs.title.isValid}
+                errors={inputs.title.errors}
+                mandatory
+                textInputConfig={{
+                  value: inputs.title.value,
+                  onChangeText: inputChangedHandler.bind(this, 'title'),
+                }}
+              />
+            </View>
+            <View style={styles.positionWrapper}>
+              <PositionSelector
+                defaultPosition={inputs.position.value}
+                errors={inputs.position.errors}
+                invalid={!inputs.position.isValid}
+                onChangePosition={(newPosition: number) =>
+                  inputChangedHandler('position', newPosition)
+                }
+                positions={positions}
+              />
+            </View>
           </View>
           <View style={styles.formRow}>
             <Input
@@ -305,11 +291,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <DatePicker
-              openDatePicker={openStartDatePicker}
-              setOpenDatePicker={() =>
-                setOpenStartDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_start_time'
               invalid={!inputs.scheduled_start_time.isValid}
@@ -323,11 +305,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
                   : parseDate(maxEndDate)
               }
             />
-            <DatePicker
-              openDatePicker={openEndDatePicker}
-              setOpenDatePicker={() =>
-                setOpenEndDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_end_time'
               invalid={!inputs.scheduled_end_time.isValid}
@@ -344,6 +322,9 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           </View>
           <View style={styles.formRow}>
             <CountrySelector
+              key={
+                isEditing ? String(editMajorStageId) : generateRandomString()
+              }
               onChangeCountry={handleChangeCountry}
               errors={inputs.country.errors}
               invalid={false}
@@ -397,6 +378,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     marginHorizontal: 12,
+  },
+  titleWrapper: {
+    flex: 4, // 75% of the row (3 parts)
+  },
+  positionWrapper: {
+    flex: 1, // 25% of the row (1 part)
+    justifyContent: 'center', // vertically center if PositionSelector has fixed height
   },
   buttonsContainer: {
     flexDirection: 'row',

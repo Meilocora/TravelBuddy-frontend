@@ -78,15 +78,13 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
       )}
 
       <View style={styles.buttonContainer}>
-        {!isOver && (
-          <Button
-            onPress={handleToggleSelection}
-            colorScheme={ColorScheme.complementary}
-            mode={ButtonMode.flat}
-          >
-            Add Place
-          </Button>
-        )}
+        <Button
+          onPress={handleToggleSelection}
+          colorScheme={ColorScheme.complementary}
+          mode={ButtonMode.flat}
+        >
+          Add Place
+        </Button>
       </View>
       {openSelection && (
         <Modal visible={openSelection} transparent>

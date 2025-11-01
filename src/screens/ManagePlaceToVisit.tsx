@@ -1,4 +1,10 @@
-import { ReactElement, useContext, useLayoutEffect, useState } from 'react';
+import {
+  ReactElement,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -14,6 +20,7 @@ import MainGradient from '../components/UI/LinearGradients/MainGradient';
 import { CustomCountryContext } from '../store/custom-country-context';
 import { StagesContext } from '../store/stages-context';
 import HeaderTitle from '../components/UI/HeaderTitle';
+import { generateRandomString } from '../utils';
 
 interface ManagePlaceToVisitProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManagePlaceToVisit'>;
@@ -52,16 +59,19 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
   }
 
   // Empty, when no default values provided
-  const [placeValues, setPlaceValues] = useState<PlaceValues>({
-    countryId: countryId!,
-    name: selectedPlace?.name || '',
-    description: selectedPlace?.description || '',
-    visited: selectedPlace?.visited || false,
-    favorite: selectedPlace?.favorite || false,
-    latitude: selectedPlace?.latitude || undefined,
-    longitude: selectedPlace?.longitude || undefined,
-    link: selectedPlace?.link || '',
-  });
+  const defaultValues = useMemo<PlaceValues | undefined>(() => {
+    if (!selectedPlace) return undefined;
+    return {
+      countryId: countryId!,
+      name: selectedPlace?.name || '',
+      description: selectedPlace?.description || '',
+      visited: selectedPlace?.visited || false,
+      favorite: selectedPlace?.favorite || false,
+      latitude: selectedPlace?.latitude || undefined,
+      longitude: selectedPlace?.longitude || undefined,
+      link: selectedPlace?.link || '',
+    };
+  }, [selectedPlace]);
 
   async function confirmHandler({ status, error, place }: ConfirmHandlerProps) {
     if (isEditing) {
@@ -107,17 +117,18 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, selectedPlace?.name]);
 
   return (
     <View style={styles.root}>
       <MainGradient />
       <PlaceForm
+        key={isEditing ? String(placeId) : generateRandomString()}
         onCancel={() => navigation.goBack()}
         onSubmit={confirmHandler}
         onDelete={deleteHandler}
         submitButtonLabel={isEditing ? 'Update' : 'Add'}
-        defaultValues={placeValues}
+        defaultValues={defaultValues}
         isEditing={isEditing}
         editPlaceId={placeId!}
       />

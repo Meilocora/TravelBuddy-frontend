@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import { Text, StyleSheet } from 'react-native';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface ElementCommentProps {
   content: string;
@@ -16,6 +17,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
     textAlign: 'center',
+    color: GlobalStyles.colors.gray400,
+    opacity: 0.7,
   },
 });
 

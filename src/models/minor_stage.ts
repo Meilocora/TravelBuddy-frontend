@@ -7,6 +7,7 @@ export interface MinorStage {
   scheduled_start_time: string;
   scheduled_end_time: string;
   costs: Costs;
+  position: number;
   transportation?: Transportation;
   accommodation: Accommodation;
   activities?: Activity[];
@@ -26,6 +27,7 @@ export interface MinorStageValues {
   accommodation_latitude: number | undefined;
   accommodation_longitude: number | undefined;
   accommodation_link: string;
+  position: number | null;
 }
 
 export interface MinorStageFormValues {
@@ -41,6 +43,7 @@ export interface MinorStageFormValues {
   accommodation_latitude: Validable<number | undefined>;
   accommodation_longitude: Validable<number | undefined>;
   accommodation_link: Validable<string>;
+  position: Validable<number>;
 }
 
 export interface Accommodation {

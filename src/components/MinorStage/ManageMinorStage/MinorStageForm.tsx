@@ -20,10 +20,11 @@ import {
   parseDate,
   updateMinorStage,
 } from '../../../utils';
-import DatePicker from '../../UI/form/DatePicker';
 import LocationPicker from '../../UI/form/LocationPicker';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
+import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
+import PositionSelector from '../../UI/form/PositionSelector';
 
 type InputValidationResponse = {
   minorStage?: MinorStage;
@@ -63,9 +64,23 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     maxAvailableMoney -= ms.costs.budget;
   });
 
+  let positions: number[];
+  if (defaultValues?.position) {
+    positions = Array.from(
+      { length: minorStages?.length ?? 0 }, // if no stages -> length = 1
+      (_, i) => i + 1
+    );
+  } else {
+    positions = Array.from(
+      { length: (minorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
+      (_, i) => i + 1
+    );
+  }
+  const initialPosition = isEditing
+    ? defaultValues?.position ?? 1
+    : positions[positions.length - 1];
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
 
   const [inputs, setInputs] = useState<MinorStageFormValues>({
     title: { value: defaultValues?.title || '', isValid: true, errors: [] },
@@ -124,6 +139,11 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       isValid: true,
       errors: [],
     },
+    position: {
+      value: initialPosition,
+      isValid: true,
+      errors: [],
+    },
   });
 
   const [maxAvailableMoneyAccommodation, setMaxAvailableMoneyAccommodation] =
@@ -142,85 +162,6 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       };
     });
   }, [inputs.budget.value]);
-
-  // Redefine inputs, when defaultValues change
-  useEffect(() => {
-    setInputs({
-      title: { value: defaultValues?.title || '', isValid: true, errors: [] },
-      scheduled_start_time: {
-        value: defaultValues?.scheduled_start_time || null,
-        isValid: true,
-        errors: [],
-      },
-      scheduled_end_time: {
-        value: defaultValues?.scheduled_end_time || null,
-        isValid: true,
-        errors: [],
-      },
-      budget: {
-        value: defaultValues?.budget || 0,
-        isValid: true,
-        errors: [],
-      },
-      spent_money: {
-        value: defaultValues?.spent_money || 0,
-        isValid: true,
-        errors: [],
-      },
-      accommodation_place: {
-        value: defaultValues?.accommodation_place || '',
-        isValid: true,
-        errors: [],
-      },
-      accommodation_costs: {
-        value: 0,
-        isValid: true,
-        errors: [],
-      },
-      unconvertedAmount: {
-        value: defaultValues?.accommodation_costs.toString() || '',
-        isValid: true,
-        errors: [],
-      },
-      accommodation_booked: {
-        value: defaultValues?.accommodation_booked || false,
-        isValid: true,
-        errors: [],
-      },
-      accommodation_latitude: {
-        value: defaultValues?.accommodation_latitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      accommodation_longitude: {
-        value: defaultValues?.accommodation_longitude || undefined,
-        isValid: true,
-        errors: [],
-      },
-      accommodation_link: {
-        value: defaultValues?.accommodation_link || '',
-        isValid: true,
-        errors: [],
-      },
-    });
-  }, [defaultValues]);
-
-  function resetValues() {
-    setInputs({
-      title: { value: '', isValid: true, errors: [] },
-      scheduled_start_time: { value: null, isValid: true, errors: [] },
-      scheduled_end_time: { value: null, isValid: true, errors: [] },
-      budget: { value: 0, isValid: true, errors: [] },
-      spent_money: { value: 0, isValid: true, errors: [] },
-      accommodation_place: { value: '', isValid: true, errors: [] },
-      accommodation_costs: { value: 0, isValid: true, errors: [] },
-      unconvertedAmount: { value: '', isValid: true, errors: [] },
-      accommodation_booked: { value: false, isValid: true, errors: [] },
-      accommodation_latitude: { value: undefined, isValid: true, errors: [] },
-      accommodation_longitude: { value: undefined, isValid: true, errors: [] },
-      accommodation_link: { value: '', isValid: true, errors: [] },
-    });
-  }
 
   function inputChangedHandler(
     inputIdentifier: string,
@@ -286,7 +227,6 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     const { error, status, minorStage, minorStageFormValues } = response!;
 
     if (!error && minorStage) {
-      resetValues();
       onSubmit({ minorStage, status });
     } else if (error) {
       onSubmit({ error, status });
@@ -324,8 +264,6 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
         errors: [],
       },
     }));
-    setOpenStartDatePicker(false);
-    setOpenEndDatePicker(false);
   }
 
   return (
@@ -333,17 +271,31 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       <View style={styles.formContainer}>
         <View>
           <View style={styles.formRow}>
-            <Input
-              label='Title'
-              maxLength={20}
-              invalid={!inputs.title.isValid}
-              errors={inputs.title.errors}
-              mandatory
-              textInputConfig={{
-                value: inputs.title.value,
-                onChangeText: inputChangedHandler.bind(this, 'title'),
-              }}
-            />
+            <View style={styles.titleWrapper}>
+              <Input
+                label='Title'
+                maxLength={20}
+                invalid={!inputs.title.isValid}
+                errors={inputs.title.errors}
+                mandatory
+                textInputConfig={{
+                  value: inputs.title.value,
+                  onChangeText: inputChangedHandler.bind(this, 'title'),
+                }}
+              />
+            </View>
+            <View style={styles.positionWrapper}>
+              <PositionSelector
+                defaultPosition={inputs.position.value}
+                errors={inputs.position.errors}
+                invalid={!inputs.position.isValid}
+                onChangePosition={(newPosition: number) =>
+                  inputChangedHandler('position', newPosition)
+                }
+                positions={positions}
+                colorScheme={ColorScheme.complementary}
+              />
+            </View>
           </View>
           <View style={styles.formRow}>
             <Input
@@ -372,11 +324,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <DatePicker
-              openDatePicker={openStartDatePicker}
-              setOpenDatePicker={() =>
-                setOpenStartDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_start_time'
               invalid={!inputs.scheduled_start_time.isValid}
@@ -390,11 +338,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
                   : parseDate(maxEndDate)
               }
             />
-            <DatePicker
-              openDatePicker={openEndDatePicker}
-              setOpenDatePicker={() =>
-                setOpenEndDatePicker((prevValue) => !prevValue)
-              }
+            <ExpoDatePicker
               handleChange={handleChangeDate}
               inputIdentifier='scheduled_end_time'
               invalid={!inputs.scheduled_end_time.isValid}
@@ -548,6 +492,13 @@ const styles = StyleSheet.create({
   },
   checkBoxLabel: {
     color: GlobalStyles.colors.gray50,
+  },
+  titleWrapper: {
+    flex: 4, // 75% of the row (3 parts)
+  },
+  positionWrapper: {
+    flex: 1, // 25% of the row (1 part)
+    justifyContent: 'center', // vertically center if PositionSelector has fixed height
   },
   buttonsContainer: {
     flexDirection: 'row',

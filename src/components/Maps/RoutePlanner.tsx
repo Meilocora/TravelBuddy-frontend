@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import OutsidePressHandler from 'react-native-outside-press';
 import { MapViewDirectionsMode } from 'react-native-maps-directions';
@@ -7,13 +7,19 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { LatLng } from 'react-native-maps';
 
 import IconButton from '../UI/IconButton';
-import { Icons, Location } from '../../models';
+import { ColorScheme, Icons, Location } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 import RoutePlannerList from './RoutePlannerList';
+import Button from '../UI/Button';
+import { StageData } from './MapScopeSelector';
+import {
+  compareRouteLocations,
+  getRouteLocationsNamesFromLocations,
+} from '../../utils/location';
 
 interface RoutePlannerProps {
   locations: Location[];
-  mapScope: string;
+  mapScope: StageData;
   mode: MapViewDirectionsMode;
   toggleButtonVisibility: () => void;
   showContent: { button: boolean; list: boolean };
@@ -31,6 +37,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
   setRoutePoints,
 }): ReactElement => {
   const [routeLocations, setRouteLocations] = useState<string[]>([]);
+  const [plannedButtonVisible, setPlannedButtonVisible] = useState(true);
 
   const isFocused = useIsFocused();
 
@@ -71,6 +78,12 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
     setRouteLocations(locs);
   }
 
+  function handlePressPlannedRoute() {
+    const customLocations = getRouteLocationsNamesFromLocations(locations);
+    setRouteLocations(customLocations);
+    setPlannedButtonVisible(false);
+  }
+
   useEffect(() => {
     const points = routeLocations
       .map((name) => locations.find((loc) => loc.data.name === name))
@@ -80,6 +93,14 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
         longitude: loc.data.longitude,
       }));
     setRoutePoints(points);
+
+    const routeAsPlanned = compareRouteLocations(
+      routeLocations,
+      getRouteLocationsNamesFromLocations(locations)
+    );
+    if (!routeAsPlanned) {
+      setPlannedButtonVisible(true);
+    }
   }, [routeLocations, locations, setRoutePoints, showContent.list]);
 
   return (
@@ -142,6 +163,16 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
               onRemoveElement={handleRemoveElement}
               onSwitchElements={handleSwitchElements}
             />
+            {plannedButtonVisible && mapScope.name !== 'MinorStage' && (
+              <Button
+                style={styles.routeButton}
+                textStyle={styles.routeButtonText}
+                colorScheme={ColorScheme.neutral}
+                onPress={handlePressPlannedRoute}
+              >
+                Planned Route
+              </Button>
+            )}
           </OutsidePressHandler>
         </Animated.View>
       )}
@@ -161,7 +192,7 @@ const styles = StyleSheet.create({
     maxHeight: Dimensions.get('window').height * 0.7,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderColor: 'black',
     borderWidth: 1,
     borderTopRightRadius: 15,
@@ -181,18 +212,25 @@ const styles = StyleSheet.create({
   button: {
     padding: 2,
     borderWidth: 1,
-    borderRadius: '100%',
+    borderRadius: 10,
     borderColor: 'black',
   },
   activeButton: {
     padding: 2,
     borderWidth: 1,
-    borderRadius: '100%',
+    borderRadius: 10,
     borderColor: 'black',
-    backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.accent50,
   },
   buttonText: {
     color: 'black',
+  },
+  routeButton: {
+    marginHorizontal: 'auto',
+    marginTop: 12,
+  },
+  routeButtonText: {
+    fontSize: 14,
   },
 });
 

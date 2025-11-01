@@ -19,12 +19,14 @@ interface TransportationBoxProps {
   transportation: Transportation;
   majorStageIsOver: boolean;
   onPressEdit: () => void;
+  customCountryId: number;
 }
 
 const TransportationBox: React.FC<TransportationBoxProps> = ({
   transportation,
   majorStageIsOver,
   onPressEdit,
+  customCountryId,
 }): ReactElement => {
   const userCtx = useContext(UserContext);
   const [openInfoBox, setOpenInfoBox] = useState(false);
@@ -100,16 +102,14 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
             <ElementTitle style={styles.title}>Transportation</ElementTitle>
             <Text style={styles.comment}>Starts in: {countdown}</Text>
           </View>
-          {!majorStageIsOver && (
-            <View style={styles.buttonContainer}>
-              <IconButton
-                icon={Icons.edit}
-                color={GlobalStyles.colors.accent800}
-                onPress={onPressEdit}
-                style={styles.button}
-              />
-            </View>
-          )}
+          <View style={styles.buttonContainer}>
+            <IconButton
+              icon={Icons.edit}
+              color={GlobalStyles.colors.accent800}
+              onPress={onPressEdit}
+              style={styles.button}
+            />
+          </View>
         </View>
         {openInfoBox &&
           infoPointsData.map((infoPoint, index) => (
@@ -120,6 +120,7 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
               location={infoPoint.location}
               colorScheme='accent'
               transportationType={transportation.type as TransportationType}
+              customCountryId={customCountryId}
             />
           ))}
         {transportation.link && (

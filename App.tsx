@@ -54,22 +54,18 @@ import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
 // PRIO 1 \\
-// TODO: ShowMap for countries um alle Orte einfach anzeigen zu lassen bei Location
-// TODO: Map => Add functionality to get route between all minorStages Accommodations
-
-// TODO: Validierung bei Vergleich Datum Beginn & Ende rausnehmen => dadurch mehr Felxibilität … Sortierung entweder nach Datum oder alphabetisch
 // TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
-// TODO: MajorStage name can't be name of the journey => Map won't work in that case
-// TODO: Create Icon and loading screen
-// TODO: Statusbar in weiß
+// TODO: Überall Sortierung der Stages nach position ändern (z.B. Map, )
+// TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
 
 // PRIO 2 \\
+// TODO: Adjust frontsize and width + wrap for PlacesList
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
 // => Slide in from Bottom + runterwischbar
 // TODO: MaxHeight for ValidationLog
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
-// TODO: Adjust frontsize and width + wrap for PlacesList
 // TODO: Improve colors (dezenter)
+// TODO: Outsource inputChangedHandler and related handlers from the Forms
 
 // PRIO 3 \\
 // TODO: Fix custom progress bar
@@ -137,6 +133,7 @@ const BottomTabsNavigator = () => {
               }}
             />
           ),
+          // TODO: Add headerLeft for a refresh Button
         })}
       >
         <BottomTabs.Screen
@@ -193,8 +190,9 @@ const JourneyBottomTabsNavigator = () => {
         }: {
           navigation: NativeStackNavigationProp<BottomTabsParamList>;
         }) => ({
-          headerTintColor: 'white',
-          headerStyle: { backgroundColor: GlobalStyles.colors.accent700 },
+          headerTintColor: GlobalStyles.colors.gray500,
+          // headerStyle: { backgroundColor: GlobalStyles.colors.accent700 },
+          headerStyle: { backgroundColor: GlobalStyles.colors.amberBg },
           headerTitleAlign: 'center',
           headerLeft: ({ tintColor }) => (
             <IconButton
@@ -207,16 +205,19 @@ const JourneyBottomTabsNavigator = () => {
             />
           ),
           tabBarStyle: {
-            backgroundColor: GlobalStyles.colors.accent700,
-            borderTopWidth: 1,
-            borderTopColor: 'white',
+            // backgroundColor: GlobalStyles.colors.accent700,
+            backgroundColor: GlobalStyles.colors.amberBg,
+            borderTopWidth: 2,
+            // borderTopColor: 'white',
+            borderTopColor: GlobalStyles.colors.amberText,
             height: 60,
             paddingTop: 5,
             paddingBottom: 5,
           },
-          tabBarInactiveTintColor: GlobalStyles.colors.gray200,
-          tabBarActiveTintColor: 'white',
-          tabBarIconStyle: { color: 'white' },
+          // tabBarInactiveTintColor: GlobalStyles.colors.gray200,
+          tabBarInactiveTintColor: GlobalStyles.colors.gray700,
+          // tabBarActiveTintColor: 'white',
+          tabBarActiveTintColor: GlobalStyles.colors.amberText,
           tabBarLabelStyle: {
             fontSize: 14,
           },
