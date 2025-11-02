@@ -2,7 +2,6 @@ import { ReactElement, useState } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import {
   ButtonMode,
@@ -30,8 +29,6 @@ import CustomProgressBar from '../UI/CustomProgressBar';
 interface MajorStageListElementProps {
   journeyId: number;
   majorStage: MajorStage;
-  index: number;
-  onDelete: (majorStageId: number) => void;
   onLongPress: () => void;
   isActive: boolean;
 }
@@ -39,12 +36,9 @@ interface MajorStageListElementProps {
 const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   journeyId,
   majorStage,
-  index,
-  onDelete,
   onLongPress,
   isActive,
 }): ReactElement => {
-  // TODO: Delete onDelete and index
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
 
@@ -148,10 +142,6 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
         majorStage.currentMajorStage && styles.currentOuterContainer,
       ]}
     >
-      {/* <LinearGradient
-        colors={['#f1dfcf', '#b8a671']}
-        style={{ height: '100%' }}
-      > */}
       <View style={styles.buttonsContainer}>
         <IconButton
           icon={Icons.edit}
@@ -232,7 +222,6 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
             endDate={majorStage.scheduled_end_time}
           /> */}
       </Pressable>
-      {/* </LinearGradient> */}
     </View>
   );
 };
@@ -240,7 +229,6 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    // borderColor: GlobalStyles.colors.gray700,
     borderColor: GlobalStyles.colors.amberDark,
     borderWidth: 2,
     borderTopWidth: 6,
@@ -257,17 +245,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   currentOuterContainer: {
-    // borderColor: 'gold',
-    borderColor: GlobalStyles.colors.amberAccent,
+    borderColor: 'gold',
+    elevation: 10,
+    shadowColor: 'gold',
   },
   inactiveOuterContainer: {
     borderColor: GlobalStyles.colors.gray300,
-  },
-  pressed: {
     opacity: 0.5,
   },
+  pressed: {
+    opacity: 0.6,
+  },
   innerContainer: {
-    // backgroundColor: GlobalStyles.colors.accent100,
     backgroundColor: GlobalStyles.colors.amberSoft,
     alignItems: 'center',
     justifyContent: 'center',

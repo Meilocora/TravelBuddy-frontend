@@ -34,6 +34,8 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
   const [openModal, setOpenModal] = useState<boolean>(false);
+
+  // TODO: This here needed? Deletion goes via the Form!
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const [deleteMajorStageId, setDeleteMajorStageId] = useState<number | null>(
     null
@@ -50,11 +52,6 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   function handleSetFilter(filter: StageFilter) {
     setFilter(filter);
     setOpenModal(false);
-  }
-
-  function handlePressDelete(majorStageId: number) {
-    setOpenDeleteModal(true);
-    setDeleteMajorStageId(majorStageId);
   }
 
   function closeDeleteModal() {
@@ -126,8 +123,6 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
                   onLongPress={drag}
                   journeyId={journey.id}
                   majorStage={item}
-                  index={index}
-                  onDelete={handlePressDelete}
                   isActive={isActive}
                 />
               </Animated.View>

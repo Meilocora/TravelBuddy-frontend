@@ -1,5 +1,5 @@
-import { ReactElement, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { ReactElement, useContext, useState } from 'react';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,15 +22,19 @@ import { StagesContext } from '../../store/stages-context';
 
 interface MinorStageListElementProps {
   minorStage: MinorStage;
-  onDelete: (minorStageId: number) => void;
+  onLongPress: () => void;
+  isActive: boolean;
 }
 
 const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   minorStage,
-  onDelete,
+  onLongPress,
+  isActive,
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<MajorStageStackParamList>>();
+
+  const [isopen, setIsOpen] = useState(false);
 
   const stagesCtx = useContext(StagesContext);
 
@@ -79,35 +83,59 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
         minorStage.currentMinorStage && styles.currentOuterContainer,
       ]}
     >
-      <View style={styles.headerContainer}>
-        <View style={styles.titleContainer}>
-          <ElementTitle>{`${minorStage.position.toString()}. ${
-            minorStage.title
-          }`}</ElementTitle>
-        </View>
+      <View style={styles.buttonsContainer}>
         <IconButton
           icon={Icons.edit}
-          color={GlobalStyles.colors.accent800}
+          color={GlobalStyles.colors.purpleAccent}
           onPress={handleEdit}
+          containerStyle={styles.icon}
         />
+        {!isopen ? (
+          <IconButton
+            icon={Icons.openDetails}
+            onPress={() => setIsOpen(true)}
+            color={GlobalStyles.colors.purpleAccent}
+            containerStyle={styles.icon}
+          />
+        ) : (
+          <IconButton
+            icon={Icons.closeDetails}
+            onPress={() => setIsOpen(false)}
+            color={GlobalStyles.colors.purpleAccent}
+            containerStyle={styles.icon}
+          />
+        )}
       </View>
-      <ElementComment content={`${startDate} - ${endDate}`} />
-      <DetailArea elementDetailInfo={elementDetailInfo} />
-      {minorStage.accommodation.place !== '' && (
-        <AccommodationBox
+      <Pressable
+        onLongPress={onLongPress}
+        style={({ pressed }) => pressed && styles.pressed}
+        android_ripple={{ color: GlobalStyles.colors.purpleAccent }}
+      >
+        <View style={styles.headerContainer}>
+          <View style={styles.titleContainer}>
+            <ElementTitle>{`${minorStage.position.toString()}. ${
+              minorStage.title
+            }`}</ElementTitle>
+          </View>
+        </View>
+        <ElementComment content={`${startDate} - ${endDate}`} />
+        <DetailArea elementDetailInfo={elementDetailInfo} />
+        {minorStage.accommodation.place !== '' && (
+          <AccommodationBox
+            minorStage={minorStage}
+            customCountryId={majorStage?.country.id!}
+          />
+        )}
+        <ContentBox
+          journeyId={journeyId}
+          majorStageId={majorStageId}
           minorStage={minorStage}
-          customCountryId={majorStage?.country.id!}
         />
-      )}
-      <ContentBox
-        journeyId={journeyId}
-        majorStageId={majorStageId}
-        minorStage={minorStage}
-      />
-      {/* <CustomProgressBar
+        {/* <CustomProgressBar
         startDate={minorStage.scheduled_start_time}
         endDate={minorStage.scheduled_end_time}
       /> */}
+      </Pressable>
     </View>
   );
 };
@@ -125,11 +153,21 @@ const styles = StyleSheet.create({
   },
   currentOuterContainer: {
     borderColor: 'gold',
-    borderWidth: 2,
+    elevation: 10,
+    shadowColor: 'gold',
+  },
+  pressed: {
+    opacity: 0.6,
   },
   inactiveContainer: {
-    borderColor: GlobalStyles.colors.gray400,
-    backgroundColor: GlobalStyles.colors.gray100,
+    // TODO: purpleSoft
+    backgroundColor: GlobalStyles.colors.purpleBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  activeInnerContainer: {
+    opacity: 0.6,
   },
   headerContainer: {
     flex: 1,
@@ -145,6 +183,22 @@ const styles = StyleSheet.create({
   iconContainer: {
     flex: 1.5,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonsContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    zIndex: 1,
+    right: 4,
+    top: 5,
+  },
+  icon: {
+    paddingHorizontal: 0,
+    marginHorizontal: 4,
+  },
+  roughDetailsContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });

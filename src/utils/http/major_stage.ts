@@ -47,7 +47,7 @@ export const createMajorStage = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not create major stage! Connection to backend failed.',
+      error: 'Could not create major stage! Backend connection error...',
     };
   }
 };
@@ -81,7 +81,10 @@ export const updateMajorStage = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update major stage!' };
+    return {
+      status: 500,
+      error: 'Could not update major stage! Backend connection error...',
+    };
   }
 };
 
@@ -101,7 +104,10 @@ export const deleteMajorStage = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete major stage!' };
+    return {
+      status: 500,
+      error: 'Could not delete major stage! Backend connection error...',
+    };
   }
 };
 
@@ -124,7 +130,7 @@ export const swapMajorStages = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not swap major stages! Backend connection error.',
+      error: 'Could not swap major stages! Backend connection error...',
     };
   }
 };

@@ -10,12 +10,17 @@ import {
   MajorStage,
   MinorStage,
   StageFilter,
+  StagesPositionDict,
 } from '../../models';
-import { deleteMinorStage, validateIsOver } from '../../utils';
+import { deleteMinorStage, swapMinorStages, validateIsOver } from '../../utils';
 import Modal from '../UI/Modal';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
 import { StagesContext } from '../../store/stages-context';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { GlobalStyles } from '../../constants/styles';
+import ErrorOverlay from '../UI/ErrorOverlay';
 
 interface MinorStageListProps {
   majorStage: MajorStage;
@@ -26,8 +31,11 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   majorStage,
   minorStages,
 }): ReactElement => {
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
   const [openModal, setOpenModal] = useState<boolean>(false);
+
+  // TODO: This here needed? Deletion goes via the Form!
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const [deleteMinorStageId, setDeleteMinorStageId] = useState<number | null>(
     null
@@ -46,11 +54,6 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
     setOpenModal(false);
   }
 
-  function handlePressDelete(minorStageId: number) {
-    setOpenDeleteModal(true);
-    setDeleteMinorStageId(minorStageId);
-  }
-
   function closeDeleteModal() {
     setOpenDeleteModal(false);
     setDeleteMinorStageId(null);
@@ -64,8 +67,23 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
     setOpenDeleteModal(false);
   }
 
+  async function handleSwitchElements(data: MinorStage[]) {
+    const stagesPositionList: StagesPositionDict[] = [];
+    data.forEach((stage, index) => {
+      stagesPositionList.push({ id: stage.id, position: index + 1 });
+    });
+
+    const { status, error } = await swapMinorStages(stagesPositionList);
+    if (error) {
+      return setError(error);
+    } else {
+      return stagesCtx.fetchStagesData();
+    }
+  }
+
   return (
     <View style={styles.container}>
+      {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       {openDeleteModal && (
         <Modal
           title='Are you sure?'
@@ -78,6 +96,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
         <IconButton
           icon={Icons.settings}
           onPress={() => setOpenModal((prevValue) => !prevValue)}
+          color={GlobalStyles.colors.gray500}
         />
       </View>
       {openModal && (
@@ -89,19 +108,35 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
           colorScheme={ColorScheme.complementary}
         />
       )}
-      <FlatList
-        scrollEnabled
-        nestedScrollEnabled
-        style={styles.listContainer}
+      <DraggableFlatList
         data={shownMinorStages}
-        renderItem={({ item }) => (
-          <MinorStageListElement
-            key={generateRandomString()}
-            minorStage={item}
-            onDelete={handlePressDelete}
-          />
-        )}
         keyExtractor={(item) => item.id.toString()}
+        style={styles.listContainer}
+        renderItem={({ item, getIndex, drag, isActive }) => {
+          const index = getIndex?.() ?? 0;
+          return (
+            <>
+              <Animated.View
+                entering={FadeInRight.delay(index * 200).duration(500)}
+              >
+                <MinorStageListElement
+                  onLongPress={drag}
+                  minorStage={item}
+                  isActive={isActive}
+                />
+              </Animated.View>
+              {index !== shownMinorStages.length - 1 && (
+                <View style={styles.separatorContainer}>
+                  <View style={styles.seperator}></View>
+                  <View style={styles.arrowDown} />
+                </View>
+              )}
+            </>
+          );
+        }}
+        onDragEnd={({ data }) => {
+          handleSwitchElements(data);
+        }}
       />
     </View>
   );
@@ -119,6 +154,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  separatorContainer: {
+    marginVertical: 4,
+  },
+  seperator: {
+    width: '50.3%',
+    height: 22,
+    alignSelf: 'flex-start',
+    borderRightWidth: 2,
+    borderColor: GlobalStyles.colors.gray700,
+  },
+  arrowDown: {
+    alignSelf: 'center',
+    width: 0,
+    height: 0,
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderTopWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: GlobalStyles.colors.gray700,
   },
 });
 

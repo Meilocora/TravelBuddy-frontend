@@ -1,6 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { MinorStage, MinorStageFormValues } from '../../models';
+import {
+  MinorStage,
+  MinorStageFormValues,
+  StagesPositionDict,
+} from '../../models';
 import api from './api';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -41,7 +45,10 @@ export const createMinorStage = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create minor stage!' };
+    return {
+      status: 500,
+      error: 'Could not create minor stage! Backend connection error...',
+    };
   }
 };
 
@@ -74,7 +81,10 @@ export const updateMinorStage = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update minor stage!' };
+    return {
+      status: 500,
+      error: 'Could not update minor stage! Backend connection error...',
+    };
   }
 };
 
@@ -94,6 +104,33 @@ export const deleteMinorStage = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete minor stage!' };
+    return {
+      status: 500,
+      error: 'Could not delete minor stage! Backend connection error...',
+    };
+  }
+};
+
+export const swapMinorStages = async (
+  stagesPositionList: StagesPositionDict[]
+): Promise<ManageMinorStageProps> => {
+  try {
+    const response: AxiosResponse<ManageMinorStageProps> = await api.post(
+      `${prefix}/swap-minor-stages`,
+      { stagesPositionList }
+    );
+
+    // Error from backend
+    if (response.data.error) {
+      return { status: response.data.status, error: response.data.error };
+    }
+
+    return { status: response.data.status };
+  } catch (error) {
+    // Error from frontend
+    return {
+      status: 500,
+      error: 'Could not swap minor stages! Backend connection error...',
+    };
   }
 };

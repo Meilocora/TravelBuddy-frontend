@@ -128,7 +128,6 @@ export function getMapLocationsFromJourney(
   const locations: Location[] = [];
   const currentDate = new Date();
 
-  // TODO: Add order numbers to locations for ordering on map
   if (!journey || !journey.majorStages || journey.majorStages.length === 0) {
     return undefined;
   }

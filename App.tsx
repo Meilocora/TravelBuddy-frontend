@@ -53,17 +53,15 @@ import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
-// PRIO 1 \\
-// TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
-// TODO: Überall Sortierung der Stages nach position ändern (z.B. Map, )
-
 // PRIO 2 \\
+// TODO: Neue Farben überall implementieren
+// TODO: MinorStages aufklappbar machen
+// TODO: Animationen einfügen
 // TODO: Adjust frontsize and width + wrap for PlacesList
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
 // => Slide in from Bottom + runterwischbar
 // TODO: MaxHeight for ValidationLog
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
-// TODO: Improve colors (dezenter)
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
 
