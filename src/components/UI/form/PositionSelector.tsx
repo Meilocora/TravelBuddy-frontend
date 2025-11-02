@@ -83,7 +83,7 @@ const PositionSelector: React.FC<PositionSelectorProps> = ({
           <Pressable onPress={handleOpenModal}>
             <Input
               maxLength={3}
-              label='position'
+              label='order'
               errors={errors}
               textInputConfig={{
                 value: position.toString(),

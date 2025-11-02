@@ -38,5 +38,6 @@ module.exports = ({ config }) => {
       googleApiKey:
         process.env.REACT_APP_GOOGLE_API_KEY || config.extra?.googleApiKey,
     },
+    plugins: [...(config.plugins || []), 'expo-asset'],
   };
 };

@@ -56,7 +56,6 @@ import UserContextProvider from './src/store/user-context';
 // PRIO 1 \\
 // TODO: Stages lieber anhand einer vom user festgelegten Reihenfolge sortieren und nicht nach Datum, sollen genauso getauscht werden können wie bei Routenplanung
 // TODO: Überall Sortierung der Stages nach position ändern (z.B. Map, )
-// TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
 
 // PRIO 2 \\
 // TODO: Adjust frontsize and width + wrap for PlacesList
@@ -66,6 +65,7 @@ import UserContextProvider from './src/store/user-context';
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
 // TODO: Improve colors (dezenter)
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
+// TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
 
 // PRIO 3 \\
 // TODO: Fix custom progress bar

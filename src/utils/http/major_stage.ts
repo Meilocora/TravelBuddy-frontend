@@ -45,7 +45,10 @@ export const createMajorStage = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create major stage!' };
+    return {
+      status: 500,
+      error: 'Could not create major stage! Connection to backend failed.',
+    };
   }
 };
 
