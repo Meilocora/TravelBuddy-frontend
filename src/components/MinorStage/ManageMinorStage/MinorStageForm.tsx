@@ -420,8 +420,8 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
                     !inputs.accommodation_booked.value
                   )
                 }
-                uncheckedColor={GlobalStyles.colors.gray200}
-                color={GlobalStyles.colors.complementary100}
+                uncheckedColor={GlobalStyles.colors.grayMedium}
+                color={GlobalStyles.colors.purpleAccent}
               />
             </View>
           </View>
@@ -445,26 +445,19 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.purpleSoftSemi,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     shadowOpacity: 0.26,
-  },
-  header: {
-    fontSize: 22,
-    textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
-    fontWeight: 'bold',
   },
   formRow: {
     flexDirection: 'row',
@@ -473,14 +466,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
   separator: {
-    borderTopColor: GlobalStyles.colors.gray100,
+    borderTopColor: GlobalStyles.colors.grayMedium,
     borderTopWidth: 2,
     marginTop: 8,
   },
   subtitle: {
     alignSelf: 'center',
     fontSize: 18,
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayMedium,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -491,7 +484,7 @@ const styles = StyleSheet.create({
     marginBottom: '5%',
   },
   checkBoxLabel: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayMedium,
   },
   titleWrapper: {
     flex: 4, // 75% of the row (3 parts)

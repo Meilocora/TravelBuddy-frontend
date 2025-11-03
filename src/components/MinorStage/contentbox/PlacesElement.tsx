@@ -60,7 +60,7 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
     <View style={styles.container}>
       {minorStage.placesToVisit!.length === 0 ? (
         <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>No places selected.</Text>
+          <Text style={styles.infoText}>No places selected...</Text>
         </View>
       ) : (
         <ScrollView style={{ maxHeight: screenHeight / 3 }}>

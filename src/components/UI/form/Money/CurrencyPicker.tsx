@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-start',
     marginTop: 32,
-    backgroundColor: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.grayDark,
     paddingVertical: 3,
     paddingHorizontal: 4,
     borderRadius: 10,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   currencyText: {
     fontSize: 22,
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.graySoft,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },

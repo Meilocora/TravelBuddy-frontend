@@ -177,7 +177,7 @@ const SpendingElement: React.FC<SpendingElementProps> = ({
     <View style={styles.container}>
       {minorStage.costs.spendings!.length === 0 ? (
         <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>No spendings found</Text>
+          <Text style={styles.infoText}>No spendings found...</Text>
         </View>
       ) : (
         <ScrollView style={{ maxHeight: screenHeight / 3 }}>

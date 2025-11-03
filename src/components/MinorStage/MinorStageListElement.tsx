@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
@@ -34,7 +34,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<MajorStageStackParamList>>();
 
-  const [isopen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const stagesCtx = useContext(StagesContext);
 
@@ -78,8 +78,8 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   return (
     <View
       style={[
-        styles.container,
-        isOver && styles.inactiveContainer,
+        styles.outerContainer,
+        isOver && styles.inactiveOuterContainer,
         minorStage.currentMinorStage && styles.currentOuterContainer,
       ]}
     >
@@ -90,7 +90,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
           onPress={handleEdit}
           containerStyle={styles.icon}
         />
-        {!isopen ? (
+        {!isOpen ? (
           <IconButton
             icon={Icons.openDetails}
             onPress={() => setIsOpen(true)}
@@ -111,26 +111,48 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
         style={({ pressed }) => pressed && styles.pressed}
         android_ripple={{ color: GlobalStyles.colors.purpleAccent }}
       >
-        <View style={styles.headerContainer}>
-          <View style={styles.titleContainer}>
+        <View
+          style={[
+            styles.innerContainer,
+            isActive && styles.activeInnerContainer,
+          ]}
+        >
+          <View style={styles.headerContainer}>
             <ElementTitle>{`${minorStage.position.toString()}. ${
               minorStage.title
             }`}</ElementTitle>
           </View>
+          <ElementComment content={`${startDate} - ${endDate}`} />
+          {isOpen && (
+            <>
+              <DetailArea elementDetailInfo={elementDetailInfo} />
+              {minorStage.accommodation.place !== '' && (
+                <AccommodationBox
+                  minorStage={minorStage}
+                  customCountryId={majorStage?.country.id!}
+                />
+              )}
+              <ContentBox
+                journeyId={journeyId}
+                majorStageId={majorStageId}
+                minorStage={minorStage}
+              />
+            </>
+          )}
+          {!isOpen && minorStage.accommodation.place && (
+            <View style={styles.roughDetailsContainer}>
+              <IconButton
+                icon={Icons.place}
+                onPress={() => {}}
+                color={GlobalStyles.colors.gray500}
+                size={18}
+                containerStyle={styles.icon}
+              />
+              <Text>{minorStage.accommodation.place}</Text>
+              {/* TODO: Add Transportation Medium here (+ traveltime) */}
+            </View>
+          )}
         </View>
-        <ElementComment content={`${startDate} - ${endDate}`} />
-        <DetailArea elementDetailInfo={elementDetailInfo} />
-        {minorStage.accommodation.place !== '' && (
-          <AccommodationBox
-            minorStage={minorStage}
-            customCountryId={majorStage?.country.id!}
-          />
-        )}
-        <ContentBox
-          journeyId={journeyId}
-          majorStageId={majorStageId}
-          minorStage={minorStage}
-        />
         {/* <CustomProgressBar
         startDate={minorStage.scheduled_start_time}
         endDate={minorStage.scheduled_end_time}
@@ -141,28 +163,34 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
-    borderColor: GlobalStyles.colors.complementary700,
-    borderWidth: 1,
+    borderColor: GlobalStyles.colors.purpleDark,
+    borderWidth: 2,
     borderRadius: 20,
-    marginVertical: 10,
     marginHorizontal: 20,
-    padding: 10,
-    backgroundColor: GlobalStyles.colors.complementary100,
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    elevation: 4,
+    shadowColor: GlobalStyles.colors.grayDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
   currentOuterContainer: {
     borderColor: 'gold',
-    elevation: 10,
+    elevation: 6,
     shadowColor: 'gold',
+  },
+  inactiveOuterContainer: {
+    borderColor: GlobalStyles.colors.grayMedium,
+    opacity: 0.5,
   },
   pressed: {
     opacity: 0.6,
   },
-  inactiveContainer: {
-    // TODO: purpleSoft
-    backgroundColor: GlobalStyles.colors.purpleBg,
-    alignItems: 'center',
+  innerContainer: {
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     justifyContent: 'center',
     padding: 10,
   },
@@ -171,14 +199,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-  titleContainer: {
-    flex: 8.5,
+    width: '80%',
+    marginRight: '15%',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   iconContainer: {
     flex: 1.5,
@@ -200,6 +223,7 @@ const styles = StyleSheet.create({
   roughDetailsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

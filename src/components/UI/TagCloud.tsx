@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: GlobalStyles.colors.gray50,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderRadius: 20,
-    backgroundColor: GlobalStyles.colors.primary500,
+    backgroundColor: GlobalStyles.colors.greenAccent,
   },
   closeStyle: {
     marginHorizontal: 1,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.greenSoft,
   },
 });
 

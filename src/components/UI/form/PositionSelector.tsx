@@ -33,9 +33,11 @@ const PositionSelector: React.FC<PositionSelectorProps> = ({
   const [openSelection, setOpenSelection] = useState(false);
   const [position, setPosition] = useState<number>(defaultPosition);
 
-  let activeBg = GlobalStyles.colors.accent200;
+  let activeBg = GlobalStyles.colors.amberAccent;
+  let bg = GlobalStyles.colors.amberSoft;
   if (colorScheme === ColorScheme.complementary) {
-    activeBg = GlobalStyles.colors.complementary200;
+    activeBg = GlobalStyles.colors.purpleAccent;
+    bg = GlobalStyles.colors.purpleBg;
   }
 
   function handleOpenModal() {
@@ -58,7 +60,7 @@ const PositionSelector: React.FC<PositionSelectorProps> = ({
       {openSelection && positions.length > 1 && (
         <OutsidePressHandler
           onOutsidePress={handleCloseModal}
-          style={styles.selectionContainer}
+          style={[styles.selectionContainer, { backgroundColor: bg }]}
         >
           <ScrollView style={styles.listContainer} nestedScrollEnabled={true}>
             {positions.length > 0 &&
@@ -114,7 +116,7 @@ const styles = StyleSheet.create({
   header: {
     textAlign: 'center',
     fontSize: 20,
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   errorText: {
     fontSize: 16,
@@ -125,11 +127,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 3,
     top: 70,
-    backgroundColor: GlobalStyles.colors.gray400,
     zIndex: 1,
   },
   listContainer: {
-    maxHeight: 200,
+    maxHeight: 180,
     paddingHorizontal: 4,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,

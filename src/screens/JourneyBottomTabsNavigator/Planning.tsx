@@ -15,7 +15,7 @@ import IconButton from '../../components/UI/IconButton';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
-import { parseDate, validateIsOver } from '../../utils';
+import { validateIsOver } from '../../utils';
 import { StagesContext } from '../../store/stages-context';
 import { GlobalStyles } from '../../constants/styles';
 

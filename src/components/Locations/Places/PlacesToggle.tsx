@@ -33,20 +33,20 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.gray50,
+    borderColor: GlobalStyles.colors.grayDark,
     borderRadius: 25,
   },
   activeContainer: {
-    borderColor: GlobalStyles.colors.accent200,
+    borderColor: GlobalStyles.colors.amberAccent,
   },
   text: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     textAlign: 'center',
   },
   activeText: {
-    color: GlobalStyles.colors.accent200,
+    color: GlobalStyles.colors.amberAccent,
   },
 });
 

@@ -167,7 +167,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
       </View>
       <Pressable
         style={({ pressed }) => pressed && styles.pressed}
-        android_ripple={{ color: GlobalStyles.colors.accent100 }}
+        android_ripple={{ color: GlobalStyles.colors.amberAccent }}
         onPress={handleOnPress}
         onLongPress={onLongPress}
       >
@@ -214,6 +214,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
                 containerStyle={styles.icon}
               />
               <Text>{majorStage.country.name}</Text>
+              {/* TODO: Add Transportation Medium here (+ traveltime) */}
             </View>
           )}
         </View>
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: 'transparent',
     elevation: 4,
-    shadowColor: GlobalStyles.colors.gray700,
+    shadowColor: GlobalStyles.colors.grayDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
     shadowColor: 'gold',
   },
   inactiveOuterContainer: {
-    borderColor: GlobalStyles.colors.gray300,
+    borderColor: GlobalStyles.colors.grayMedium,
     opacity: 0.5,
   },
   pressed: {
@@ -286,6 +287,7 @@ const styles = StyleSheet.create({
   roughDetailsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

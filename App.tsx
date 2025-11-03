@@ -55,9 +55,8 @@ import UserContextProvider from './src/store/user-context';
 
 // PRIO 2 \\
 // TODO: Neue Farben überall implementieren
-// TODO: MinorStages aufklappbar machen
 // TODO: Animationen einfügen
-// TODO: Adjust frontsize and width + wrap for PlacesList
+// TODO: Adjust fontsize and width + wrap for PlacesList
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
 // => Slide in from Bottom + runterwischbar
 // TODO: MaxHeight for ValidationLog
@@ -105,19 +104,20 @@ const BottomTabsNavigator = () => {
         }: {
           navigation: BottomTabNavigationProp<BottomTabsParamList>;
         }) => ({
-          headerTintColor: 'white',
-          headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+          headerTintColor: GlobalStyles.colors.grayDark,
+          headerStyle: { backgroundColor: GlobalStyles.colors.greenBg },
           headerTitleAlign: 'center',
           tabBarStyle: {
-            backgroundColor: GlobalStyles.colors.primary500,
+            backgroundColor: GlobalStyles.colors.greenBg,
             borderTopWidth: 1,
-            borderTopColor: GlobalStyles.colors.accent600,
+            borderTopColor: GlobalStyles.colors.greenDark,
             height: 60,
             paddingTop: 5,
             paddingBottom: 5,
           },
-          tabBarActiveTintColor: GlobalStyles.colors.accent600,
-          tabBarIconStyle: { color: 'white' },
+          tabBarInactiveTintColor: GlobalStyles.colors.greenDark,
+          tabBarActiveTintColor: GlobalStyles.colors.greenAccent,
+          tabBarIconStyle: { color: GlobalStyles.colors.grayDark },
           tabBarLabelStyle: {
             fontSize: 14,
           },
@@ -188,8 +188,7 @@ const JourneyBottomTabsNavigator = () => {
         }: {
           navigation: NativeStackNavigationProp<BottomTabsParamList>;
         }) => ({
-          headerTintColor: GlobalStyles.colors.gray500,
-          // headerStyle: { backgroundColor: GlobalStyles.colors.accent700 },
+          headerTintColor: GlobalStyles.colors.grayDark,
           headerStyle: { backgroundColor: GlobalStyles.colors.amberBg },
           headerTitleAlign: 'center',
           headerLeft: ({ tintColor }) => (
@@ -203,19 +202,15 @@ const JourneyBottomTabsNavigator = () => {
             />
           ),
           tabBarStyle: {
-            // backgroundColor: GlobalStyles.colors.accent700,
             backgroundColor: GlobalStyles.colors.amberBg,
             borderTopWidth: 2,
-            // borderTopColor: 'white',
-            borderTopColor: GlobalStyles.colors.amberText,
+            borderTopColor: GlobalStyles.colors.amberDark,
             height: 60,
             paddingTop: 5,
             paddingBottom: 5,
           },
-          // tabBarInactiveTintColor: GlobalStyles.colors.gray200,
-          tabBarInactiveTintColor: GlobalStyles.colors.gray700,
-          // tabBarActiveTintColor: 'white',
-          tabBarActiveTintColor: GlobalStyles.colors.amberText,
+          tabBarInactiveTintColor: GlobalStyles.colors.amberDark,
+          tabBarActiveTintColor: GlobalStyles.colors.amberAccent,
           tabBarLabelStyle: {
             fontSize: 14,
           },
@@ -273,7 +268,7 @@ const MajorStageStackNavigator = () => {
     <MajorStageStack.Navigator
       screenOptions={() => ({
         headerTintColor: 'white',
-        headerStyle: { backgroundColor: GlobalStyles.colors.accent700 },
+        headerStyle: { backgroundColor: GlobalStyles.colors.amberBg },
         headerTitleAlign: 'center',
         headerShadowVisible: false,
         animationEnabled: false,
@@ -318,7 +313,7 @@ const AuthenticatedStack = () => {
               screenOptions={() => ({
                 headerTintColor: 'white',
                 headerStyle: {
-                  backgroundColor: GlobalStyles.colors.primary500,
+                  backgroundColor: GlobalStyles.colors.greenBg,
                 },
                 headerTitleAlign: 'center',
                 headerShadowVisible: false,
@@ -412,7 +407,7 @@ export default function App() {
 
   return (
     <EventProvider>
-      <StatusBar style='light' />
+      <StatusBar style='dark' />
       <AuthContextProvider>
         <Root />
       </AuthContextProvider>

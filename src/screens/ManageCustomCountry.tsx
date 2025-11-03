@@ -53,12 +53,17 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTintColor: GlobalStyles.colors.grayDark,
       headerTitle: () => <HeaderTitle title={'Country Details'} />,
       headerRight: () => (
         <IconButton
           icon={Icons.edit}
           onPress={handleChangeEdit}
-          color={isEditing ? GlobalStyles.colors.accent600 : 'white'}
+          color={
+            isEditing
+              ? GlobalStyles.colors.amberAccent
+              : GlobalStyles.colors.grayDark
+          }
         />
       ),
     });

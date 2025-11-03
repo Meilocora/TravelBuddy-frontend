@@ -1,4 +1,10 @@
-import { ReactElement, useContext, useState, useMemo } from 'react';
+import {
+  ReactElement,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
@@ -22,6 +28,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../../components/UI/Modal';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../store/stages-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ManageJourneyProps {
   route: ManageJourneyRouteProp;
@@ -48,24 +55,58 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
   const selectedJourney = stagesCtx.findJourney(editedJourneyId!);
 
   // Empty, when no default values provided
-  const defaultValues = useMemo<JourneyValues | undefined>(() => {
-    if (!selectedJourney) return undefined;
-    return {
-      name: selectedJourney?.name || '',
-      description: selectedJourney?.description || '',
-      scheduled_start_time: selectedJourney?.scheduled_start_time
-        ? formatDateString(selectedJourney.scheduled_start_time)!
-        : null,
-      scheduled_end_time: selectedJourney?.scheduled_end_time
-        ? formatDateString(selectedJourney.scheduled_end_time)!
-        : null,
-      budget: selectedJourney?.costs.budget || 0,
-      spent_money: selectedJourney?.costs.spent_money || 0,
-      countries: selectedJourney?.countries
-        ? formatCountrynamesToString(selectedJourney!.countries)
-        : '',
-    };
-  }, [selectedJourney]);
+  const [defaultValues, setDefaultValues] = useState<JourneyValues>({
+    name: selectedJourney?.name || '',
+    description: selectedJourney?.description || '',
+    scheduled_start_time: selectedJourney?.scheduled_start_time
+      ? formatDateString(selectedJourney.scheduled_start_time)!
+      : null,
+    scheduled_end_time: selectedJourney?.scheduled_end_time
+      ? formatDateString(selectedJourney.scheduled_end_time)!
+      : null,
+    budget: selectedJourney?.costs.budget || 0,
+    spent_money: selectedJourney?.costs.spent_money || 0,
+    countries: selectedJourney?.countries
+      ? formatCountrynamesToString(selectedJourney!.countries)
+      : '',
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      // JourneyValues set, when screen is focused
+      setDefaultValues({
+        name: selectedJourney?.name || '',
+        description: selectedJourney?.description || '',
+        scheduled_start_time: selectedJourney?.scheduled_start_time
+          ? formatDateString(selectedJourney.scheduled_start_time)!
+          : null,
+        scheduled_end_time: selectedJourney?.scheduled_end_time
+          ? formatDateString(selectedJourney.scheduled_end_time)!
+          : null,
+        budget: selectedJourney?.costs.budget || 0,
+        spent_money: selectedJourney?.costs.spent_money || 0,
+        countries: selectedJourney?.countries
+          ? formatCountrynamesToString(selectedJourney!.countries)
+          : '',
+      });
+
+      return () => {
+        // Clean up function, when screen is unfocused
+        // reset JourneyValues
+        setDefaultValues({
+          name: '',
+          description: '',
+          scheduled_start_time: null,
+          scheduled_end_time: null,
+          budget: 0,
+          spent_money: 0,
+          countries: '',
+        });
+        // reset journeyId in navigation params for BottomTab
+        navigation.setParams({ journeyId: undefined });
+      };
+    }, [selectedJourney])
+  );
 
   async function deleteJourneyHandler() {
     try {

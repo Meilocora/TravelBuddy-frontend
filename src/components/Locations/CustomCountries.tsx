@@ -76,12 +76,12 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
         <IconButton
           icon={Icons.search}
           onPress={handleTapSearch}
-          color={searchTerm ? GlobalStyles.colors.accent100 : undefined}
+          color={searchTerm ? GlobalStyles.colors.amberAccent : undefined}
         />
         <IconButton
           icon={Icons.filter}
           onPress={handleTapSort}
-          color={sort === 'desc' ? GlobalStyles.colors.accent100 : undefined}
+          color={sort === 'desc' ? GlobalStyles.colors.amberAccent : undefined}
           style={
             sort === 'desc' ? { transform: [{ rotate: '180deg' }] } : undefined
           }

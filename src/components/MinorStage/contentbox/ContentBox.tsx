@@ -71,18 +71,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingBottom: 5,
     borderBottomWidth: 2,
-    borderBottomColor: GlobalStyles.colors.complementary200,
+    borderBottomColor: GlobalStyles.colors.purpleAccent,
   },
   inactiveContentHeaderContainer: {
-    borderBottomColor: GlobalStyles.colors.gray200,
+    borderBottomColor: GlobalStyles.colors.grayMedium,
   },
   activeHeader: {
-    color: GlobalStyles.colors.complementary800,
+    color: GlobalStyles.colors.purpleAccent,
     fontWeight: 'bold',
     fontSize: 18,
   },
   activeContainer: {
-    backgroundColor: GlobalStyles.colors.complementary100,
+    backgroundColor: GlobalStyles.colors.amberAccent,
   },
 });
 

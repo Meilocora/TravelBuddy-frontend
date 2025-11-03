@@ -18,7 +18,6 @@ import { GlobalStyles } from '../../../constants/styles';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { PlaceContext } from '../../../store/place-context';
 import InfoText from '../../UI/InfoText';
-import LocationPicker from '../../UI/form/LocationPicker';
 import IconButton from '../../UI/IconButton';
 
 interface PlacesListProps {
@@ -154,8 +153,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: GlobalStyles.colors.gray700,
-    borderRadius: 20,
+    backgroundColor: GlobalStyles.colors.graySoft,
+    borderRadius: 6,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -164,19 +163,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   mapButton: {
-    backgroundColor: GlobalStyles.colors.gray300,
+    backgroundColor: GlobalStyles.colors.grayMedium,
   },
   listContainer: {
     width: '100%',
     paddingHorizontal: 8,
     borderRadius: 20,
-    backgroundColor: GlobalStyles.colors.gray400,
+    backgroundColor: GlobalStyles.colors.grayMedium,
   },
   info: {
     marginTop: 10,

@@ -1,5 +1,5 @@
 import { parse } from 'dotenv';
-import { Journey, MajorStage, MinorStage } from '../models';
+import { Journey, MajorStage, MinorStage, StagesPositionDict } from '../models';
 import { parseDate, parseDateAndTime } from './formatting';
 
 export function validateIsOver(date: string): boolean {
@@ -242,4 +242,12 @@ function validateStagesDates(stages: MajorStage[] | MinorStage[]) {
   }
 
   return checks;
+}
+
+export function validateOrders(
+  a: StagesPositionDict[],
+  b: StagesPositionDict[]
+) {
+  if (a.length !== b.length) return false;
+  return a.every((x, i) => x.id === b[i].id && x.position === b[i].position);
 }

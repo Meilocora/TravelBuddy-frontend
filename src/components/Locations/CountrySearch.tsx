@@ -33,12 +33,13 @@ const CountrySearch: React.FC<CountrySearchProps> = ({
         <View style={styles.innerContainer}>
           <Input
             errors={[]}
+            maxLength={100}
             invalid={false}
             label={searchTermLabel}
             textInputConfig={{
               value: searchTerm,
               onChangeText: inputChangedHandler,
-              cursorColor: GlobalStyles.colors.gray700,
+              cursorColor: GlobalStyles.colors.grayDark,
             }}
             customInputStyles={styles.input}
           />
@@ -61,8 +62,10 @@ const styles = StyleSheet.create({
     height: 75,
   },
   input: {
-    backgroundColor: GlobalStyles.colors.gray50,
-    color: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.graySoft,
+    color: GlobalStyles.colors.grayDark,
+    borderColor: GlobalStyles.colors.grayDark,
+    borderWidth: 0.5,
   },
 });
 

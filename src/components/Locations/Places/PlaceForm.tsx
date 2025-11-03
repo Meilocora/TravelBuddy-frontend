@@ -259,8 +259,8 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
                 onPress={() =>
                   inputChangedHandler('visited', !inputs.visited.value)
                 }
-                uncheckedColor={GlobalStyles.colors.gray200}
-                color={GlobalStyles.colors.primary100}
+                uncheckedColor={GlobalStyles.colors.grayDark}
+                color={GlobalStyles.colors.greenAccent}
               />
             </View>
             <View style={styles.checkBoxContainer}>
@@ -270,8 +270,8 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
                 onPress={() =>
                   inputChangedHandler('favorite', !inputs.favorite.value)
                 }
-                uncheckedColor={GlobalStyles.colors.gray200}
-                color={GlobalStyles.colors.primary100}
+                uncheckedColor={GlobalStyles.colors.grayDark}
+                color={GlobalStyles.colors.greenAccent}
               />
             </View>
           </View>
@@ -303,17 +303,17 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginTop: '15%',
+    marginBottom: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
-    elevation: 5,
-    shadowColor: 'black',
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.graySoftSemi,
+    elevation: 10,
+    shadowColor: GlobalStyles.colors.grayDark,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     shadowOpacity: 0.26,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     fontWeight: 'bold',
   },
   formRow: {
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     marginBottom: '5%',
   },
   checkBoxLabel: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   buttonsContainer: {
     flexDirection: 'row',

@@ -58,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({
           <Text
             style={[
               generalStyles.buttonText,
+              schemeStyles.buttonText,
               mode === 'flat' && schemeStyles.flatText,
               textStyle,
             ]}
@@ -82,7 +83,6 @@ const generalStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   buttonText: {
-    color: 'white',
     textAlign: 'center',
     fontSize: 16,
     paddingHorizontal: 4,
@@ -95,55 +95,70 @@ const generalStyles = StyleSheet.create({
 
 const neutralStyles = StyleSheet.create({
   button: {
-    backgroundColor: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.grayDark,
+  },
+  buttonText: {
+    color: GlobalStyles.colors.graySoft,
   },
   flatText: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   pressed: {
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.grayMedium,
   },
 });
 
 const primaryStyles = StyleSheet.create({
   button: {
-    backgroundColor: GlobalStyles.colors.primary500,
+    backgroundColor: GlobalStyles.colors.greenAccent,
+  },
+  buttonText: {
+    color: GlobalStyles.colors.greenSoft,
   },
   flatText: {
-    color: GlobalStyles.colors.primary400,
+    color: GlobalStyles.colors.greenAccent,
   },
   pressed: {
-    backgroundColor: GlobalStyles.colors.primary100,
+    backgroundColor: GlobalStyles.colors.greenBg,
   },
 });
 
 const accentStyles = StyleSheet.create({
   button: {
-    backgroundColor: GlobalStyles.colors.accent500,
+    backgroundColor: GlobalStyles.colors.amberAccent,
+  },
+  buttonText: {
+    color: GlobalStyles.colors.amberSoft,
   },
   flatText: {
-    color: GlobalStyles.colors.accent800,
+    color: GlobalStyles.colors.amberAccent,
   },
   pressed: {
-    backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.amberBg,
   },
 });
 
 const complementaryStyles = StyleSheet.create({
   button: {
-    backgroundColor: GlobalStyles.colors.complementary500,
+    backgroundColor: GlobalStyles.colors.purpleAccent,
+  },
+  buttonText: {
+    color: GlobalStyles.colors.purpleSoft,
   },
   flatText: {
-    color: GlobalStyles.colors.complementary800,
+    color: GlobalStyles.colors.purpleAccent,
   },
   pressed: {
-    backgroundColor: GlobalStyles.colors.complementary100,
+    backgroundColor: GlobalStyles.colors.purpleBg,
   },
 });
 
 const errorStyles = StyleSheet.create({
   button: {
     backgroundColor: GlobalStyles.colors.error500,
+  },
+  buttonText: {
+    color: 'white',
   },
   flatText: {
     color: GlobalStyles.colors.error500,

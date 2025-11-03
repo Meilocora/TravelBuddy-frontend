@@ -19,7 +19,7 @@ const GridInfoLine: React.FC<GridInfoLineProps> = ({
       <Ionicons
         name={icon}
         size={14}
-        color={GlobalStyles.colors.gray200}
+        color={GlobalStyles.colors.grayDark}
         style={styles.icon}
       />
       <Text style={styles.text} numberOfLines={1}>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 4,
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayMedium,
   },
 });
 

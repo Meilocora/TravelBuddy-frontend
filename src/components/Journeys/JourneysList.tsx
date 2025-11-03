@@ -10,6 +10,7 @@ import FilterSettings from '../UI/FilterSettings';
 import { deleteJourney } from '../../utils/http';
 import Modal from '../UI/Modal';
 import { StagesContext } from '../../store/stages-context';
+import { GlobalStyles } from '../../constants/styles';
 
 const JourneysList: React.FC = ({}): ReactElement => {
   const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
@@ -63,6 +64,7 @@ const JourneysList: React.FC = ({}): ReactElement => {
         <IconButton
           icon={Icons.settings}
           onPress={() => setOpenModal(!openModal)}
+          color={GlobalStyles.colors.grayDark}
         />
       </View>
       {openModal && (

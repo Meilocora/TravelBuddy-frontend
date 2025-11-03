@@ -66,7 +66,7 @@ const OverviewChart: React.FC<OverviewChartProps> = ({
       <Text
         style={{
           fontSize: 20,
-          color: GlobalStyles.colors.gray500,
+          color: GlobalStyles.colors.grayDark,
           fontWeight: 'bold',
         }}
         numberOfLines={1}
@@ -82,7 +82,7 @@ const OverviewChart: React.FC<OverviewChartProps> = ({
         <Text
           style={{
             fontSize: 14,
-            color: GlobalStyles.colors.gray500,
+            color: GlobalStyles.colors.grayDark,
           }}
           numberOfLines={1}
         >
@@ -91,7 +91,7 @@ const OverviewChart: React.FC<OverviewChartProps> = ({
         <Text
           style={{
             fontSize: 20,
-            color: GlobalStyles.colors.gray500,
+            color: GlobalStyles.colors.grayDark,
             fontWeight: 'bold',
           }}
           numberOfLines={1}

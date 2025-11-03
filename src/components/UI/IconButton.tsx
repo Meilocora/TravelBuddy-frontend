@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ReactElement } from 'react';
 
 import { Icons } from '../../models';
+import { GlobalStyles } from '../../constants/styles';
 
 interface IconButtonProps {
   icon: Icons;
@@ -16,7 +17,7 @@ interface IconButtonProps {
 const IconButton: React.FC<IconButtonProps> = ({
   icon,
   size = 24,
-  color = 'white',
+  color = GlobalStyles.colors.grayDark,
   containerStyle,
   style,
   onPress,

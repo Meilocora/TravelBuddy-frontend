@@ -14,6 +14,8 @@ interface CurrenciesModalProps {
   onSelectCurrency: (currency: CurrencyInfo) => void;
 }
 
+// TODO: Make this bigger (whole screen), slide from bottom and give more informations...
+
 const CurrenciesModal: React.FC<CurrenciesModalProps> = ({
   onCloseModal,
   onSelectCurrency,
@@ -54,6 +56,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     zIndex: 1,
     position: 'absolute',
+    top: -300,
     width: '100%',
   },
   innerContainer: {
@@ -61,7 +64,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 10,
     paddingHorizontal: 15,
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.graySoft,
     maxHeight: '50%',
     maxWidth: '120%',
     borderWidth: 1,
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginBottom: 4,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayMedium,
   },
   info: {
     marginVertical: 4,

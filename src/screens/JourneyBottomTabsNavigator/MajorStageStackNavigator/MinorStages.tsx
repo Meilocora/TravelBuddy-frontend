@@ -48,8 +48,6 @@ const MinorStages: React.FC<MinorStagesProps> = ({
   const stagesCtx = useContext(StagesContext);
   const majorStage = stagesCtx.findMajorStage(majorStageId);
 
-  const isOver = validateIsOver(majorStage!.scheduled_end_time);
-
   const planningNavigation =
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
@@ -62,7 +60,7 @@ const MinorStages: React.FC<MinorStagesProps> = ({
     });
     return () =>
       navigation.getParent()?.setOptions({
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary700 },
+        tabBarStyle: { backgroundColor: GlobalStyles.colors.greenBg },
       });
   }, [navigation]);
 
@@ -99,13 +97,13 @@ const MinorStages: React.FC<MinorStagesProps> = ({
         <IconButton
           icon={Icons.add}
           onPress={handleAddMinorStage}
-          color={'white'}
+          color={GlobalStyles.colors.grayDark}
           size={32}
         />
       ),
-      headerLeft: ({ tintColor }) => (
+      headerLeft: ({}) => (
         <IconButton
-          color={tintColor}
+          color={GlobalStyles.colors.grayDark}
           size={24}
           icon={Icons.arrowBack}
           onPress={() => {
@@ -115,7 +113,7 @@ const MinorStages: React.FC<MinorStagesProps> = ({
           }}
         />
       ),
-      headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
+      headerStyle: { backgroundColor: GlobalStyles.colors.purpleBg },
     });
   }, [navigation, majorStage]);
 

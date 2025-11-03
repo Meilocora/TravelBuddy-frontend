@@ -44,11 +44,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, [pickedLocation]);
 
-  let iconStandardColor = GlobalStyles.colors.primary100;
+  let iconStandardColor = GlobalStyles.colors.greenSoft;
   if (colorScheme === ColorScheme.complementary) {
-    iconStandardColor = GlobalStyles.colors.complementary100;
+    iconStandardColor = GlobalStyles.colors.purpleSoft;
   } else if (colorScheme === ColorScheme.accent) {
-    iconStandardColor = GlobalStyles.colors.accent100;
+    iconStandardColor = GlobalStyles.colors.amberSoft;
   }
 
   async function pickOnMapHandler() {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   mapButton: {
-    backgroundColor: GlobalStyles.colors.gray300,
+    backgroundColor: GlobalStyles.colors.grayMedium,
   },
 });
 

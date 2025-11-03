@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   header: {
     textAlign: 'center',
     fontSize: 20,
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   errorText: {
     fontSize: 16,
@@ -224,25 +224,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     width: 200,
     maxHeight: 300,
-    backgroundColor: GlobalStyles.colors.gray700,
     borderRadius: 20,
   },
   list: {
     paddingHorizontal: 10,
-    borderColor: GlobalStyles.colors.gray200,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderWidth: 0.5,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
   separatorText: {
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayDark,
     fontStyle: 'italic',
     marginTop: 20,
     marginBottom: 5,
     textAlign: 'center',
   },
   chosenListElement: {
-    backgroundColor: GlobalStyles.colors.gray300,
+    backgroundColor: GlobalStyles.colors.grayMedium,
     borderWidth: 0,
   },
   chosenText: {

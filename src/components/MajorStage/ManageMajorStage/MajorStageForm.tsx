@@ -352,26 +352,19 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.amberSoftSemi,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     shadowOpacity: 0.26,
-  },
-  header: {
-    fontSize: 22,
-    textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
-    fontWeight: 'bold',
   },
   formRow: {
     flexDirection: 'row',

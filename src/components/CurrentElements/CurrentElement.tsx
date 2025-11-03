@@ -36,12 +36,15 @@ const CurrentElement: React.FC<CurrentElementProps> = ({
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
 
-  let elementStyle = { backgroundColor: GlobalStyles.colors.primary100 };
+  let elementStyle = { backgroundColor: GlobalStyles.colors.greenBgSemi };
+  let rippleColor = GlobalStyles.colors.greenAccent;
   if (colorScheme === ColorScheme.complementary) {
-    elementStyle = { backgroundColor: GlobalStyles.colors.complementary100 };
+    elementStyle = { backgroundColor: GlobalStyles.colors.purpleBgSemi };
+    rippleColor = GlobalStyles.colors.purpleAccent;
   }
   if (colorScheme === ColorScheme.accent) {
-    elementStyle = { backgroundColor: GlobalStyles.colors.accent100 };
+    elementStyle = { backgroundColor: GlobalStyles.colors.amberBgSemi };
+    rippleColor = GlobalStyles.colors.amberAccent;
   }
 
   // Drag-to-dismiss logic
@@ -87,7 +90,7 @@ const CurrentElement: React.FC<CurrentElementProps> = ({
             <Pressable
               style={({ pressed }) => pressed && styles.pressed}
               onPress={onPress}
-              android_ripple={{ color: GlobalStyles.colors.primary100 }}
+              android_ripple={{ color: rippleColor }}
             >
               <View style={styles.innerContainer}>
                 <Text
@@ -121,7 +124,7 @@ const CurrentElement: React.FC<CurrentElementProps> = ({
             icon={Icons.arrowLeft}
             onPress={handleOpen}
             size={20}
-            color='black'
+            color={GlobalStyles.colors.grayDark}
             containerStyle={styles.icon}
           />
         </View>
@@ -172,7 +175,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 5,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 25,
-    backgroundColor: GlobalStyles.colors.gray50,
+    backgroundColor: GlobalStyles.colors.graySoft,
     justifyContent: 'center',
     height: 30,
     width: 30,

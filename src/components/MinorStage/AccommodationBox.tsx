@@ -66,7 +66,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
           <IconButton
             icon={Icons.place}
             onPress={() => {}}
-            color='black'
+            color={GlobalStyles.colors.grayMedium}
             containerStyle={styles.icon}
           />
           {minorStage.accommodation.link ? (
@@ -85,7 +85,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
             <IconButton
               icon={Icons.currency}
               onPress={() => {}}
-              color='black'
+              color={GlobalStyles.colors.grayMedium}
               containerStyle={styles.icon}
             />
             <Text style={styles.content}>
@@ -101,14 +101,14 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
                 icon={Icons.checkmarkOutline}
                 onPress={() => {}}
                 containerStyle={styles.icon}
-                color={GlobalStyles.colors.complementary500}
+                color={GlobalStyles.colors.purpleAccent}
               />
             ) : (
               <IconButton
                 icon={Icons.remove}
                 onPress={() => {}}
                 containerStyle={styles.icon}
-                color={GlobalStyles.colors.complementary500}
+                color={GlobalStyles.colors.purpleAccent}
               />
             )}
           </Text>
@@ -137,14 +137,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: GlobalStyles.colors.gray500,
+    borderColor: GlobalStyles.colors.grayDark,
   },
   titleContainer: {
     position: 'absolute',
     left: '50%',
     top: -12,
     transform: [{ translateX: -60 }],
-    backgroundColor: GlobalStyles.colors.complementary100,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     paddingHorizontal: 10,
   },
   title: {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     left: '50%',
     top: -12,
     transform: [{ translateX: -60 }],
-    backgroundColor: GlobalStyles.colors.gray100,
+    backgroundColor: GlobalStyles.colors.graySoft,
     paddingHorizontal: 10,
   },
   row: {
@@ -168,12 +168,12 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayMedium,
     textAlign: 'center',
   },
   content: {
     fontSize: 14,
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayDark,
     textAlign: 'center',
   },
   link: {

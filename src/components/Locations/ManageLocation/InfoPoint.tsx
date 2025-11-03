@@ -29,22 +29,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
-    backgroundColor: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.greenSoft,
+    borderWidth: 0.25,
     marginVertical: 4,
     marginHorizontal: 4,
   },
   touchable: {
-    borderColor: GlobalStyles.colors.accent100,
+    borderColor: 'gold',
+    shadowColor: 'gold',
+    elevation: 4,
     borderWidth: 1,
   },
   value: {
     fontSize: 16,
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     marginBottom: 2,
   },
   title: {
     fontSize: 12,
-    color: GlobalStyles.colors.gray300,
+    color: GlobalStyles.colors.grayMedium,
   },
 });
 

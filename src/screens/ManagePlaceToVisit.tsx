@@ -21,6 +21,7 @@ import { CustomCountryContext } from '../store/custom-country-context';
 import { StagesContext } from '../store/stages-context';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { generateRandomString } from '../utils';
+import { GlobalStyles } from '../constants/styles';
 
 interface ManagePlaceToVisitProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManagePlaceToVisit'>;
@@ -60,7 +61,6 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
 
   // Empty, when no default values provided
   const defaultValues = useMemo<PlaceValues | undefined>(() => {
-    if (!selectedPlace) return undefined;
     return {
       countryId: countryId!,
       name: selectedPlace?.name || '',
@@ -111,6 +111,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTintColor: GlobalStyles.colors.grayDark,
       headerTitle: () => (
         <HeaderTitle
           title={isEditing ? `Manage ${selectedPlace?.name}` : 'Add Place'}

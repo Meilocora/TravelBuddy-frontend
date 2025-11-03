@@ -104,7 +104,7 @@ const SearchElement = <T, U>({
     content = <ErrorOverlay message={error} onPress={() => setError(null)} />;
   } else if (isLoading && debouncedSearchTerm.length > 1) {
     content = (
-      <ActivityIndicator size='large' color={GlobalStyles.colors.accent200} />
+      <ActivityIndicator size='large' color={GlobalStyles.colors.amberAccent} />
     );
   } else if (
     debouncedSearchTerm.length > 1 &&
@@ -184,9 +184,9 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '90%',
     marginHorizontal: 'auto',
-    backgroundColor: GlobalStyles.colors.gray700,
-    borderWidth: 2,
-    borderColor: GlobalStyles.colors.gray300,
+    backgroundColor: GlobalStyles.colors.graySoft,
+    borderWidth: 1,
+    borderColor: GlobalStyles.colors.grayDark,
     borderRadius: 10,
   },
   innerContainer: {

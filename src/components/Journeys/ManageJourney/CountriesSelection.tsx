@@ -30,6 +30,8 @@ const CountriesSelection = ({
   const navigation = useNavigation<NavigationProp<BottomTabsParamList>>();
   const [fetchedData, setFetchedData] = useState<string[]>([]);
 
+  // TODO: Make it SlideinFromBottom and close by sliding back
+
   // Fetch data
   useEffect(() => {
     async function fetchData() {
@@ -122,9 +124,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '90%',
     marginHorizontal: 'auto',
-    backgroundColor: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.greenSoft,
     borderWidth: 2,
-    borderColor: GlobalStyles.colors.gray300,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderRadius: 10,
     zIndex: 1,
   },

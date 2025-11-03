@@ -28,6 +28,7 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
     '#00BFFF',
     '#FFA500',
   ];
+  // TODO: Doenst work
 
   const spendingsList = new SpendingsList(brightColors, journeys);
   const totalAmount = spendingsList.getTotalAmount();
@@ -125,14 +126,16 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
       )}
       <View style={styles.chart}>
         <OutsidePressHandler onOutsidePress={handleOutsideTap}>
-          <PieChart
-            data={chartData}
-            sectionAutoFocus
-            onPress={handleTapSection}
-            centerLabelComponent={() => {
-              return centerLabelComponent;
-            }}
-          />
+          {chartData && (
+            <PieChart
+              data={chartData}
+              sectionAutoFocus
+              onPress={handleTapSection}
+              centerLabelComponent={() => {
+                return centerLabelComponent;
+              }}
+            />
+          )}
         </OutsidePressHandler>
       </View>
 

@@ -14,6 +14,8 @@ interface CountryGridTileProps {
   index: number;
 }
 
+// TODO: Visited muss auswählbar sein oder automatisch, wenn PlaceToVisit auf visited gestellt wurde
+
 const CountryGridTile: React.FC<CountryGridTileProps> = ({
   country,
   index,
@@ -36,7 +38,7 @@ const CountryGridTile: React.FC<CountryGridTileProps> = ({
       style={[styles.container, country.visited ? styles.visited : undefined]}
     >
       <Pressable
-        android_ripple={{ color: GlobalStyles.colors.accent100 }}
+        android_ripple={{ color: GlobalStyles.colors.amberBg }}
         onPress={onPressHandler}
         style={({ pressed }) => [
           styles.button,
@@ -81,13 +83,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 'auto',
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayDark,
     borderRadius: 10,
     overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
     backgroundColor: 'transparent',
   },
   visited: {
-    borderColor: GlobalStyles.colors.accent500,
+    borderWidth: 2,
+    borderColor: 'gold',
   },
   button: {
     flex: 1,
@@ -103,12 +106,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayDark,
     flexWrap: 'wrap',
   },
   subtitle: {
     fontStyle: 'italic',
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.grayMedium,
     marginBottom: 6,
   },
 });

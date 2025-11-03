@@ -85,7 +85,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
+      headerStyle: { backgroundColor: GlobalStyles.colors.purpleBg },
       headerTitle: () => (
         <HeaderTitle
           title={
@@ -95,6 +95,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
           }
         />
       ),
+      headerTintColor: GlobalStyles.colors.grayDark,
       headerLeft: ({ tintColor }) => (
         <IconButton
           color={tintColor}

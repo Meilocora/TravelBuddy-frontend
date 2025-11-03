@@ -12,7 +12,12 @@ import {
   StageFilter,
   StagesPositionDict,
 } from '../../models';
-import { deleteMinorStage, swapMinorStages, validateIsOver } from '../../utils';
+import {
+  deleteMinorStage,
+  swapMinorStages,
+  validateIsOver,
+  validateOrders,
+} from '../../utils';
 import Modal from '../UI/Modal';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
@@ -69,9 +74,18 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
 
   async function handleSwitchElements(data: MinorStage[]) {
     const stagesPositionList: StagesPositionDict[] = [];
+    const currentStagesPositionList: StagesPositionDict[] = [];
     data.forEach((stage, index) => {
       stagesPositionList.push({ id: stage.id, position: index + 1 });
     });
+    minorStages.forEach((stage, index) => {
+      currentStagesPositionList.push({ id: stage.id, position: index + 1 });
+    });
+
+    // When positions don't change, return ... otherwise every press will lead to a request for swap
+    if (validateOrders(stagesPositionList, currentStagesPositionList)) {
+      return;
+    }
 
     const { status, error } = await swapMinorStages(stagesPositionList);
     if (error) {
@@ -100,7 +114,11 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
         />
       </View>
       {openModal && (
-        <FilterSettings filter={filter} setFilter={handleSetFilter} />
+        <FilterSettings
+          filter={filter}
+          setFilter={handleSetFilter}
+          colorScheme={ColorScheme.complementary}
+        />
       )}
       {majorStage?.additional_info && (
         <InfoCurtain

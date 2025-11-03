@@ -100,7 +100,11 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
         />
       </View>
       {openModal && (
-        <FilterSettings filter={filter} setFilter={handleSetFilter} />
+        <FilterSettings
+          filter={filter}
+          setFilter={handleSetFilter}
+          colorScheme={ColorScheme.accent}
+        />
       )}
       {journey?.description && (
         <InfoCurtain

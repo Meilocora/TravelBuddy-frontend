@@ -99,14 +99,14 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     borderTopWidth: 3,
-    borderTopColor: GlobalStyles.colors.gray200,
+    borderTopColor: GlobalStyles.colors.grayMedium,
     width: '95%',
     paddingVertical: 8,
   },
   header: {
     textAlign: 'center',
     fontSize: 20,
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   cloudContainer: {
     flexDirection: 'row',

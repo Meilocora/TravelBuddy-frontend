@@ -78,6 +78,7 @@ const Input: React.FC<InputProps> = ({
           selectionColor='white'
           underlineColorAndroid='transparent'
           maxLength={maxLength}
+          placeholderTextColor={GlobalStyles.colors.graySoft}
         />
       ) : (
         <TextInput
@@ -91,6 +92,7 @@ const Input: React.FC<InputProps> = ({
           selectionColor='white'
           underlineColorAndroid='transparent'
           maxLength={maxLength}
+          placeholderTextColor={GlobalStyles.colors.graySoft}
         />
       )}
       {errors &&
@@ -116,12 +118,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayMedium,
     marginBottom: 4,
   },
   input: {
-    backgroundColor: GlobalStyles.colors.gray300,
-    color: GlobalStyles.colors.gray50,
+    backgroundColor: GlobalStyles.colors.grayDark,
+    color: 'white',
     padding: 6,
     borderRadius: 6,
     fontSize: 18,

@@ -29,7 +29,7 @@ const ListItem: React.FC<ListItemProps> = ({
         containerStyles && containerStyles,
         pressed && styles.pressed,
       ]}
-      android_ripple={{ color: GlobalStyles.colors.gray100 }}
+      android_ripple={{ color: GlobalStyles.colors.grayMedium }}
     >
       <Text style={[styles.text, textStyles && textStyles]} numberOfLines={1}>
         {children}
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayDark,
     marginVertical: 5,
   },
   pressed: {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayDark,
     flexWrap: 'wrap',
   },
 });

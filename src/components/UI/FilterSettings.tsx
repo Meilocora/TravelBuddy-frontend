@@ -1,18 +1,27 @@
 import { ReactElement } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { StageFilter } from '../../models';
+import { ColorScheme, StageFilter } from '../../models';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 
 interface FilterSettingsProps {
   filter: StageFilter;
   setFilter: (filter: StageFilter) => void;
+  colorScheme?: ColorScheme;
 }
 
 const FilterSettings: React.FC<FilterSettingsProps> = ({
   filter,
   setFilter,
+  colorScheme,
 }): ReactElement => {
+  let bg = GlobalStyles.colors.greenBg;
+  if (colorScheme === ColorScheme.accent) {
+    bg = GlobalStyles.colors.amberBg;
+  } else if (colorScheme === ColorScheme.complementary) {
+    bg = GlobalStyles.colors.purpleBg;
+  }
+
   return (
     <Animated.View
       style={styles.container}
@@ -22,7 +31,7 @@ const FilterSettings: React.FC<FilterSettingsProps> = ({
       <Pressable
         style={[
           styles.button,
-          filter === StageFilter.current ? styles.activeButton : undefined,
+          filter === StageFilter.current ? { backgroundColor: bg } : undefined,
         ]}
         onPress={() => setFilter(StageFilter.current)}
       >
@@ -31,7 +40,7 @@ const FilterSettings: React.FC<FilterSettingsProps> = ({
       <Pressable
         style={[
           styles.button,
-          filter === StageFilter.all ? styles.activeButton : undefined,
+          filter === StageFilter.all ? { backgroundColor: bg } : undefined,
         ]}
         onPress={() => setFilter(StageFilter.all)}
       >
@@ -48,16 +57,13 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 120,
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 10,
     paddingVertical: 3,
     paddingHorizontal: 5,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'black',
-  },
-  activeButton: {
-    backgroundColor: GlobalStyles.colors.gray50,
   },
   buttonText: {
     textAlign: 'center',

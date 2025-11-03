@@ -107,48 +107,40 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
         journey.currentJourney && styles.currentOuterContainer,
       ]}
     >
-      <LinearGradient
-        colors={['#ced4da', '#5b936c']}
-        style={{ height: '100%' }}
+      <View style={styles.buttonsContainer}>
+        <IconButton
+          icon={Icons.edit}
+          color={GlobalStyles.colors.greenAccent}
+          onPress={handleEdit}
+        />
+      </View>
+      <Pressable
+        style={({ pressed }) => pressed && styles.pressed}
+        android_ripple={{ color: GlobalStyles.colors.greenAccent }}
+        onPress={handleOnPress}
       >
-        <Pressable
-          style={({ pressed }) => pressed && styles.pressed}
-          android_ripple={{ color: GlobalStyles.colors.primary100 }}
-          onPress={handleOnPress}
-        >
-          <View style={styles.innerContainer}>
-            <View style={styles.headerContainer}>
-              <ElementTitle>{journey.name}</ElementTitle>
-              <IconButton
-                icon={Icons.edit}
-                color={GlobalStyles.colors.primary500}
-                onPress={handleEdit}
-              />
-            </View>
-            <ElementComment content={`${startDate} - ${endDate}`} />
-            <DetailArea
-              elementDetailInfo={elementDetailInfo}
-              areaStyle={
-                !isOver ? styles.detailArea : styles.inactiveDetailArea
-              }
-            />
-            <View style={styles.countryRow}>
-              {countryList.map((country, index) => (
-                <CountryElement
-                  country={country}
-                  currentCountry={country.name === currentCountry}
-                  isLast={index === journey.countries.length - 1}
-                  key={generateRandomString()}
-                />
-              ))}
-            </View>
+        <View style={styles.innerContainer}>
+          <View style={styles.headerContainer}>
+            <ElementTitle>{journey.name}</ElementTitle>
           </View>
-          {/* <CustomProgressBar
+          <ElementComment content={`${startDate} - ${endDate}`} />
+          <DetailArea elementDetailInfo={elementDetailInfo} />
+          <View style={styles.countryRow}>
+            {countryList.map((country, index) => (
+              <CountryElement
+                country={country}
+                currentCountry={country.name === currentCountry}
+                isLast={index === journey.countries.length - 1}
+                key={generateRandomString()}
+              />
+            ))}
+          </View>
+        </View>
+        {/* <CustomProgressBar
             startDate={journey.scheduled_start_time}
             endDate={journey.scheduled_end_time}
           /> */}
-        </Pressable>
-      </LinearGradient>
+      </Pressable>
     </View>
   );
 };
@@ -156,38 +148,52 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    borderColor: GlobalStyles.colors.primary400,
-    borderWidth: 2,
-    borderRadius: 20,
+    borderColor: GlobalStyles.colors.greenDark,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderLeftWidth: 4,
+    borderRightWidth: 4,
+    borderRadius: 6,
     marginVertical: 8,
     marginHorizontal: 32,
     overflow: 'hidden',
     backgroundColor: 'transparent',
     elevation: 5,
-    shadowColor: GlobalStyles.colors.gray500,
+    shadowColor: GlobalStyles.colors.grayDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },
   currentOuterContainer: {
     borderColor: 'gold',
+    elevation: 10,
+    shadowColor: 'gold',
   },
   inactiveOuterContainer: {
-    borderColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
+    opacity: 0.5,
   },
   pressed: {
     opacity: 0.5,
   },
   innerContainer: {
+    backgroundColor: GlobalStyles.colors.greenSoft,
     padding: 10,
     alignItems: 'center',
   },
   headerContainer: {
     flex: 1,
-    width: '90%',
+    width: '85%',
+    marginRight: '10%',
+    justifyContent: 'center',
+  },
+  buttonsContainer: {
+    position: 'absolute',
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    zIndex: 1,
+    right: 4,
+    top: 5,
   },
   countryRow: {
     maxHeight: 60,
@@ -195,14 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-  },
-  detailArea: {
-    borderTopWidth: 2,
-    borderTopColor: GlobalStyles.colors.primary500,
-  },
-  inactiveDetailArea: {
-    borderTopWidth: 2,
-    borderTopColor: GlobalStyles.colors.gray400,
   },
 });
 
