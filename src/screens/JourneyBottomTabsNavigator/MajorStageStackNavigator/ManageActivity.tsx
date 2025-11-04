@@ -56,12 +56,21 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
     );
   }
 
+  // Hide tab bar when navigating to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+  }, [navigation]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <HeaderTitle title={isEditing ? 'Edit Activity' : 'Add Activity'} />
       ),
-      headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
+      headerStyle: { backgroundColor: GlobalStyles.colors.purpleBg },
     });
   }, [navigation]);
 

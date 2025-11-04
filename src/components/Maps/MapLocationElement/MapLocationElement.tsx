@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'flex-start',
     borderWidth: 2,
-    borderColor: GlobalStyles.colors.gray500,
+    borderColor: GlobalStyles.colors.grayDark,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },

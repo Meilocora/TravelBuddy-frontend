@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   text: {
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.amberText,
     textAlign: 'center',
     fontStyle: 'italic',
   },

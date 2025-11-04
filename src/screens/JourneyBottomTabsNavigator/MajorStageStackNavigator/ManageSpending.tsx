@@ -2,6 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -54,12 +55,21 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
     );
   }
 
+  // Hide tab bar when navigating to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+  }, [navigation]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <HeaderTitle title={isEditing ? 'Edit Spending' : 'Add Spending'} />
       ),
-      headerStyle: { backgroundColor: GlobalStyles.colors.complementary700 },
+      headerStyle: { backgroundColor: GlobalStyles.colors.purpleBg },
     });
   }, [navigation]);
 

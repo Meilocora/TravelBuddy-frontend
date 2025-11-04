@@ -62,37 +62,37 @@ const styles = StyleSheet.create({
 
 const neutralStyles = StyleSheet.create({
   container: {
-    backgroundColor: GlobalStyles.colors.gray100,
+    backgroundColor: GlobalStyles.colors.graySoft,
   },
   text: {
-    color: GlobalStyles.colors.gray700,
+    color: GlobalStyles.colors.grayDark,
   },
 });
 
 const primaryStyles = StyleSheet.create({
   container: {
-    backgroundColor: GlobalStyles.colors.primary100,
+    backgroundColor: GlobalStyles.colors.greenBg,
   },
   text: {
-    color: GlobalStyles.colors.primary800,
+    color: GlobalStyles.colors.greenText,
   },
 });
 
 const accentStyles = StyleSheet.create({
   container: {
-    backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.amberBg,
   },
   text: {
-    color: GlobalStyles.colors.accent800,
+    color: GlobalStyles.colors.amberText,
   },
 });
 
 const complementaryStyles = StyleSheet.create({
   container: {
-    backgroundColor: GlobalStyles.colors.complementary100,
+    backgroundColor: GlobalStyles.colors.purpleBg,
   },
   text: {
-    color: GlobalStyles.colors.complementary800,
+    color: GlobalStyles.colors.purpleText,
   },
 });
 

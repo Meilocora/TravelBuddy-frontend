@@ -28,12 +28,12 @@ const CustomProgressBar: React.FC<CustomProgressBarProps> = ({
     <View style={styles.progressBarContainer}>
       <ProgressBar
         progress={progress}
-        color={GlobalStyles.colors.primary800}
+        color={GlobalStyles.colors.greenDark}
         style={styles.progressBar}
         fillStyle={{
           backgroundColor: isOver
-            ? GlobalStyles.colors.gray300
-            : GlobalStyles.colors.primary100,
+            ? GlobalStyles.colors.grayMedium
+            : GlobalStyles.colors.greenAccent,
         }}
       />
       {progress > 0 ? (
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '80%',
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.primary700,
+    borderColor: GlobalStyles.colors.greenDark,
     borderRadius: 25,
   },
   text: {

@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     marginHorizontal: 'auto',
-    backgroundColor: 'rgba(222, 226, 230, 0.5)',
+    backgroundColor: 'white',
     borderRadius: 20,
   },
   button: {

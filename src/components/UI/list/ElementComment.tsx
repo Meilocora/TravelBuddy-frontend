@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
     textAlign: 'center',
-    color: GlobalStyles.colors.gray400,
+    color: GlobalStyles.colors.grayMedium,
     opacity: 0.7,
   },
 });

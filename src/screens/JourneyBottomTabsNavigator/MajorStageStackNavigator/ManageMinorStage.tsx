@@ -2,6 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -82,6 +83,15 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       position: selectedMinorStage.position ?? 0,
     };
   }, [selectedMinorStage]);
+
+  // Hide tab bar when navigating to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

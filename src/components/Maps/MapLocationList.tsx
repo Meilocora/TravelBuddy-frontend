@@ -71,7 +71,7 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
           <IconButton
             icon={Icons.listCircleOutline}
             onPress={toggleButtonVisibility}
-            color='black'
+            color={GlobalStyles.colors.grayDark}
             size={40}
           />
         </Animated.View>
@@ -90,7 +90,11 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
               <IconButton
                 icon={Icons.walk}
                 onPress={() => setMode('WALKING')}
-                color='black'
+                color={
+                  mode === 'WALKING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'WALKING' ? styles.activeButton : styles.button
                 }
@@ -98,7 +102,11 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
               <IconButton
                 icon={Icons.bicycle}
                 onPress={() => setMode('BICYCLING')}
-                color='black'
+                color={
+                  mode === 'BICYCLING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'BICYCLING' ? styles.activeButton : styles.button
                 }
@@ -106,7 +114,11 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
               <IconButton
                 icon={Icons.car}
                 onPress={() => setMode('DRIVING')}
-                color='black'
+                color={
+                  mode === 'DRIVING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'DRIVING' ? styles.activeButton : styles.button
                 }
@@ -178,11 +190,11 @@ const styles = StyleSheet.create({
     padding: 2,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: 'black',
-    backgroundColor: GlobalStyles.colors.accent50,
+    borderColor: GlobalStyles.colors.amberAccent,
+    backgroundColor: GlobalStyles.colors.amberSoft,
   },
   buttonText: {
-    color: 'black',
+    color: GlobalStyles.colors.grayDark,
   },
 });
 

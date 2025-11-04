@@ -165,11 +165,11 @@ const listElementStyles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     marginVertical: 4,
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.grayDark,
     borderRadius: 16,
   },
   name: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.graySoft,
     fontSize: 16,
     maxWidth: '65%',
   },
@@ -205,12 +205,12 @@ const listElementStyles = StyleSheet.create({
   },
   subtitle: {
     marginRight: 2,
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
     fontWeight: 'bold',
   },
   description: {
     marginVertical: 2,
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
     fontSize: 14,
     fontStyle: 'italic',
   },

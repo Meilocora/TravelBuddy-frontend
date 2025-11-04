@@ -22,16 +22,15 @@ const FormShell: React.FC<FormShellProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 45,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
-    elevation: 5,
+    borderColor: GlobalStyles.colors.grayDark,
+    backgroundColor: GlobalStyles.colors.greenSoft,
+    elevation: 15,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayMedium,
     fontWeight: 'bold',
   },
 });

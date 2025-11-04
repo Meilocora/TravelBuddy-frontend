@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   selectedRow: {
-    backgroundColor: GlobalStyles.colors.accent50,
+    backgroundColor: GlobalStyles.colors.amberAccent,
   },
   selectedText: {
     fontWeight: 'bold',

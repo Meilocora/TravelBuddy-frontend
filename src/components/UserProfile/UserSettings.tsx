@@ -1,8 +1,6 @@
 import { ReactElement, useContext } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { GlobalStyles } from '../../constants/styles';
-import IconButton from '../UI/IconButton';
-import { Icons } from '../../models';
 import { UserContext } from '../../store/user-context';
 
 interface UserSettingsProps {}
@@ -59,7 +57,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   innerContainer: {
-    backgroundColor: GlobalStyles.colors.gray500,
+    marginTop: 12,
+    backgroundColor: 'white',
     paddingVertical: 6,
     paddingHorizontal: 10,
     marginHorizontal: 'auto',
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'stretch',
     justifyContent: 'space-around',
-    borderColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayDark,
   },
   rowElement: {
     width: '45%',
@@ -82,10 +81,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayMedium,
   },
   text: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   icon: {
     marginVertical: 0,

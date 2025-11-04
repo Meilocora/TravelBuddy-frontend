@@ -56,18 +56,19 @@ const ShowMap: React.FC<ShowMapProps> = ({
     calculateRegion();
   }, []);
 
-  let headerstyle = { backgroundColor: GlobalStyles.colors.primary500 };
+  let headerstyle = { backgroundColor: GlobalStyles.colors.greenBg };
   if (route.params?.colorScheme === 'complementary') {
-    headerstyle = { backgroundColor: GlobalStyles.colors.complementary700 };
+    headerstyle = { backgroundColor: GlobalStyles.colors.purpleBg };
   }
   if (route.params?.colorScheme === 'accent') {
-    headerstyle = { backgroundColor: GlobalStyles.colors.accent700 };
+    headerstyle = { backgroundColor: GlobalStyles.colors.amberBg };
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <HeaderTitle title={'Map'} />,
       headerStyle: headerstyle,
+      headerTintColor: GlobalStyles.colors.grayDark,
     });
   }, []);
 

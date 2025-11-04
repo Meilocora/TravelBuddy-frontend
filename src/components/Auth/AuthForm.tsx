@@ -194,7 +194,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 84,
+    marginTop: '25%',
   },
   formRow: {
     flexDirection: 'row',

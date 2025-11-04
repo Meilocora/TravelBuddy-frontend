@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     borderColor: GlobalStyles.colors.grayMedium,
-    backgroundColor: GlobalStyles.colors.amberSoftSemi,
+    backgroundColor: GlobalStyles.colors.amberSoft,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },

@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   chosenText: {
-    color: GlobalStyles.colors.gray700,
+    color: GlobalStyles.colors.grayDark,
   },
   button: {
     marginHorizontal: 'auto',

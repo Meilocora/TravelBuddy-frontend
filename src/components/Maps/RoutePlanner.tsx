@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import OutsidePressHandler from 'react-native-outside-press';
 import { MapViewDirectionsMode } from 'react-native-maps-directions';
@@ -114,7 +114,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
           <IconButton
             icon={Icons.routePlanner}
             onPress={toggleButtonVisibility}
-            color='black'
+            color={GlobalStyles.colors.grayDark}
             size={36}
             style={{ marginLeft: 6 }}
           />
@@ -134,7 +134,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
               <IconButton
                 icon={Icons.walk}
                 onPress={() => setMode('WALKING')}
-                color='black'
+                color={
+                  mode === 'WALKING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'WALKING' ? styles.activeButton : styles.button
                 }
@@ -142,7 +146,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
               <IconButton
                 icon={Icons.bicycle}
                 onPress={() => setMode('BICYCLING')}
-                color='black'
+                color={
+                  mode === 'BICYCLING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'BICYCLING' ? styles.activeButton : styles.button
                 }
@@ -150,7 +158,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
               <IconButton
                 icon={Icons.car}
                 onPress={() => setMode('DRIVING')}
-                color='black'
+                color={
+                  mode === 'DRIVING'
+                    ? GlobalStyles.colors.amberAccent
+                    : GlobalStyles.colors.grayDark
+                }
                 containerStyle={
                   mode === 'DRIVING' ? styles.activeButton : styles.button
                 }
@@ -219,11 +231,11 @@ const styles = StyleSheet.create({
     padding: 2,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: 'black',
-    backgroundColor: GlobalStyles.colors.accent50,
+    borderColor: GlobalStyles.colors.amberAccent,
+    backgroundColor: GlobalStyles.colors.amberSoft,
   },
   buttonText: {
-    color: 'black',
+    color: GlobalStyles.colors.grayDark,
   },
   routeButton: {
     marginHorizontal: 'auto',

@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
     paddingTop: 10,
-    backgroundColor: GlobalStyles.colors.gray50,
-    borderColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.graySoft,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderWidth: 1,
     borderRadius: 20,
     zIndex: 2,
@@ -176,28 +176,28 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.gray500,
+    borderBottomColor: GlobalStyles.colors.grayMedium,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
   listElementContainer: {
-    borderColor: GlobalStyles.colors.gray500,
+    borderColor: GlobalStyles.colors.grayMedium,
   },
   listElementText: {
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayMedium,
   },
   button: {
     marginHorizontal: 'auto',
   },
   buttonText: {
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayMedium,
   },
   seperator: {
     width: '45%',
     height: 12,
     alignSelf: 'flex-start',
     borderRightWidth: 2,
-    borderColor: GlobalStyles.colors.gray500,
+    borderColor: GlobalStyles.colors.grayMedium,
   },
   iconContainer: {
     marginVertical: 4,

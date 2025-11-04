@@ -108,7 +108,7 @@ const listElementStyles = StyleSheet.create({
     marginVertical: 5,
     maxHeight: 200,
     paddingBottom: 5,
-    borderBottomColor: GlobalStyles.colors.complementary700,
+    borderBottomColor: GlobalStyles.colors.purpleDark,
     borderBottomWidth: 2,
   },
   row: {
@@ -117,7 +117,7 @@ const listElementStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headRow: {
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.grayDark,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     marginBottom: 3,
@@ -125,13 +125,13 @@ const listElementStyles = StyleSheet.create({
   oddRow: {
     marginBottom: 3,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.complementary700,
-    backgroundColor: GlobalStyles.colors.complementary700,
+    borderColor: GlobalStyles.colors.purpleDark,
+    backgroundColor: GlobalStyles.colors.purpleDark,
   },
   evenRow: {
     marginBottom: 3,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.complementary700,
+    borderColor: GlobalStyles.colors.purpleDark,
   },
   lastRow: {
     borderBottomLeftRadius: 10,
@@ -146,17 +146,17 @@ const listElementStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     paddingVertical: 5,
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
   },
   evenText: {
     fontSize: 14,
     paddingVertical: 5,
-    color: GlobalStyles.colors.complementary700,
+    color: GlobalStyles.colors.purpleDark,
   },
   oddText: {
     fontSize: 14,
     paddingVertical: 5,
-    color: GlobalStyles.colors.complementary100,
+    color: GlobalStyles.colors.purpleSoft,
   },
 });
 

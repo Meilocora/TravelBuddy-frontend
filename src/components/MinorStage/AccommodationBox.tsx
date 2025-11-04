@@ -119,7 +119,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
               <IconButton
                 icon={Icons.location}
                 onPress={handleShowLocation}
-                color={GlobalStyles.colors.complementary500}
+                color={GlobalStyles.colors.purpleAccent}
                 containerStyle={styles.button}
                 size={30}
               />

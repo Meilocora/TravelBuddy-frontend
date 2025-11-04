@@ -153,7 +153,7 @@ const UserStats: React.FC<UserStatsProps> = ({
               <IconButton
                 icon={Icons.duration}
                 onPress={() => {}}
-                color={GlobalStyles.colors.gray100}
+                color={GlobalStyles.colors.grayMedium}
                 containerStyle={styles.icon}
               />
               <Text style={styles.text}>
@@ -171,7 +171,7 @@ const UserStats: React.FC<UserStatsProps> = ({
               <IconButton
                 icon={Icons.location}
                 onPress={() => {}}
-                color={GlobalStyles.colors.gray100}
+                color={GlobalStyles.colors.grayMedium}
                 containerStyle={styles.icon}
               />
               <Text style={styles.text}>
@@ -202,7 +202,7 @@ const UserStats: React.FC<UserStatsProps> = ({
               <IconButton
                 icon={Icons.activity}
                 onPress={() => {}}
-                color={GlobalStyles.colors.gray100}
+                color={GlobalStyles.colors.grayMedium}
                 containerStyle={styles.icon}
               />
               <Text style={styles.text}>
@@ -216,8 +216,8 @@ const UserStats: React.FC<UserStatsProps> = ({
                 onPress={() => {}}
                 color={
                   budgetExceeded
-                    ? GlobalStyles.colors.error50
-                    : GlobalStyles.colors.gray100
+                    ? GlobalStyles.colors.error200
+                    : GlobalStyles.colors.grayMedium
                 }
                 containerStyle={styles.icon}
               />
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     textDecorationLine: 'underline',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     textAlign: 'center',
   },
   innerContainer: {
@@ -276,20 +276,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 6,
     width: '40%',
-    borderColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayDark,
     borderWidth: 0.75,
     borderRadius: 10,
   },
   subtitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.grayMedium,
   },
   text: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
   },
   errorText: {
-    color: GlobalStyles.colors.error50,
+    color: GlobalStyles.colors.error200,
   },
   icon: {
     marginVertical: 0,

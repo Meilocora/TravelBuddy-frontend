@@ -7,7 +7,6 @@ import { GlobalStyles } from '../../constants/styles';
 import Button from '../UI/Button';
 import { ColorScheme } from '../../models';
 import OutsidePressHandler from 'react-native-outside-press';
-import { Screen } from 'react-native-screens';
 
 interface ValidationModalProps {
   checkLogs: CheckLog[];
@@ -32,12 +31,16 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
           <Text style={styles.titleDescription}>
             - {checkLogs.length} problems found -
           </Text>
-          <Animated.ScrollView style={styles.logContainer}>
+          <Animated.ScrollView
+            style={styles.logContainer}
+            scrollEnabled
+            nestedScrollEnabled
+          >
             {checkLogs.map((item, index) => (
               <Pressable
                 key={generateRandomString()}
                 style={({ pressed }) => pressed && styles.pressed}
-                android_ripple={{ color: GlobalStyles.colors.gray50 }}
+                android_ripple={{ color: GlobalStyles.colors.grayMedium }}
                 onPress={() => onTapItem(item)}
               >
                 <View style={styles.logElement}>
@@ -78,10 +81,11 @@ const styles = StyleSheet.create({
     marginTop: '15%',
     paddingHorizontal: 15,
     paddingVertical: 5,
-    backgroundColor: GlobalStyles.colors.gray400,
-    borderColor: GlobalStyles.colors.gray200,
+    backgroundColor: GlobalStyles.colors.grayMedium,
+    borderColor: GlobalStyles.colors.graySoft,
     borderRadius: 20,
     borderWidth: 1,
+    maxHeight: 600,
   },
   logContainer: {
     maxHeight: '80%',
@@ -96,20 +100,22 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: 'center',
     fontWeight: 'bold',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.graySoft,
     marginBottom: 5,
   },
   titleDescription: {
     fontStyle: 'italic',
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
+    opacity: 0.7,
     textAlign: 'center',
   },
   subtitle: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.graySoft,
     textDecorationLine: 'underline',
   },
   description: {
-    color: GlobalStyles.colors.gray100,
+    color: GlobalStyles.colors.graySoft,
+    opacity: 0.8,
   },
   button: {
     marginTop: 10,

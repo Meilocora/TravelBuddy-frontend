@@ -1,12 +1,5 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import {
-  Keyboard,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, Text } from 'react-native';
 import OutsidePressHandler from 'react-native-outside-press';
 
 import ListItem from '../UI/search/ListItem';
@@ -305,7 +298,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     backgroundColor: 'white',
-    borderColor: GlobalStyles.colors.gray500,
+    borderColor: GlobalStyles.colors.grayDark,
     borderWidth: 1,
     borderTopWidth: 0,
     borderBottomLeftRadius: 20,
@@ -321,19 +314,19 @@ const styles = StyleSheet.create({
     padding: 0,
     borderWidth: 0,
     borderRadius: 0,
-    backgroundColor: GlobalStyles.colors.gray50,
-    borderColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.graySoft,
+    borderColor: GlobalStyles.colors.grayDark,
   },
   listItemText: {
     fontSize: 14,
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayDark,
   },
   button: {
     alignSelf: 'center',
     marginVertical: 0,
   },
   buttonText: {
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.grayDark,
   },
 });
 

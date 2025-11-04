@@ -62,8 +62,10 @@ export function validateJourney(journey: Journey): CheckLog[] {
     });
   }
 
+  // TODO: Check for overlaping stages or stages, that are in the wrong order
+
   // Check if budget of journey is exceeded
-  if (journey.costs.budget <= journey.costs.spent_money) {
+  if (journey.costs.budget < journey.costs.spent_money) {
     checks.push({
       subtitle: 'Journey Budget exceeded',
       description: `Your budget of ${
@@ -98,7 +100,7 @@ export function validateJourney(journey: Journey): CheckLog[] {
 
     for (const majorStage of journey.majorStages) {
       // Check if the budget of the majorStage is exceeded
-      if (majorStage.costs.budget <= majorStage.costs.spent_money) {
+      if (majorStage.costs.budget < majorStage.costs.spent_money) {
         checks.push({
           subtitle: 'Major stage budget exceeded',
           description: `Major stage "${

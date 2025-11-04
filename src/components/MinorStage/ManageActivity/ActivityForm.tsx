@@ -258,8 +258,8 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
                 onPress={() =>
                   inputChangedHandler('booked', !inputs.booked.value)
                 }
-                uncheckedColor={GlobalStyles.colors.gray200}
-                color={GlobalStyles.colors.complementary100}
+                uncheckedColor={GlobalStyles.colors.grayMedium}
+                color={GlobalStyles.colors.purpleAccent}
               />
             </View>
           </View>
@@ -283,15 +283,14 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
     marginBottom: '5%',
   },
   checkBoxLabel: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayMedium,
   },
   buttonsContainer: {
     flexDirection: 'row',

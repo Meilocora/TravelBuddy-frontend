@@ -58,10 +58,10 @@ const MinorStages: React.FC<MinorStagesProps> = ({
         display: 'none',
       },
     });
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.greenBg },
-      });
+    // return () =>
+    // navigation.getParent()?.setOptions({
+    // tabBarStyle: { backgroundColor: GlobalStyles.colors.greenBg },
+    // });
   }, [navigation]);
 
   useEffect(() => {

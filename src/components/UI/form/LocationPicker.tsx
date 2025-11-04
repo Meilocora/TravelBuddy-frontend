@@ -44,11 +44,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, [pickedLocation]);
 
-  let iconStandardColor = GlobalStyles.colors.greenSoft;
+  let iconStandardColor = GlobalStyles.colors.greenAccent;
   if (colorScheme === ColorScheme.complementary) {
-    iconStandardColor = GlobalStyles.colors.purpleSoft;
+    iconStandardColor = GlobalStyles.colors.purpleAccent;
   } else if (colorScheme === ColorScheme.accent) {
-    iconStandardColor = GlobalStyles.colors.amberSoft;
+    iconStandardColor = GlobalStyles.colors.amberAccent;
   }
 
   async function pickOnMapHandler() {
@@ -99,7 +99,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
           icon={hasInitialLocation ? Icons.map : Icons.mapFilled}
           onPress={pickOnMapHandler}
           size={32}
-          containerStyle={styles.mapButton}
+          containerStyle={
+            hasInitialLocation ? styles.activeMapButton : styles.mapButton
+          }
           color={
             iconColor
               ? iconColor
@@ -120,6 +122,9 @@ const styles = StyleSheet.create({
   },
   mapButton: {
     backgroundColor: GlobalStyles.colors.grayMedium,
+  },
+  activeMapButton: {
+    backgroundColor: GlobalStyles.colors.graySoft,
   },
 });
 

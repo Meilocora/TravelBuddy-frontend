@@ -62,6 +62,15 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     route.params;
   let isEditing = !!transportationId;
 
+  // Hide tab bar when navigating to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+  }, [navigation]);
+
   useEffect(() => {
     if (minorStageId) {
       setSelectedTransportation(
@@ -75,7 +84,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
 
     return () => {
       // Clean up function, when screen is unfocused
-      setSelectedTransportation(undefined);
+      // setSelectedTransportation(undefined);
     };
   }, [minorStageId, majorStageId, stagesCtx]);
 
@@ -83,8 +92,8 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     planningNavigation.setOptions({
       headerStyle:
         majorStageId !== undefined
-          ? { backgroundColor: GlobalStyles.colors.accent700 }
-          : { backgroundColor: GlobalStyles.colors.complementary700 },
+          ? { backgroundColor: GlobalStyles.colors.amberBg }
+          : { backgroundColor: GlobalStyles.colors.purpleBg },
       headerTitle: () => (
         <HeaderTitle
           title={isEditing ? `Manage Transportation` : 'Add Transportation'}
@@ -131,7 +140,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       planningNavigation.navigate('Planning', {
         journeyId: journeyId!,
       });
-    } else {
+    } else if (minorStageId !== undefined) {
       navigation.goBack();
     }
   }
@@ -177,11 +186,6 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     }
   }
 
-  // Memoize default values, so the TransportationForm does not rerender, when the user is directed to LocationPickMap
-  const memoizedDefaultValues = useMemo(() => {
-    return isEditing ? selectedTransportation : undefined;
-  }, [isEditing, selectedTransportation]);
-
   return (
     <>
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
@@ -193,7 +197,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
             onCancel={cancelHandler}
             onSubmit={confirmHandler}
             submitButtonLabel={isEditing ? 'Update' : 'Add'}
-            defaultValues={memoizedDefaultValues}
+            defaultValues={isEditing ? selectedTransportation : undefined}
             isEditing={isEditing}
             majorStageId={majorStageId!}
             minorStageId={minorStageId!}

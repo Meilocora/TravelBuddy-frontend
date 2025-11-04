@@ -28,7 +28,6 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
     '#00BFFF',
     '#FFA500',
   ];
-  // TODO: Doenst work
 
   const spendingsList = new SpendingsList(brightColors, journeys);
   const totalAmount = spendingsList.getTotalAmount();
@@ -67,7 +66,7 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
       <Text
         style={{
           fontSize: 20,
-          color: GlobalStyles.colors.gray500,
+          color: GlobalStyles.colors.grayDark,
           fontWeight: 'bold',
         }}
         numberOfLines={1}
@@ -83,7 +82,7 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
         <Text
           style={{
             fontSize: 14,
-            color: GlobalStyles.colors.gray500,
+            color: GlobalStyles.colors.grayDark,
           }}
           numberOfLines={1}
         >
@@ -92,7 +91,7 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
         <Text
           style={{
             fontSize: 20,
-            color: GlobalStyles.colors.gray500,
+            color: GlobalStyles.colors.grayDark,
             fontWeight: 'bold',
           }}
           numberOfLines={1}
@@ -138,7 +137,6 @@ const UserProfileChart: React.FC<UserProfileChartProps> = ({
           )}
         </OutsidePressHandler>
       </View>
-
       <Legend data={chartData} />
     </View>
   );
@@ -151,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     marginHorizontal: 'auto',
-    backgroundColor: 'rgba(222, 226, 230, 0.5)',
+    backgroundColor: 'white',
     borderRadius: 20,
   },
   button: {

@@ -11,6 +11,7 @@ import {
 import TextLink from '../TextLink';
 import { Icons } from '../../../models';
 import IconButton from '../IconButton';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface ElementDetailProps {
   title?: string;
@@ -41,7 +42,7 @@ const ElementDetail = ({
         <IconButton
           icon={icon}
           onPress={() => {}}
-          color='black'
+          color={GlobalStyles.colors.grayMedium}
           containerStyle={styles.icon}
         />
       ) : undefined}
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     textAlign: 'center',
+    color: GlobalStyles.colors.grayMedium,
   },
   icon: {
     marginVertical: 0,

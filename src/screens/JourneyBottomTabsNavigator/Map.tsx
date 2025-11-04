@@ -30,7 +30,7 @@ import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
 import RoutePlanner from '../../components/Maps/RoutePlanner';
 import { UserContext } from '../../store/user-context';
-import { generateRandomString } from '../../utils';
+import { formatRouteDuration, generateRandomString } from '../../utils';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
@@ -305,7 +305,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         >
           <Text style={styles.routeInfoText}>
             Distance: {routeInfo.distance.toFixed(1)} km | Time:{' '}
-            {Math.round(routeInfo.duration)} min
+            {formatRouteDuration(routeInfo.duration)}
           </Text>
         </Pressable>
       )}

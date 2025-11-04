@@ -56,23 +56,24 @@ const styles = StyleSheet.create({
   },
   legendElement: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '45%',
   },
   textWrapper: {
     width: '90%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   text: {
     fontSize: 12,
     flexWrap: 'nowrap',
-    color: GlobalStyles.colors.gray700,
+    color: GlobalStyles.colors.grayDark,
   },
   value: {
     fontSize: 12,
     flexWrap: 'nowrap',
-    color: GlobalStyles.colors.gray700,
+    marginLeft: 2,
+    color: GlobalStyles.colors.grayDark,
     fontWeight: 'bold',
   },
 });

@@ -215,3 +215,14 @@ export function formatCountrynamesToString(
     return customCountries.name;
   }
 }
+
+export function formatRouteDuration(duration: number): string {
+  const hours = Math.floor(duration / 60);
+  const minutes = Math.floor(duration % 60)
+    .toString()
+    .padStart(2, '0');
+  if (duration < 60) {
+    return `${minutes}m`;
+  }
+  return `${hours}:${minutes}h`;
+}

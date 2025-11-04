@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -59,10 +59,12 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   let maxStartDate: Date;
   const stagesCtx = useContext(StagesContext);
 
+  let bg = GlobalStyles.colors.amberSoft;
   if (majorStageId !== undefined) {
     stage = stagesCtx.findMajorStage(majorStageId)!;
   } else {
     stage = stagesCtx.findMinorStage(minorStageId!)!;
+    bg = GlobalStyles.colors.purpleSoft;
   }
 
   minStartDate = parseDate(stage!.scheduled_start_time);
@@ -134,6 +136,72 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
       errors: [],
     },
   });
+
+  // Redefine inputs, when defaultValues change
+  useEffect(() => {
+    setInputs({
+      type: {
+        value: defaultValues?.type || '',
+        isValid: true,
+        errors: [],
+      },
+      start_time: {
+        value: defaultValues?.start_time || null,
+        isValid: true,
+        errors: [],
+      },
+      arrival_time: {
+        value: defaultValues?.arrival_time || null,
+        isValid: true,
+        errors: [],
+      },
+      place_of_departure: {
+        value: defaultValues?.place_of_departure || '',
+        isValid: true,
+        errors: [],
+      },
+      departure_latitude: {
+        value: defaultValues?.departure_latitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      departure_longitude: {
+        value: defaultValues?.departure_longitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      place_of_arrival: {
+        value: defaultValues?.place_of_arrival || '',
+        isValid: true,
+        errors: [],
+      },
+      arrival_latitude: {
+        value: defaultValues?.arrival_latitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      arrival_longitude: {
+        value: defaultValues?.arrival_longitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      transportation_costs: {
+        value: 0,
+        isValid: true,
+        errors: [],
+      },
+      unconvertedAmount: {
+        value: defaultValues?.transportation_costs.toString() || '',
+        isValid: true,
+        errors: [],
+      },
+      link: {
+        value: defaultValues?.link || '',
+        isValid: true,
+        errors: [],
+      },
+    });
+  }, [defaultValues]);
 
   function inputChangedHandler(
     inputIdentifier: string,
@@ -268,7 +336,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   }
 
   return (
-    <View style={styles.formContainer}>
+    <View style={[styles.formContainer, { backgroundColor: bg }]}>
       {'country' in stage ? (
         <Text style={styles.header}>
           Destination: "{stage!.country.name || ''}"
@@ -283,6 +351,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
             defaultType={inputs.type.value}
             invalid={!inputs.type.isValid}
             errors={inputs.type.errors}
+            colorscheme={ColorScheme.accent}
           />
         </View>
         <View style={styles.formRow}>
@@ -408,15 +477,13 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
     marginHorizontal: 14,
     marginVertical: 8,
     paddingHorizontal: 4,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
@@ -426,7 +493,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     textAlign: 'center',
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.grayDark,
     fontWeight: 'bold',
   },
   formRow: {

@@ -9,6 +9,7 @@ import ElementComment from '../UI/list/ElementComment';
 import {
   formatAmount,
   formatDateString,
+  formatDuration,
   formatDurationToDays,
   validateIsOver,
 } from '../../utils';
@@ -19,6 +20,21 @@ import DetailArea, { ElementDetailInfo } from '../UI/list/DetailArea';
 import AccommodationBox from './AccommodationBox';
 import CustomProgressBar from '../UI/CustomProgressBar';
 import { StagesContext } from '../../store/stages-context';
+import BoatIcon from '../../../assets/boat.svg';
+import CarIcon from '../../../assets/car.svg';
+import BusIcon from '../../../assets/bus.svg';
+import PlaneIcon from '../../../assets/plane.svg';
+import TrainIcon from '../../../assets/train.svg';
+import OtherIcon from '../../../assets/other.svg';
+
+const iconMap: { [key: string]: React.FC<any> } = {
+  boat: BoatIcon,
+  car: CarIcon,
+  bus: BusIcon,
+  plane: PlaneIcon,
+  train: TrainIcon,
+  other: OtherIcon,
+};
 
 interface MinorStageListElementProps {
   minorStage: MinorStage;
@@ -52,6 +68,20 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const moneyAvailable = formatAmount(minorStage.costs.budget);
   const moneyPlanned = formatAmount(minorStage.costs.spent_money);
   const isOver = validateIsOver(minorStage.scheduled_end_time);
+
+  const transportDuration = formatDuration(
+    minorStage?.transportation?.start_time,
+    minorStage?.transportation?.start_time_offset,
+    minorStage?.transportation?.arrival_time,
+    minorStage?.transportation?.arrival_time_offset
+  );
+
+  const IconComponent =
+    iconMap[
+      minorStage!.transportation
+        ? minorStage.transportation.type.toString().toLowerCase()
+        : 'other'
+    ] || null; // Fallback to null if no icon is found
 
   const elementDetailInfo: ElementDetailInfo[] = [
     {
@@ -141,15 +171,28 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
           )}
           {!isOpen && minorStage.accommodation.place && (
             <View style={styles.roughDetailsContainer}>
-              <IconButton
-                icon={Icons.place}
-                onPress={() => {}}
-                color={GlobalStyles.colors.gray500}
-                size={18}
-                containerStyle={styles.icon}
-              />
-              <Text>{minorStage.accommodation.place}</Text>
-              {/* TODO: Add Transportation Medium here (+ traveltime) */}
+              <View style={styles.roughDetailsRow}>
+                <IconButton
+                  icon={Icons.place}
+                  onPress={() => {}}
+                  color={GlobalStyles.colors.grayMedium}
+                  size={18}
+                  containerStyle={styles.icon}
+                />
+                <Text>{minorStage.accommodation.place}</Text>
+              </View>
+              {minorStage.transportation && IconComponent && (
+                <View style={styles.roughDetailsRow}>
+                  <IconComponent
+                    width={18}
+                    height={18}
+                    fill={GlobalStyles.colors.grayMedium}
+                  />
+                  <Text
+                    style={{ marginLeft: 4 }}
+                  >{`(${transportDuration})`}</Text>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -222,8 +265,13 @@ const styles = StyleSheet.create({
   },
   roughDetailsContainer: {
     flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-evenly',
+    flexWrap: 'wrap',
+  },
+  roughDetailsRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

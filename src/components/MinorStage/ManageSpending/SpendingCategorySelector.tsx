@@ -130,11 +130,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: '100%',
   },
-  header: {
-    textAlign: 'center',
-    fontSize: 20,
-    color: GlobalStyles.colors.gray50,
-  },
   errorText: {
     fontSize: 16,
     color: GlobalStyles.colors.error200,
@@ -142,14 +137,15 @@ const styles = StyleSheet.create({
   },
   selectionContainer: {
     position: 'absolute',
-    top: '100%',
+    top: 70,
+    left: -6,
     maxHeight: 200,
     zIndex: 1,
   },
   listContainer: {
     marginHorizontal: 10,
-    backgroundColor: GlobalStyles.colors.gray700,
-    borderColor: GlobalStyles.colors.gray100,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
+    borderColor: GlobalStyles.colors.grayDark,
     borderWidth: 1,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -158,15 +154,15 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.gray100,
+    borderBottomColor: GlobalStyles.colors.grayDark,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
   chosenType: {
-    backgroundColor: GlobalStyles.colors.accent200,
+    backgroundColor: GlobalStyles.colors.purpleAccent,
   },
   chosenText: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.purpleSoft,
     fontWeight: 'bold',
   },
   button: {

@@ -22,6 +22,7 @@ interface TransportTypeSelectorProps {
   invalid: boolean;
   defaultType: string;
   errors: string[];
+  colorscheme: ColorScheme;
 }
 
 const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
@@ -29,10 +30,20 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
   invalid,
   defaultType,
   errors,
+  colorscheme,
 }): ReactElement => {
   const [isInvalid, setIsInvalid] = useState<boolean>(invalid);
   const [openSelection, setOpenSelection] = useState(false);
   const [transportType, setTransportType] = useState<string>('');
+
+  let bg = GlobalStyles.colors.amberSoft;
+  let bgChosen = GlobalStyles.colors.amberAccent;
+  let textChosen = GlobalStyles.colors.amberSoft;
+  if (colorscheme === ColorScheme.complementary) {
+    bg = GlobalStyles.colors.purpleSoft;
+    bgChosen = GlobalStyles.colors.purpleAccent;
+    textChosen = bg = GlobalStyles.colors.purpleSoft;
+  }
 
   useEffect(() => {
     setTransportType(defaultType);
@@ -57,6 +68,8 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
     setOpenSelection(false);
   }
 
+  // TODO: gray backdrop!
+
   return (
     <>
       {openSelection && (
@@ -66,7 +79,7 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
             style={styles.selectionContainer}
           >
             <Animated.View
-              style={styles.listContainer}
+              style={[styles.listContainer, { backgroundColor: bg }]}
               entering={FadeInUp}
               exiting={FadeOutUp}
             >
@@ -76,9 +89,13 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
                     key={generateRandomString()}
                     onPress={handlePressListElement.bind(item)}
                     containerStyles={
-                      item === transportType ? styles.chosenType : {}
+                      item === transportType
+                        ? { backgroundColor: bgChosen }
+                        : {}
                     }
-                    textStyles={item === transportType ? styles.chosenText : {}}
+                    textStyles={
+                      item === transportType ? { color: textChosen } : {}
+                    }
                   >
                     {item}
                   </ListItem>
@@ -134,11 +151,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: '100%',
   },
-  header: {
-    textAlign: 'center',
-    fontSize: 20,
-    color: GlobalStyles.colors.gray50,
-  },
   errorText: {
     fontSize: 16,
     color: GlobalStyles.colors.error200,
@@ -146,7 +158,7 @@ const styles = StyleSheet.create({
   },
   outerSelectionContainer: {
     position: 'absolute',
-    top: 80,
+    top: 72,
     width: '100%',
   },
   selectionContainer: {
@@ -155,9 +167,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: 150,
-    height: 200,
-    backgroundColor: GlobalStyles.colors.gray700,
-    borderColor: GlobalStyles.colors.gray100,
+    height: 310,
+    elevation: 5,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderWidth: 1,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -166,16 +178,9 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.gray100,
+    borderBottomColor: GlobalStyles.colors.grayMedium,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
-  },
-  chosenType: {
-    backgroundColor: GlobalStyles.colors.accent200,
-  },
-  chosenText: {
-    color: GlobalStyles.colors.gray50,
-    fontWeight: 'bold',
   },
   button: {
     marginHorizontal: 'auto',

@@ -152,7 +152,7 @@ const PlacesSelection = ({
           <IconButton
             icon={Icons.map}
             onPress={handlePressMapButton}
-            color={GlobalStyles.colors.gray500}
+            color={GlobalStyles.colors.graySoft}
             containerStyle={styles.mapButton}
           />
           <Text style={styles.mapText}>Pick on map!</Text>
@@ -192,7 +192,7 @@ const PlacesSelection = ({
             Dismiss
           </Button>
           <Button
-            colorScheme={ColorScheme.accent}
+            colorScheme={ColorScheme.complementary}
             onPress={handlePressAdd}
             style={styles.button}
           >
@@ -238,22 +238,23 @@ const styles = StyleSheet.create({
   },
   mapButtonContainer: { marginVertical: 5 },
   mapButton: {
-    backgroundColor: GlobalStyles.colors.gray100,
+    backgroundColor: GlobalStyles.colors.grayDark,
     alignSelf: 'center',
   },
   mapText: {
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.grayMedium,
     fontStyle: 'italic',
     fontSize: 10,
     textAlign: 'center',
   },
   pressable: {
     paddingVertical: 5,
-    backgroundColor: GlobalStyles.colors.gray700,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     borderWidth: 2,
-    borderColor: GlobalStyles.colors.gray300,
+    borderColor: GlobalStyles.colors.grayMedium,
     borderRadius: 10,
     zIndex: 2,
+    elevation: 5,
   },
   list: {
     marginHorizontal: 10,

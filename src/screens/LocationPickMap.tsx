@@ -175,17 +175,18 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     }
   }
 
-  let mainColor = GlobalStyles.colors.primary700;
+  let mainColor = GlobalStyles.colors.greenBg;
   if (initialColorScheme === ColorScheme.complementary) {
-    mainColor = GlobalStyles.colors.complementary700;
+    mainColor = GlobalStyles.colors.purpleBg;
   } else if (initialColorScheme === ColorScheme.accent) {
-    mainColor = GlobalStyles.colors.accent700;
+    mainColor = GlobalStyles.colors.amberBg;
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <HeaderTitle title={'Pick a Location'} />,
       headerStyle: { backgroundColor: mainColor },
+      headerTintColor: GlobalStyles.colors.grayDark,
     });
   }, []);
 

@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     borderColor: GlobalStyles.colors.grayMedium,
-    backgroundColor: GlobalStyles.colors.graySoftSemi,
+    backgroundColor: GlobalStyles.colors.graySoft,
     elevation: 10,
     shadowColor: GlobalStyles.colors.grayDark,
     shadowOffset: { width: 0, height: 2 },

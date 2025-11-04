@@ -91,7 +91,7 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
     >
       <Pressable
         onPress={handleOpenInfoBox}
-        android_ripple={{ color: GlobalStyles.colors.accent200 }}
+        android_ripple={{ color: GlobalStyles.colors.amberSoft }}
         style={({ pressed }) => [
           styles.innerContainer,
           pressed && styles.pressed,
@@ -105,7 +105,7 @@ const TransportationBox: React.FC<TransportationBoxProps> = ({
           <View style={styles.buttonContainer}>
             <IconButton
               icon={Icons.edit}
-              color={GlobalStyles.colors.accent800}
+              color={GlobalStyles.colors.amberDark}
               onPress={onPressEdit}
               style={styles.button}
             />
@@ -140,15 +140,15 @@ const styles = StyleSheet.create({
     width: '95%',
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: GlobalStyles.colors.accent700,
+    borderColor: GlobalStyles.colors.amberDark,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     overflow: 'hidden',
-    backgroundColor: GlobalStyles.colors.accent100,
+    backgroundColor: GlobalStyles.colors.amberBg,
   },
   inactiveOuterContainer: {
-    borderColor: GlobalStyles.colors.gray500,
-    backgroundColor: GlobalStyles.colors.gray100,
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.graySoft,
   },
   innerContainer: {
     marginHorizontal: 10,
@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   comment: {
     textAlign: 'center',
     fontStyle: 'italic',
+    color: GlobalStyles.colors.amberText,
   },
   buttonContainer: {
     width: '20%',

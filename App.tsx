@@ -54,17 +54,17 @@ import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
 // PRIO 2 \\
-// TODO: Neue Farben überall implementieren
-// TODO: Animationen einfügen
 // TODO: Adjust fontsize and width + wrap for PlacesList
 // TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
 // => Slide in from Bottom + runterwischbar
-// TODO: MaxHeight for ValidationLog
-// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
-// TODO: Outsource inputChangedHandler and related handlers from the Forms
-// TODO: When tapping into majorStage and back and tapping edit majorStage, the BottomTabs are green
+// TODO: Checks für ValidationLog erweitern
+// TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
+// TODO: Animationen einfügen
+// TODO: Error Farben überprüfen
 
 // PRIO 3 \\
+// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
+// TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot, that interacts with the app?! => that can make journeys

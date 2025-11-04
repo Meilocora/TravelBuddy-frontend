@@ -110,7 +110,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
         <IconButton
           icon={Icons.settings}
           onPress={() => setOpenModal((prevValue) => !prevValue)}
-          color={GlobalStyles.colors.gray500}
+          color={GlobalStyles.colors.grayMedium}
         />
       </View>
       {openModal && (
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     height: 22,
     alignSelf: 'flex-start',
     borderRightWidth: 2,
-    borderColor: GlobalStyles.colors.gray700,
+    borderColor: GlobalStyles.colors.grayDark,
   },
   arrowDown: {
     alignSelf: 'center',
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 10,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderTopColor: GlobalStyles.colors.gray700,
+    borderTopColor: GlobalStyles.colors.grayDark,
   },
 });
 

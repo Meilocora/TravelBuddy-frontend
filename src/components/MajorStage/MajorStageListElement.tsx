@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,6 +14,7 @@ import {
 import {
   formatAmount,
   formatDateString,
+  formatDuration,
   formatDurationToDays,
   validateIsOver,
 } from '../../utils';
@@ -25,6 +26,21 @@ import ElementComment from '../UI/list/ElementComment';
 import Button from '../UI/Button';
 import TransportationBox from './TransportationBox';
 import CustomProgressBar from '../UI/CustomProgressBar';
+import BoatIcon from '../../../assets/boat.svg';
+import CarIcon from '../../../assets/car.svg';
+import BusIcon from '../../../assets/bus.svg';
+import PlaneIcon from '../../../assets/plane.svg';
+import TrainIcon from '../../../assets/train.svg';
+import OtherIcon from '../../../assets/other.svg';
+
+const iconMap: { [key: string]: React.FC<any> } = {
+  boat: BoatIcon,
+  car: CarIcon,
+  bus: BusIcon,
+  plane: PlaneIcon,
+  train: TrainIcon,
+  other: OtherIcon,
+};
 
 interface MajorStageListElementProps {
   journeyId: number;
@@ -53,6 +69,20 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     majorStage.scheduled_end_time
   );
   const isOver = validateIsOver(majorStage.scheduled_end_time);
+
+  const transportDuration = formatDuration(
+    majorStage?.transportation?.start_time,
+    majorStage?.transportation?.start_time_offset,
+    majorStage?.transportation?.arrival_time,
+    majorStage?.transportation?.arrival_time_offset
+  );
+
+  const IconComponent =
+    iconMap[
+      majorStage!.transportation
+        ? majorStage.transportation.type.toString().toLowerCase()
+        : 'other'
+    ] || null; // Fallback to null if no icon is found
 
   const countryNavigation = useNavigation<NavigationProp<StackParamList>>();
 
@@ -206,15 +236,28 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
             </>
           ) : (
             <View style={styles.roughDetailsContainer}>
-              <IconButton
-                icon={Icons.country}
-                onPress={() => {}}
-                color={GlobalStyles.colors.gray500}
-                size={18}
-                containerStyle={styles.icon}
-              />
-              <Text>{majorStage.country.name}</Text>
-              {/* TODO: Add Transportation Medium here (+ traveltime) */}
+              <View style={styles.roughDetailsRow}>
+                <IconButton
+                  icon={Icons.country}
+                  onPress={() => {}}
+                  color={GlobalStyles.colors.grayMedium}
+                  size={18}
+                  containerStyle={styles.icon}
+                />
+                <Text>{majorStage.country.name}</Text>
+              </View>
+              {majorStage.transportation && IconComponent && (
+                <View style={styles.roughDetailsRow}>
+                  <IconComponent
+                    width={18}
+                    height={18}
+                    fill={GlobalStyles.colors.grayMedium}
+                  />
+                  <Text
+                    style={{ marginLeft: 4 }}
+                  >{`(${transportDuration})`}</Text>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -286,8 +329,12 @@ const styles = StyleSheet.create({
   },
   roughDetailsContainer: {
     flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-evenly',
+  },
+  roughDetailsRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

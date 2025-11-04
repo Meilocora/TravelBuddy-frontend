@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     zIndex: 1,
     position: 'absolute',
-    top: -300,
+    // top: -300,
     width: '100%',
   },
   innerContainer: {

@@ -223,15 +223,15 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    opacity: 0.75,
+    marginTop: '15%',
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
-    borderColor: GlobalStyles.colors.gray100,
-    backgroundColor: GlobalStyles.colors.gray400,
+    borderColor: GlobalStyles.colors.grayMedium,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },

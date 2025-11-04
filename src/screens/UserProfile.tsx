@@ -20,6 +20,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { AuthContext } from '../store/auth-context';
 import Popup from '../components/UI/Popup';
+import { GlobalStyles } from '../constants/styles';
 
 interface UserProfileProps {
   route: UserProfileRouteProp;
@@ -44,6 +45,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       headerTitle: () => (
         <HeaderTitle title={`${authCtx.username}'s Profile`} />
       ),
+      headerTintColor: GlobalStyles.colors.grayDark,
     });
   }, [authCtx.username]);
 

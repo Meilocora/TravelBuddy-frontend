@@ -22,12 +22,7 @@ import {
 import { UserContext } from '../../store/user-context';
 import { GlobalStyles } from '../../constants/styles';
 import { LatLng } from 'react-native-maps';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 interface AllJourneysProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'AllJourneys'>;
@@ -116,26 +111,13 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     setRefresh((prev) => prev + 1);
   }
 
-  // Animation for ActivityIndicator \\
-  const scale = useSharedValue(1);
-  const reanimatedSzyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  }, []);
-  useEffect(() => {
-    scale.value = withRepeat(withTiming(2, { duration: 2000 }), -1, true);
-  }, []);
-
-  //  \\
-
   let content;
   if (isFetching) {
     content = (
-      <Animated.View style={[styles.indicator, reanimatedSzyle]}>
+      <Animated.View style={styles.indicator}>
         <ActivityIndicator
           size='large'
-          color={GlobalStyles.colors.primary100}
+          color={GlobalStyles.colors.greenAccent}
           style={styles.indicator}
         />
       </Animated.View>

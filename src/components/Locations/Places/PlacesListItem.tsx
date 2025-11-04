@@ -160,23 +160,23 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     marginVertical: 5,
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.grayDark,
     borderRadius: 16,
   },
   name: {
-    color: GlobalStyles.colors.gray50,
+    color: GlobalStyles.colors.graySoft,
     fontSize: 16,
     maxWidth: '50%',
     marginLeft: 10,
   },
   description: {
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
     fontSize: 14,
     fontStyle: 'italic',
     marginLeft: 4,
   },
   detail: {
-    color: GlobalStyles.colors.gray200,
+    color: GlobalStyles.colors.graySoft,
     fontSize: 14,
   },
   row: {

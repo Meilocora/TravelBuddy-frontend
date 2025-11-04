@@ -74,7 +74,7 @@ const Planning: React.FC<PlanningProps> = ({
         <IconButton
           icon={Icons.add}
           onPress={handleAddMajorStage}
-          color={GlobalStyles.colors.gray500}
+          color={GlobalStyles.colors.grayMedium}
           size={32}
         />
       ),

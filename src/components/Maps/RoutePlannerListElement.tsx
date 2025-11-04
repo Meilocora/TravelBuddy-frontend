@@ -42,7 +42,7 @@ const RoutePlannerListElement: React.FC<RoutePlannerListElementProps> = ({
       <IconButton
         icon={Icons.close}
         onPress={() => onRemove(name)}
-        color={GlobalStyles.colors.gray700}
+        color={GlobalStyles.colors.grayDark}
         size={20}
         containerStyle={styles.iconContainer}
       />
@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
     width: 200,
   },
   active: {
-    backgroundColor: GlobalStyles.colors.accent200,
+    backgroundColor: GlobalStyles.colors.amberBgSemi,
+    opacity: 0.7,
   },
   iconContainer: {
     marginVertical: 'auto',

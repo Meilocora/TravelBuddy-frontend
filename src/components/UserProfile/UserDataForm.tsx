@@ -60,6 +60,7 @@ const UserDataForm: React.FC<UserDataFormProps> = ({
     setShowPasswordForm(false);
     setHidePassword(true);
   }
+  // TODO: Change password won't work
 
   function inputChangedHandler(
     formType: 'name' | 'password',
@@ -363,7 +364,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: '80%',
-    backgroundColor: GlobalStyles.colors.gray500,
+    backgroundColor: GlobalStyles.colors.graySoft,
     borderRadius: 20,
     borderWidth: 1,
   },
