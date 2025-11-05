@@ -1,4 +1,5 @@
-import React from 'react';
+import * as Font from 'expo-font';
+import React, { useState } from 'react';
 import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
@@ -370,7 +371,7 @@ const AuthenticatedStack = () => {
 const Navigation = () => {
   const authCtx = useContext(AuthContext);
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={navTheme}>
         {!authCtx.isAuthenticated && <AuthStack />}
         {authCtx.isAuthenticated && <AuthenticatedStack />}
@@ -404,6 +405,25 @@ export default function App() {
   useEffect(() => {
     NavigationBar.setVisibilityAsync('hidden');
   }, []);
+
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // Ionicons-Font vorladen (falls nötig)
+        await Font.loadAsync(Ionicons.font);
+        console.log('Ionicons font loaded successfully');
+      } catch (err) {
+        console.error('Ionicons font loading failed:', err);
+        // Wenn du möchtest, kannst du hier ein Flag setzen, um einen Fallback oder Hinweis zu zeigen.
+      } finally {
+        setReady(true);
+      }
+    })();
+  }, []);
+
+  if (!ready) return null;
 
   return (
     <EventProvider>

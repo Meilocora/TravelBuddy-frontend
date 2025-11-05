@@ -1,7 +1,12 @@
 import { ReactElement, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import {
+  FadeInDown,
+  FadeOutDown,
+  SlideInDown,
+  SlideOutDown,
+} from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
 
 import PlacesListItem from './PlacesListItem';
@@ -82,58 +87,61 @@ const PlacesList: React.FC<PlacesListProps> = ({
   }
 
   return (
-    <BlurView intensity={85} tint='dark' style={styles.blurcontainer}>
-      <Animated.View
-        entering={FadeInDown}
-        exiting={FadeOutDown}
-        style={styles.container}
-      >
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>Places to Visit</Text>
-          <IconButton
-            icon={Icons.map}
-            onPress={handleShowOnMap}
-            size={32}
-            containerStyle={styles.mapButton}
-            color={'white'}
-          />
-        </View>
-        {countryPlaces.length > 0 && (
-          <ScrollView style={styles.listContainer}>
-            {countryPlaces.map((place, index) => (
-              <PlacesListItem
-                key={generateRandomString()}
-                place={place}
-                onToggleFavorite={handleToggleFavorite}
-                onToggleVisited={handleToggleVisited}
-              />
-            ))}
-          </ScrollView>
-        )}
-        {!isFetching && countryPlaces.length === 0 && (
-          <InfoText content='No places found...' style={styles.info} />
-        )}
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            mode={ButtonMode.flat}
-            onPress={onCancel}
-            colorScheme={ColorScheme.neutral}
-          >
-            Close
-          </Button>
-          <Button
-            colorScheme={ColorScheme.primary}
-            onPress={handleAdd}
-            style={styles.button}
-          >
-            Add Place
-          </Button>
-        </View>
-      </Animated.View>
-    </BlurView>
+    // TODO: Use this in other places
+    // <BlurView intensity={85} tint='dark' style={styles.blurcontainer}>
+    <Animated.View
+      entering={SlideInDown}
+      exiting={SlideOutDown}
+      style={styles.container}
+    >
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Places to Visit</Text>
+        <IconButton
+          icon={Icons.map}
+          onPress={handleShowOnMap}
+          size={32}
+          containerStyle={styles.mapButton}
+          color={'white'}
+        />
+      </View>
+      {countryPlaces.length > 0 && (
+        <ScrollView style={styles.listContainer}>
+          {countryPlaces.map((place, index) => (
+            <PlacesListItem
+              key={generateRandomString()}
+              place={place}
+              onToggleFavorite={handleToggleFavorite}
+              onToggleVisited={handleToggleVisited}
+            />
+          ))}
+        </ScrollView>
+      )}
+      {!isFetching && countryPlaces.length === 0 && (
+        <InfoText content='No places found...' style={styles.info} />
+      )}
+      <View style={styles.buttonContainer}>
+        <Button
+          style={styles.button}
+          mode={ButtonMode.flat}
+          onPress={onCancel}
+          colorScheme={ColorScheme.neutral}
+        >
+          Close
+        </Button>
+        <Button
+          colorScheme={ColorScheme.primary}
+          onPress={handleAdd}
+          style={styles.button}
+        >
+          Add Place
+        </Button>
+      </View>
+    </Animated.View>
+    // </BlurView>
   );
 };
+
+// TODO: Add filters, make cool Modal Gradient for use in other Modals => make Modal as separate Component to use in CurrencyModal and others
 
 const styles = StyleSheet.create({
   blurcontainer: {
@@ -145,16 +153,22 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   container: {
-    maxHeight: '60%',
-    width: '80%',
-    marginHorizontal: 'auto',
-    marginVertical: 'auto',
+    position: 'absolute',
+    zIndex: 1,
+    // maxHeight: '60%',
+    height: '91%',
+    width: '100%',
+    // width: '80%',
+    // marginHorizontal: 'auto',
+    top: '9%',
+    // marginVertical: 'auto',
     padding: 24,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: GlobalStyles.colors.graySoft,
-    borderRadius: 6,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
   },
   headerContainer: {
     flexDirection: 'row',

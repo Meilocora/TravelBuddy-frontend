@@ -60,7 +60,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   }
 
   function closeDeleteModal() {
-    setOpenDeleteModal(false);
+    false;
     setDeleteMinorStageId(null);
   }
 
