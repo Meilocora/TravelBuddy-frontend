@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   runOnJS,
   SlideInRight,
@@ -24,7 +24,7 @@ interface CurrentElementProps {
   onPress: () => void;
 }
 
-const DISMISS_THRESHOLD = 70;
+const DISMISS_THRESHOLD = 40;
 
 const CurrentElement: React.FC<CurrentElementProps> = ({
   title,
@@ -58,19 +58,36 @@ const CurrentElement: React.FC<CurrentElementProps> = ({
   }
 
   const translateX = useSharedValue(0);
+  const windowWidth = Dimensions.get('window').width;
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
+      // Nur nach rechts ziehen erlauben; clampen zwischen 0 und windowWidth
       if (event.translationX > 0) {
-        translateX.value = event.translationX;
+        translateX.value = Math.min(
+          windowWidth,
+          Math.max(0, event.translationX)
+        );
       }
     })
     .onEnd((event) => {
-      if (event.translationX > DISMISS_THRESHOLD) {
-        runOnJS(handleClose)();
-        translateX.value = 0;
+      const finalTranslation = translateX.value || event.translationX;
+
+      if (finalTranslation > DISMISS_THRESHOLD) {
+        // Animiere nach rechts außerhalb des Bildschirms.
+        translateX.value = withTiming(
+          windowWidth,
+          { duration: 300 },
+          (isFinished) => {
+            if (isFinished) {
+              // Auf JS-Thread nach Abschluss der Animation
+              runOnJS(handleClose)();
+            }
+          }
+        );
       } else {
-        translateX.value = withTiming(0);
+        // Zurück in die Ausgangsposition
+        translateX.value = withTiming(0, { duration: 200 });
       }
     });
 

@@ -7,7 +7,7 @@ import { CustomCountryContext } from '../../store/custom-country-context';
 import { addCountry, fetchCountries } from '../../utils/http/custom_country';
 import CountriesList from './CountriesList';
 import IconButton from '../UI/IconButton';
-import CountrySearch from './CountrySearch';
+import Search from './Search';
 import { GlobalStyles } from '../../constants/styles';
 
 interface CustomCountriesProps {}
@@ -88,7 +88,7 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
         />
       </View>
       {search && (
-        <CountrySearch
+        <Search
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           setSearch={setSearch}

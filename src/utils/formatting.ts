@@ -142,11 +142,11 @@ export function formatDuration(
 
   const startDateObject = parseDateAndTime(startDate);
   startDateObject.setHours(
-    startDateObject.getHours() + Number(startDateOffset)
+    startDateObject.getHours() - Number(startDateOffset)
   );
 
   const endDateObject = parseDateAndTime(endDate);
-  endDateObject.setHours(endDateObject.getHours() + Number(endDateOffset));
+  endDateObject.setHours(endDateObject.getHours() - Number(endDateOffset));
   const timeDifference = endDateObject.getTime() - startDateObject.getTime();
 
   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));

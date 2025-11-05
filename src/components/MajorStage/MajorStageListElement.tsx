@@ -272,7 +272,6 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
 
 const styles = StyleSheet.create({
   outerContainer: {
-    flex: 1,
     borderColor: GlobalStyles.colors.amberDark,
     borderWidth: 2,
     borderTopWidth: 6,

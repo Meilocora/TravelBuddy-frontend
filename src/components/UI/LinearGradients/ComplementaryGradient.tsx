@@ -13,7 +13,7 @@ const ComplementaryGradient: React.FC = (): ReactElement => {
         bottom: 0,
       }}
       colors={['#F3ECFAE6', '#EDE1F7CC', '#e7d0fae6']}
-      locations={[0, 0.4, 1]}
+      locations={[0.4, 0.7, 1]}
     />
   );
 };

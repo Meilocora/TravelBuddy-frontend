@@ -72,7 +72,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         toggleVisivility={() => setShowDetails((prevValue) => !prevValue)}
         isVisible={showDetails}
       />
-      {journeys.length > 0 && <UserProfileChart journeys={journeys} />}
+      <UserProfileChart journeys={journeys} />
     </ScrollView>
   );
 };

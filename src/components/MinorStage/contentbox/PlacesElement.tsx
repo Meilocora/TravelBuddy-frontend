@@ -35,8 +35,6 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
   const majorStage = stagesCtx.findMinorStagesMajorStage(minorStage.id);
   const countryName = majorStage!.country.name;
 
-  const isOver = validateIsOver(minorStage.scheduled_end_time);
-
   let defaultPlacesNames: string[] = [];
   if (minorStage.placesToVisit) {
     defaultPlacesNames = minorStage.placesToVisit.map((place) => place.name);

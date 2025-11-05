@@ -149,6 +149,9 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
                   <View style={styles.arrowDown} />
                 </View>
               )}
+              {index === shownMinorStages.length - 1 && (
+                <View style={{ height: 75 }}></View>
+              )}
             </>
           );
         }}

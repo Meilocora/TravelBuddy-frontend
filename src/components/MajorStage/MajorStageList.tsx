@@ -27,6 +27,8 @@ interface MajorStageListProps {
   majorStages: MajorStage[];
 }
 
+// TODO: Bei mehreren Elementen zu kurz?!
+
 const MajorStageList: React.FC<MajorStageListProps> = ({
   journey,
   majorStages,
@@ -115,7 +117,7 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
       <DraggableFlatList
         data={shownMajorStages}
         keyExtractor={(item) => item.id.toString()}
-        style={styles.listContainer}
+        removeClippedSubviews={false}
         renderItem={({ item, getIndex, drag, isActive }) => {
           const index = getIndex?.() ?? 0;
           return (
@@ -136,6 +138,9 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
                   <View style={styles.arrowDown} />
                 </View>
               )}
+              {index === shownMajorStages.length - 1 && (
+                <View style={{ height: 75 }}></View>
+              )}
             </>
           );
         }}
@@ -150,9 +155,6 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  listContainer: {
-    paddingBottom: 30,
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -23,6 +23,7 @@
     "expo-asset": "~11.0.5",
     "expo-blur": "~14.0.3",
     "expo-dev-client": "~5.0.20",
+    "expo-file-system": "~18.0.12",
     "expo-font": "~13.0.4",
     "expo-linear-gradient": "~14.0.2",
     "expo-location": "~18.0.10",

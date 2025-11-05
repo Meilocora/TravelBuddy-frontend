@@ -78,6 +78,9 @@ const JourneysList: React.FC = ({}): ReactElement => {
             exiting={FadeOutDown}
           >
             <JourneyListElement journey={item} onDelete={handlePressDelete} />
+            {index === shownJourneys.length - 1 && (
+              <View style={{ height: 75 }}></View>
+            )}
           </Animated.View>
         )}
       />

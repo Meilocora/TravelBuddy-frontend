@@ -1,7 +1,6 @@
 import { View, Pressable, StyleSheet } from 'react-native';
 import { ReactElement, useContext } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import {
   BottomTabsParamList,
@@ -53,7 +52,9 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   if (journey.majorStages) {
     for (const majorStage of journey.majorStages) {
       minorStagesQty += majorStage.minorStages?.length || 0;
-      countryList.push(majorStage.country);
+      if (!countryList.some((c) => c.id === majorStage.country.id)) {
+        countryList.push(majorStage.country);
+      }
       if (majorStage.currentMajorStage) {
         currentCountry = majorStage.country.name;
       }
@@ -61,7 +62,7 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   }
 
   for (const country of journey.countries) {
-    if (!countryList.some((c) => c.name === country.name)) {
+    if (!countryList.some((c) => c.name == country.name)) {
       countryList.push(country);
     }
   }

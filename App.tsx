@@ -54,10 +54,18 @@ import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 
+// PRIO 1 \\
+//  Berechnung Duration korrigieren
+//  StageLists verlängern...
+//  PlacesList => mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
+//  Routeplanning geht nur bei 1. MajorStage?!
+// TODO: Liste for RoutePlanningList mit erweiterten Funktionen ... also fix List Design
+// TODO: Liste für MapLocationList mit erweiterten Funktionen
+// TODO: Button zum Map-Screen für MajorStage (neben FilterSettings) und einzelne MinorStage
+// TODO: In LocationPickMap auch PlacesToVisit darstellen => so leichter auswählbar bei neuer Stage (mit filter zum ausblenden)
+// TODO: ShowMap => OnPress direkt LocationToVisit hinzufügen
+
 // PRIO 2 \\
-// TODO: Adjust fontsize and width + wrap for PlacesList
-// TODO: Places => größer (H-full) und mit Suchfunktion, sortiert alphabetisch, filter nach noch nicht besuchten Orten
-// => Slide in from Bottom + runterwischbar
 // TODO: Checks für ValidationLog erweitern
 // TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
 // TODO: Animationen einfügen

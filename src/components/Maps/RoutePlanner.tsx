@@ -103,6 +103,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
     }
   }, [routeLocations, locations, setRoutePoints, showContent.list]);
 
+  // TODO: No Locations for 2nd majorStage?!
+
   return (
     <>
       {showContent.button && (

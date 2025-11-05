@@ -13,7 +13,7 @@ const SecondaryGradient: React.FC = (): ReactElement => {
         bottom: 0,
       }}
       colors={['#f8e8cdff', '#FFEED1', '#e9c896ff']}
-      locations={[0, 0.4, 1]}
+      locations={[0.6, 0.8, 1]}
     />
   );
 };

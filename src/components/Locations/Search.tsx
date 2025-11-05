@@ -6,13 +6,13 @@ import OutsidePressHandler from 'react-native-outside-press';
 import Input from '../UI/form/Input';
 import { GlobalStyles } from '../../constants/styles';
 
-interface CountrySearchProps {
+interface SearchProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   setSearch: (value: boolean) => void;
 }
 
-const CountrySearch: React.FC<CountrySearchProps> = ({
+const Search: React.FC<SearchProps> = ({
   searchTerm,
   setSearchTerm,
   setSearch,
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
     height: 75,
   },
   input: {
-    backgroundColor: GlobalStyles.colors.graySoft,
+    backgroundColor: GlobalStyles.colors.grayMedium,
     color: GlobalStyles.colors.grayDark,
     borderColor: GlobalStyles.colors.grayDark,
     borderWidth: 0.5,
   },
 });
 
-export default CountrySearch;
+export default Search;

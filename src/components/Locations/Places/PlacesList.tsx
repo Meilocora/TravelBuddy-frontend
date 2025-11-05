@@ -1,19 +1,25 @@
 import { ReactElement, useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BlurView } from 'expo-blur';
 import {
-  FadeInDown,
-  FadeOutDown,
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  runOnJS,
   SlideInDown,
   SlideOutDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
 
 import PlacesListItem from './PlacesListItem';
-import { generateRandomString } from '../../../utils';
 import Button from '../../UI/Button';
 import {
-  ButtonMode,
   ColorScheme,
   Icons,
   PlaceToVisit,
@@ -24,6 +30,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { PlaceContext } from '../../../store/place-context';
 import InfoText from '../../UI/InfoText';
 import IconButton from '../../UI/IconButton';
+import Search from '../Search';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 interface PlacesListProps {
   onCancel: () => void;
@@ -39,23 +47,71 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
   const [isFetching, setIsFetching] = useState(true);
   const [countryPlaces, setCountryPlaces] = useState<PlaceToVisit[]>([]);
+  const [isFav, setIsFav] = useState(false);
+  const [isVisited, setIsVisited] = useState(false);
+  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
+  const [search, setSearch] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch all places to visit for this country
   useEffect(() => {
     function getPlaces() {
       const fetchedPlaces = placesCtx.getPlacesByCountry(countryId);
-      setCountryPlaces(fetchedPlaces);
+      // setCountryPlaces(fetchedPlaces);
       setIsFetching(false);
+
+      let places = fetchedPlaces;
+      if (sort === 'desc') {
+        places = [...places].sort((a, b) => b.name.localeCompare(a.name));
+      } else {
+        places = [...places].sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      if (isFav) {
+        places = [...places].filter((place) => place.favorite === true);
+      }
+
+      if (isVisited) {
+        places = [...places].filter((place) => place.visited === true);
+      }
+
+      if (searchTerm !== '') {
+        places = places.filter((place) =>
+          place.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+        );
+      }
+
+      setCountryPlaces(places);
     }
 
     getPlaces();
-  }, [countryId, placesCtx.placesToVisit]);
+  }, [
+    countryId,
+    placesCtx.placesToVisit,
+    sort,
+    search,
+    searchTerm,
+    isFav,
+    isVisited,
+  ]);
 
   function handleAdd() {
     navigation.navigate('ManagePlaceToVisit', {
       placeId: null,
       countryId: countryId,
     });
+  }
+
+  function handleTapSort() {
+    if (sort === 'asc') {
+      setSort('desc');
+    } else {
+      setSort('asc');
+    }
+  }
+
+  function handleTapSearch() {
+    setSearch((prevValue) => !prevValue);
   }
 
   function handleToggleFavorite(placeId: number) {
@@ -86,50 +142,137 @@ const PlacesList: React.FC<PlacesListProps> = ({
     });
   }
 
+  // Drag-to-dismiss logic
+  const translateY = useSharedValue(0);
+  const isDismissing = useSharedValue(false); // Guard: verhindert mehrfaches Dismiss
+
+  const windowHeight = Dimensions.get('window').height;
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      // nur wenn noch nicht im Dismiss- Ablauf
+      if (!isDismissing.value && event.translationY > 0) {
+        translateY.value = event.translationY;
+      }
+    })
+    .onEnd((event) => {
+      if (isDismissing.value) return; // bereits unterwegs -> nichts tun
+
+      if (event.translationY > 100) {
+        // Starte das Slide-Down bis außerhalb des Screens, dann runOnJS(onCancel)
+        isDismissing.value = true;
+        translateY.value = withSpring(
+          windowHeight,
+          {
+            mass: 2,
+            damping: 25,
+            stiffness: 100,
+          },
+          (isFinished) => {
+            if (isFinished) {
+              runOnJS(onCancel)(); // Aufruf im JS-Thread nachdem Animation fertig ist
+            }
+          }
+        );
+      } else {
+        // Zurückfederung nach oben
+        translateY.value = withSpring(0, {
+          mass: 2,
+          damping: 25,
+          stiffness: 100,
+        });
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   return (
-    // TODO: Use this in other places
-    // <BlurView intensity={85} tint='dark' style={styles.blurcontainer}>
     <Animated.View
       entering={SlideInDown}
       exiting={SlideOutDown}
-      style={styles.container}
+      style={[styles.container, animatedStyle]}
     >
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Places to Visit</Text>
-        <IconButton
-          icon={Icons.map}
-          onPress={handleShowOnMap}
-          size={32}
-          containerStyle={styles.mapButton}
-          color={'white'}
-        />
-      </View>
-      {countryPlaces.length > 0 && (
-        <ScrollView style={styles.listContainer}>
-          {countryPlaces.map((place, index) => (
-            <PlacesListItem
-              key={generateRandomString()}
-              place={place}
-              onToggleFavorite={handleToggleFavorite}
-              onToggleVisited={handleToggleVisited}
+      <GestureDetector gesture={panGesture}>
+        <View style={styles.guestureContainer}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.header}>Places to Visit</Text>
+            <IconButton
+              icon={Icons.map}
+              onPress={handleShowOnMap}
+              size={32}
+              containerStyle={styles.mapButton}
+              color={'white'}
             />
-          ))}
-        </ScrollView>
+          </View>
+          <View style={styles.iconButtonsContainer}>
+            <IconButton
+              icon={Icons.filter}
+              onPress={handleTapSort}
+              color={
+                sort === 'desc' ? GlobalStyles.colors.amberAccent : undefined
+              }
+              style={
+                sort === 'desc'
+                  ? { transform: [{ rotate: '180deg' }] }
+                  : undefined
+              }
+            />
+            <IconButton
+              icon={Icons.search}
+              onPress={handleTapSearch}
+              color={searchTerm ? GlobalStyles.colors.amberAccent : undefined}
+            />
+            <IconButton
+              icon={isFav ? Icons.heartFilled : Icons.heartOutline}
+              onPress={() => setIsFav((prevValue) => !prevValue)}
+              color={isFav ? GlobalStyles.colors.amberAccent : undefined}
+            />
+            <IconButton
+              icon={isVisited ? Icons.checkmarkFilled : Icons.checkmarkOutline}
+              onPress={() => setIsVisited((prevValue) => !prevValue)}
+              color={isVisited ? GlobalStyles.colors.amberAccent : undefined}
+            />
+          </View>
+        </View>
+      </GestureDetector>
+      {search && (
+        <View style={styles.searchContainer}>
+          <Search
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            setSearch={setSearch}
+          />
+        </View>
+      )}
+      {isFetching ? (
+        <ActivityIndicator size='large' color={GlobalStyles.colors.grayDark} />
+      ) : (
+        countryPlaces.length > 0 && (
+          <ScrollView
+            style={styles.listContainer}
+            nestedScrollEnabled
+            scrollEnabled
+          >
+            {countryPlaces.map((place, index) => (
+              <PlacesListItem
+                key={place.id ? place.id.toString() : place.name}
+                place={place}
+                index={index}
+                onToggleFavorite={handleToggleFavorite}
+                onToggleVisited={handleToggleVisited}
+              />
+            ))}
+          </ScrollView>
+        )
       )}
       {!isFetching && countryPlaces.length === 0 && (
         <InfoText content='No places found...' style={styles.info} />
       )}
       <View style={styles.buttonContainer}>
         <Button
-          style={styles.button}
-          mode={ButtonMode.flat}
-          onPress={onCancel}
           colorScheme={ColorScheme.neutral}
-        >
-          Close
-        </Button>
-        <Button
-          colorScheme={ColorScheme.primary}
           onPress={handleAdd}
           style={styles.button}
         >
@@ -137,38 +280,26 @@ const PlacesList: React.FC<PlacesListProps> = ({
         </Button>
       </View>
     </Animated.View>
-    // </BlurView>
   );
 };
 
-// TODO: Add filters, make cool Modal Gradient for use in other Modals => make Modal as separate Component to use in CurrencyModal and others
-
 const styles = StyleSheet.create({
-  blurcontainer: {
-    flex: 1,
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
-    zIndex: 1,
-    ...StyleSheet.absoluteFillObject,
-  },
   container: {
     position: 'absolute',
     zIndex: 1,
-    // maxHeight: '60%',
     height: '91%',
     width: '100%',
-    // width: '80%',
-    // marginHorizontal: 'auto',
     top: '9%',
-    // marginVertical: 'auto',
-    padding: 24,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: GlobalStyles.colors.graySoft,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
+    borderWidth: 2,
+  },
+  guestureContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -185,11 +316,20 @@ const styles = StyleSheet.create({
   mapButton: {
     backgroundColor: GlobalStyles.colors.grayMedium,
   },
-  listContainer: {
+  iconButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginHorizontal: 'auto',
+    marginBottom: 10,
+  },
+  searchContainer: {
     width: '100%',
-    paddingHorizontal: 8,
-    borderRadius: 20,
-    backgroundColor: GlobalStyles.colors.grayMedium,
+  },
+  listContainer: {
+    width: '80%',
+    marginHorizontal: 'auto',
+    borderBottomWidth: 2,
+    borderTopWidth: 2,
   },
   info: {
     marginTop: 10,
@@ -197,8 +337,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
+    justifyContent: 'center',
+    marginVertical: 16,
   },
   button: {
     marginHorizontal: 4,

@@ -13,7 +13,7 @@ const MainGradient: React.FC = (): ReactElement => {
         bottom: 0,
       }}
       colors={['#F1FAF3', '#d3f3dfff', '#b5f1c6']}
-      locations={[0, 0.4, 1]}
+      locations={[0.6, 0.8, 1]}
     />
   );
 };

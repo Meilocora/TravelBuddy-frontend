@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
   SlideInDown,
@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -23,7 +24,7 @@ interface MapLocationElementProps {
   onClose: () => void;
 }
 
-const DISMISS_THRESHOLD = 100;
+const DISMISS_THRESHOLD = 40;
 
 const MapLocationElement: React.FC<MapLocationElementProps> = ({
   location,
@@ -82,17 +83,38 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
 
   // Drag-to-dismiss logic
   const translateY = useSharedValue(0);
+  const isDismissing = useSharedValue(false);
+  const windowHeight = Dimensions.get('window').height;
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      // Nur nach unten ziehen erlauben; clamp zwischen 0 und windowHeight
+      if (!isDismissing.value && event.translationY > 0) {
+        translateY.value = Math.min(
+          windowHeight,
+          Math.max(0, event.translationY)
+        );
       }
     })
     .onEnd((event) => {
-      if (event.translationY > DISMISS_THRESHOLD) {
-        runOnJS(onClose)();
+      if (isDismissing.value) return;
+
+      const finalTranslation = translateY.value || event.translationY;
+
+      if (finalTranslation > DISMISS_THRESHOLD) {
+        // Animieren nach unten außerhalb des Bildschirms, dann onClose auf JS-Thread aufrufen
+        isDismissing.value = true;
+        translateY.value = withTiming(
+          windowHeight,
+          { duration: 300 },
+          (isFinished) => {
+            if (isFinished) {
+              runOnJS(onClose)();
+            }
+          }
+        );
       } else {
+        // Zurückfedern
         translateY.value = withSpring(0, {
           mass: 2,
           damping: 25,

@@ -17,9 +17,11 @@ import {
   toggleFavoritePlace,
   toggleVisitedPlace,
 } from '../../../utils/http/place_to_visit';
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
+  index?: number;
   onToggleFavorite: (placeId: number) => void;
   onToggleVisited: (placeId: number) => void;
   onRemovePlace?: (name: string) => void;
@@ -28,6 +30,7 @@ interface PlacesListItemProps {
 
 const PlacesListItem: React.FC<PlacesListItemProps> = ({
   place,
+  index,
   onToggleFavorite,
   onToggleVisited,
   onRemovePlace,
@@ -85,7 +88,11 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      entering={index ? FadeInDown.delay(index * 100).duration(500) : undefined}
+      exiting={index ? FadeOutDown : undefined}
+      style={styles.container}
+    >
       <Pressable onPress={() => setIsOpened(!isOpened)}>
         <View style={styles.row}>
           <Text style={styles.name} ellipsizeMode='tail' numberOfLines={1}>
@@ -151,7 +158,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
           </View>
         )}
       </Pressable>
-    </View>
+    </Animated.View>
   );
 };
 

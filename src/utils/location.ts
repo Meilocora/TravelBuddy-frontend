@@ -292,94 +292,94 @@ export function getMapLocationsFromMajorStage(
       done:
         parseDateAndTime(majorStage.transportation.arrival_time) < currentDate,
     });
-    if (majorStage.minorStages) {
-      for (const minorStage of majorStage.minorStages) {
-        if (minorStage.transportation) {
-          locations.push({
-            id: minorStage.id,
-            minorStageName: minorStage.title,
-            belonging: majorStage.title,
-            locationType: LocationType.transportation_departure,
-            transportationType: minorStage.transportation
-              .type as TransportationType,
-            data: {
-              name: minorStage.transportation.place_of_departure,
-              latitude: minorStage.transportation.departure_latitude!,
-              longitude: minorStage.transportation.departure_longitude!,
-            },
-            done:
-              parseDateAndTime(minorStage.transportation.start_time) <
-              currentDate,
-          });
-          locations.push({
-            id: minorStage.id,
-            minorStageName: minorStage.title,
-            belonging: majorStage.title,
-            locationType: LocationType.transportation_arrival,
-            transportationType: minorStage.transportation
-              .type as TransportationType,
-            data: {
-              name: minorStage.transportation.place_of_arrival,
-              latitude: minorStage.transportation.arrival_latitude!,
-              longitude: minorStage.transportation.arrival_longitude!,
-            },
-            done:
-              parseDateAndTime(minorStage.transportation.arrival_time) <
-              currentDate,
-          });
-        }
-        if (
-          minorStage.accommodation.latitude &&
-          minorStage.accommodation.longitude
-        ) {
-          locations.push({
-            id: minorStage.id,
-            minorStageName: minorStage.title,
-            belonging: majorStage.title,
-            locationType: LocationType.accommodation,
-            data: {
-              name: minorStage.accommodation.place,
-              latitude: minorStage.accommodation.latitude,
-              longitude: minorStage.accommodation.longitude,
-            },
-            done: parseDate(minorStage.scheduled_end_time) < currentDate,
-          });
-        }
-        if (minorStage.activities) {
-          for (const activity of minorStage.activities) {
-            if (activity.latitude && activity.longitude) {
-              locations.push({
-                id: activity.id,
-                minorStageName: minorStage.title,
-                belonging: majorStage.title,
-                locationType: LocationType.activity,
-                description: activity.description || '',
-                data: {
-                  name: activity.name,
-                  latitude: activity.latitude,
-                  longitude: activity.longitude,
-                },
-                done: parseDate(minorStage.scheduled_end_time) < currentDate,
-              });
-            }
-          }
-        }
-        if (minorStage.placesToVisit) {
-          for (const place of minorStage.placesToVisit) {
+  }
+  if (majorStage.minorStages) {
+    for (const minorStage of majorStage.minorStages) {
+      if (minorStage.transportation) {
+        locations.push({
+          id: minorStage.id,
+          minorStageName: minorStage.title,
+          belonging: majorStage.title,
+          locationType: LocationType.transportation_departure,
+          transportationType: minorStage.transportation
+            .type as TransportationType,
+          data: {
+            name: minorStage.transportation.place_of_departure,
+            latitude: minorStage.transportation.departure_latitude!,
+            longitude: minorStage.transportation.departure_longitude!,
+          },
+          done:
+            parseDateAndTime(minorStage.transportation.start_time) <
+            currentDate,
+        });
+        locations.push({
+          id: minorStage.id,
+          minorStageName: minorStage.title,
+          belonging: majorStage.title,
+          locationType: LocationType.transportation_arrival,
+          transportationType: minorStage.transportation
+            .type as TransportationType,
+          data: {
+            name: minorStage.transportation.place_of_arrival,
+            latitude: minorStage.transportation.arrival_latitude!,
+            longitude: minorStage.transportation.arrival_longitude!,
+          },
+          done:
+            parseDateAndTime(minorStage.transportation.arrival_time) <
+            currentDate,
+        });
+      }
+      if (
+        minorStage.accommodation.latitude &&
+        minorStage.accommodation.longitude
+      ) {
+        locations.push({
+          id: minorStage.id,
+          minorStageName: minorStage.title,
+          belonging: majorStage.title,
+          locationType: LocationType.accommodation,
+          data: {
+            name: minorStage.accommodation.place,
+            latitude: minorStage.accommodation.latitude,
+            longitude: minorStage.accommodation.longitude,
+          },
+          done: parseDate(minorStage.scheduled_end_time) < currentDate,
+        });
+      }
+      if (minorStage.activities) {
+        for (const activity of minorStage.activities) {
+          if (activity.latitude && activity.longitude) {
             locations.push({
-              id: place.id,
+              id: activity.id,
               minorStageName: minorStage.title,
               belonging: majorStage.title,
-              locationType: LocationType.placeToVisit,
-              description: place.description || '',
+              locationType: LocationType.activity,
+              description: activity.description || '',
               data: {
-                name: place.name,
-                latitude: place.latitude,
-                longitude: place.longitude,
+                name: activity.name,
+                latitude: activity.latitude,
+                longitude: activity.longitude,
               },
-              done: place.visited || false,
+              done: parseDate(minorStage.scheduled_end_time) < currentDate,
             });
           }
+        }
+      }
+      if (minorStage.placesToVisit) {
+        for (const place of minorStage.placesToVisit) {
+          locations.push({
+            id: place.id,
+            minorStageName: minorStage.title,
+            belonging: majorStage.title,
+            locationType: LocationType.placeToVisit,
+            description: place.description || '',
+            data: {
+              name: place.name,
+              latitude: place.latitude,
+              longitude: place.longitude,
+            },
+            done: place.visited || false,
+          });
         }
       }
     }
@@ -566,9 +566,7 @@ export function getRouteLocationsNamesFromLocations(
   locations: Location[]
 ): string[] {
   const filteredLocations = locations.filter(
-    (location) =>
-      location.locationType === LocationType.accommodation ||
-      location.locationType === LocationType.transportation_arrival
+    (location) => location.locationType === LocationType.accommodation
   );
   return filteredLocations.map((location) => location.data.name);
 }

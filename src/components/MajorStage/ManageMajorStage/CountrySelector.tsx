@@ -65,11 +65,6 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
           (country) => country.name
         );
 
-        // TODO: Einfügen, wenn bereits enthaltene Länder nicht erneut ausgewählt werden dürfen sollen
-        // const leftOverCountries = journeyCountries?.filter(
-        //   (country) => !countriesList.includes(country)
-        // );
-
         const leftOverCountries = journeyCountries;
 
         setSelectableCountries(leftOverCountries || []);
@@ -215,7 +210,6 @@ const styles = StyleSheet.create({
     left: Dimensions.get('window').width / 8,
     bottom: Dimensions.get('window').height / 8,
     maxHeight: 300,
-    zIndex: 1,
   },
   listContainer: {
     marginVertical: 'auto',
@@ -225,6 +219,10 @@ const styles = StyleSheet.create({
     width: 200,
     maxHeight: 300,
     borderRadius: 20,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    zIndex: 1,
+    elevation: 5,
   },
   list: {
     paddingHorizontal: 10,
