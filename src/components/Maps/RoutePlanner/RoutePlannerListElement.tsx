@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
 import { StyleSheet, Text, Pressable, View } from 'react-native';
-import { GlobalStyles } from '../../constants/styles';
-import IconButton from '../UI/IconButton';
-import { Icons } from '../../models';
+import IconButton from '../../UI/IconButton';
+import { Icons } from '../../../models';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface RoutePlannerListElementProps {
   name: string;
@@ -52,7 +52,8 @@ const RoutePlannerListElement: React.FC<RoutePlannerListElementProps> = ({
 
 const styles = StyleSheet.create({
   outerContainer: {
-    paddingTop: 10,
+    paddingTop: 15,
+    paddingLeft: 5,
     flexDirection: 'row',
   },
   innerContainer: {

@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import MapView, { Marker, Region } from 'react-native-maps';
+import MapView, { MapPressEvent, Marker, Region } from 'react-native-maps';
 
 import { StackParamList } from '../models';
 import { GlobalStyles } from '../constants/styles';
@@ -72,12 +72,24 @@ const ShowMap: React.FC<ShowMapProps> = ({
     });
   }, []);
 
+  function handlePressMap(event: MapPressEvent) {
+    const lat = event.nativeEvent.coordinate.latitude;
+    const lng = event.nativeEvent.coordinate.longitude;
+
+    navigation.navigate('ManagePlaceToVisit', {
+      placeId: null,
+      countryId: customCountryId,
+      lat: lat,
+      lng: lng,
+    });
+  }
+
   return (
     <View style={styles.container}>
       <MapView
         initialRegion={region!}
         region={region}
-        onPress={() => {}}
+        onPress={handlePressMap}
         style={styles.map}
         showsUserLocation
         showsMyLocationButton

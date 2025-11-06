@@ -109,3 +109,9 @@ export interface StagesPositionDict {
   id: number;
   position: number;
 }
+
+export type FilterKey =
+  | 'activities'
+  | 'accommodations'
+  | 'places'
+  | 'transportations';

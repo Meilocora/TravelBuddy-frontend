@@ -1,6 +1,8 @@
 import { NavigatorScreenParams, RouteProp } from '@react-navigation/native';
 import { Location, MapLocation } from './map';
 import { ColorScheme } from './ui';
+import { MajorStage } from './major_stage';
+import { MinorStage } from './minor_stage';
 
 export type BottomTabsParamList = {
   AllJourneys: undefined | { popupText?: string };
@@ -40,7 +42,7 @@ export type MajorStageStackParamList = {
 export type JourneyBottomTabsParamsList = {
   Planning: { journeyId: number; popupText?: string };
   Overview: undefined;
-  Map: undefined;
+  Map: { majorStage?: MajorStage; minorStage?: MinorStage };
   MajorStageStackNavigator: NavigatorScreenParams<MajorStageStackParamList>;
 };
 
@@ -54,6 +56,8 @@ export type StackParamList = {
     placeId: number | null;
     countryId: number | null;
     majorStageId?: number;
+    lat?: number;
+    lng?: number;
   };
   LocationPickMap: {
     initialTitle: string | undefined;
@@ -66,6 +70,7 @@ export type StackParamList = {
     customCountryId?: number;
     onPressMarker?: (name: string) => void;
     minorStageId?: number;
+    majorStageId?: number;
   };
   ShowMap: {
     customCountryId: number;

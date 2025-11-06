@@ -22,6 +22,7 @@ interface LocationPickerProps {
   iconColor?: string;
   colorScheme?: ColorScheme;
   countryId?: number;
+  majorStageId?: number;
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
@@ -30,6 +31,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   iconColor,
   colorScheme = ColorScheme.primary,
   countryId,
+  majorStageId,
 }): ReactElement => {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
@@ -81,6 +83,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       hasLocation: hasInitialLocation,
       colorScheme: colorScheme,
       customCountryId: countryId,
+      majorStageId: majorStageId,
     });
     setIsLoading(false);
   }

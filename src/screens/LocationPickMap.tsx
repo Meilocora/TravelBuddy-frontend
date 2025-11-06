@@ -19,12 +19,13 @@ import MapView, {
 } from 'react-native-maps';
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
 
-import { ColorScheme, PlaceToVisit, StackParamList } from '../models';
+import { ColorScheme, PlaceToVisit, StackParamList, Location } from '../models';
 import Modal from '../components/UI/Modal';
 import { GlobalStyles } from '../constants/styles';
 import Button from '../components/UI/Button';
 import {
   formatPlaceToLocation,
+  getMapLocationsFromJourney,
   getPlaceDetails,
   getRegionForLocations,
 } from '../utils/location';
@@ -55,8 +56,9 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 
   const initialColorScheme = route.params.colorScheme || ColorScheme.primary;
 
-  const minorStageId = route.params.minorStageId;
   const customCountryId = route.params.customCountryId || undefined;
+  const minorStageId = route.params.minorStageId;
+  const majorStageId = route.params.majorStageId;
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasLocation, setHasLocation] = useState(route.params.hasLocation);
@@ -72,6 +74,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   let placesToVisit: undefined | PlaceToVisit[];
+  let journeysLocations: undefined | Location[];
   if (customCountryId) {
     placesToVisit = customCountryCtx.findCountriesPlaces(customCountryId);
 
@@ -89,6 +92,10 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         );
       }
     }
+  }
+  if (majorStageId) {
+    const journey = stagesCtx.findMajorStagesJourney(majorStageId)!;
+    journeysLocations = getMapLocationsFromJourney(journey);
   }
 
   // Update the useEffect
@@ -253,6 +260,15 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
               />
             );
           })}
+        {journeysLocations &&
+          journeysLocations.map((loc) => (
+            <MapsMarker
+              location={loc}
+              key={generateRandomString()}
+              active={loc.done}
+              onPressMarker={() => {}}
+            />
+          ))}
       </MapView>
       {route.params.onResetLocation && (
         <View style={styles.buttonContainer}>

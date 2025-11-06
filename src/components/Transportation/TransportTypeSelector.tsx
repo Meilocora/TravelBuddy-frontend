@@ -68,8 +68,6 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
     setOpenSelection(false);
   }
 
-  // TODO: gray backdrop!
-
   return (
     <>
       {openSelection && (
@@ -83,6 +81,7 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
               entering={FadeInUp}
               exiting={FadeOutUp}
             >
+              <Text style={styles.header}>Transport-Types</Text>
               <ScrollView style={styles.list} nestedScrollEnabled>
                 {Object.values(TransportationType).map((item: string) => (
                   <ListItem
@@ -148,9 +147,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    color: GlobalStyles.colors.grayDark,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 12,
+  },
   headerContainer: {
     width: '100%',
   },
+
   errorText: {
     fontSize: 16,
     color: GlobalStyles.colors.error200,
@@ -166,24 +173,23 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   listContainer: {
-    width: 150,
-    height: 310,
+    width: 250,
+    height: 370,
+    paddingHorizontal: 24,
     elevation: 5,
     borderColor: GlobalStyles.colors.grayMedium,
     borderWidth: 1,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderRadius: 20,
     zIndex: 1,
   },
   list: {
     paddingHorizontal: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.grayMedium,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
   button: {
     marginHorizontal: 'auto',
+    paddingBottom: 4,
   },
 });
 

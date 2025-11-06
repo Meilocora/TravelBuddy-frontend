@@ -24,11 +24,11 @@ import {
   getMapLocationsFromMinorStage,
   getRegionForLocations,
 } from '../../utils/location';
-import MapLocationList from '../../components/Maps/MapLocationList';
+import MapLocationList from '../../components/Maps/MapLocationList/MapLocationList';
 import Popup from '../../components/UI/Popup';
 import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
-import RoutePlanner from '../../components/Maps/RoutePlanner';
+import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
 import { UserContext } from '../../store/user-context';
 import { formatRouteDuration, generateRandomString } from '../../utils';
 
@@ -68,17 +68,49 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const journeyId = stagesCtx.selectedJourneyId!;
   const journey = stagesCtx.findJourney(journeyId);
 
-  const [mapScope, setMapScope] = useState<StageData>({
-    stageType: 'Journey',
-    id: journeyId,
-    name: journey!.name,
-  });
+  // TODO: über Layouteffect => getBack()
+  const minorStage = route.params.minorStage;
+  const majorStage = route.params.majorStage;
+
+  const [mapScope, setMapScope] = useState<StageData>(
+    majorStage
+      ? {
+          stageType: 'MajorStage',
+          id: majorStage.id,
+          name: majorStage.title,
+        }
+      : minorStage
+      ? {
+          stageType: 'MinorStage',
+          id: minorStage.id,
+          name: minorStage.title,
+        }
+      : {
+          stageType: 'Journey',
+          id: journeyId,
+          name: journey!.name,
+        }
+  );
 
   useFocusEffect(
     useCallback(() => {
       // get data when the screen comes into focus
       async function getLocations() {
-        const locations = getMapLocationsFromJourney(journey!);
+        let locations: Location[] | undefined;
+        if (minorStage) {
+          const localMajorStage = stagesCtx.findMinorStagesMajorStage(
+            minorStage.id
+          );
+          locations = getMapLocationsFromMinorStage(
+            minorStage,
+            localMajorStage!
+          );
+        } else if (majorStage) {
+          locations = getMapLocationsFromMajorStage(majorStage);
+        } else {
+          locations = getMapLocationsFromJourney(journey!);
+        }
+
         if (locations) {
           setLocations(locations);
 
@@ -106,7 +138,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         });
         setPressedLocation(undefined);
       };
-    }, [journeyId])
+    }, [journeyId, minorStage, majorStage])
   );
 
   function handlePressListElement(location: Location) {
@@ -332,7 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     padding: 8,
     borderRadius: 8,
-    zIndex: 10,
+    zIndex: 1,
   },
   routeInfoText: {
     color: 'white',

@@ -2,12 +2,11 @@ import { ReactElement, useState } from 'react';
 import { StyleSheet, View, ScrollView, Modal } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 
-import { GlobalStyles } from '../../constants/styles';
-import { ButtonMode, ColorScheme, Location } from '../../models';
-import Button from '../UI/Button';
-import { generateRandomString } from '../../utils';
-import ListItem from '../UI/search/ListItem';
+import { GlobalStyles } from '../../../constants/styles';
+import { ColorScheme, Location } from '../../../models';
+import Button from '../../UI/Button';
 import RoutePlannerListElement from './RoutePlannerListElement';
+import LocationsSelectionModal from './LocationsSelectionModal';
 
 interface RoutePlannerListProps {
   locations: Location[];
@@ -27,9 +26,9 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const choosableLocations = locations
-    .map((loc) => loc.data.name)
-    .filter((name) => !routeElements.includes(name));
+  const choosableLocations = locations.filter(
+    (loc) => !routeElements.includes(loc.data.name)
+  );
 
   function handlePressButton() {
     setCurrentIndex(99);
@@ -50,45 +49,15 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
     onRemoveElement(name);
   }
 
-  function handleSwitchElements(locs: string[]) {
-    onSwitchElements(locs);
-  }
-
   return (
     <>
       {showModal && (
-        <Modal
-          visible={showModal}
-          transparent
-          animationType='fade'
-          onRequestClose={() => setShowModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.listContainer}>
-              <ScrollView style={styles.list}>
-                {choosableLocations.map((name: string) => (
-                  <ListItem
-                    key={generateRandomString()}
-                    onPress={() => handleAddElement(name)}
-                    containerStyles={styles.listElementContainer}
-                    textStyles={styles.listElementText}
-                  >
-                    {name}
-                  </ListItem>
-                ))}
-              </ScrollView>
-              <Button
-                colorScheme={ColorScheme.neutral}
-                mode={ButtonMode.flat}
-                onPress={() => setShowModal(false)}
-                style={styles.button}
-                textStyle={styles.buttonText}
-              >
-                Dismiss
-              </Button>
-            </View>
-          </View>
-        </Modal>
+        <LocationsSelectionModal
+          choosableLocations={choosableLocations}
+          handleAddElement={handleAddElement}
+          setShowModal={setShowModal}
+          showModal={showModal}
+        />
       )}
       {routeElements.length < 2 && (
         <>
@@ -111,6 +80,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
       {!showModal && routeElements.length > 1 && (
         <DraggableFlatList
           data={routeElements}
+          style={styles.list}
           keyExtractor={(item) => item}
           renderItem={({ item, getIndex, drag, isActive }) => {
             const index = getIndex?.() ?? 0;
@@ -156,42 +126,6 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listContainer: {
-    maxHeight: '70%',
-    width: '80%',
-    alignItems: 'center',
-    paddingTop: 10,
-    backgroundColor: GlobalStyles.colors.graySoft,
-    borderColor: GlobalStyles.colors.grayMedium,
-    borderWidth: 1,
-    borderRadius: 20,
-    zIndex: 2,
-  },
-  list: {
-    paddingHorizontal: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.grayMedium,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-  },
-  listElementContainer: {
-    borderColor: GlobalStyles.colors.grayMedium,
-  },
-  listElementText: {
-    color: GlobalStyles.colors.grayMedium,
-  },
-  button: {
-    marginHorizontal: 'auto',
-  },
-  buttonText: {
-    color: GlobalStyles.colors.grayMedium,
-  },
   seperator: {
     width: '45%',
     height: 12,
@@ -213,6 +147,10 @@ const styles = StyleSheet.create({
   },
   stopoverButtonText: {
     fontSize: 14,
+  },
+  list: {
+    backgroundColor: GlobalStyles.colors.graySoft,
+    maxHeight: 400,
   },
 });
 

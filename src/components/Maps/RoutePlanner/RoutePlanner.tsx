@@ -6,16 +6,16 @@ import { MapViewDirectionsMode } from 'react-native-maps-directions';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { LatLng } from 'react-native-maps';
 
-import IconButton from '../UI/IconButton';
-import { ColorScheme, Icons, Location } from '../../models';
-import { GlobalStyles } from '../../constants/styles';
+import IconButton from '../../UI/IconButton';
+import { ColorScheme, Icons, Location } from '../../../models';
+import { GlobalStyles } from '../../../constants/styles';
 import RoutePlannerList from './RoutePlannerList';
-import Button from '../UI/Button';
-import { StageData } from './MapScopeSelector';
+import Button from '../../UI/Button';
+import { StageData } from '../MapScopeSelector';
 import {
   compareRouteLocations,
   getRouteLocationsNamesFromLocations,
-} from '../../utils/location';
+} from '../../../utils/location';
 
 interface RoutePlannerProps {
   locations: Location[];
@@ -102,8 +102,6 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
       setPlannedButtonVisible(true);
     }
   }, [routeLocations, locations, setRoutePoints, showContent.list]);
-
-  // TODO: No Locations for 2nd majorStage?!
 
   return (
     <>
@@ -199,11 +197,11 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     position: 'absolute',
-    zIndex: 2,
+    zIndex: 4,
     justifyContent: 'center',
   },
   innerContainer: {
-    maxHeight: Dimensions.get('window').height * 0.7,
+    maxHeight: Dimensions.get('window').height * 0.9,
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',

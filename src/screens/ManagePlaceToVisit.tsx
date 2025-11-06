@@ -46,6 +46,9 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
 
   const majorStageId = route.params?.majorStageId;
   const placeId = route.params?.placeId;
+  const initialLat = route.params.lat;
+  const initialLng = route.params.lng;
+
   let isEditing = !!placeId;
 
   const selectedPlace = placesCtx.placesToVisit.find(
@@ -67,8 +70,8 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
       description: selectedPlace?.description || '',
       visited: selectedPlace?.visited || false,
       favorite: selectedPlace?.favorite || false,
-      latitude: selectedPlace?.latitude || undefined,
-      longitude: selectedPlace?.longitude || undefined,
+      latitude: selectedPlace?.latitude || initialLat || undefined,
+      longitude: selectedPlace?.longitude || initialLng || undefined,
       link: selectedPlace?.link || '',
     };
   }, [selectedPlace]);

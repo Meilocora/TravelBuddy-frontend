@@ -32,6 +32,7 @@ import BusIcon from '../../../assets/bus.svg';
 import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -57,8 +58,10 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
+  const mapNavigation =
+    useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
-  const [isopen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const moneyAvailable = formatAmount(majorStage.costs.budget);
   const moneyPlanned = formatAmount(majorStage.costs.spent_money);
@@ -164,6 +167,13 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     });
   }
 
+  function handleTapMap() {
+    mapNavigation.navigate('Map', {
+      majorStage: majorStage,
+      minorStage: undefined,
+    });
+  }
+
   return (
     <View
       style={[
@@ -174,17 +184,24 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     >
       <View style={styles.buttonsContainer}>
         <IconButton
+          icon={Icons.mapFilled}
+          color={GlobalStyles.colors.amberAccent}
+          onPress={handleTapMap}
+          containerStyle={styles.icon}
+        />
+        <IconButton
           icon={Icons.edit}
           color={GlobalStyles.colors.amberAccent}
           onPress={handleEdit}
           containerStyle={styles.icon}
         />
-        {!isopen ? (
+        {!isOpen ? (
           <IconButton
             icon={Icons.openDetails}
             onPress={() => setIsOpen(true)}
             color={GlobalStyles.colors.amberAccent}
             containerStyle={styles.icon}
+            size={30}
           />
         ) : (
           <IconButton
@@ -192,6 +209,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
             onPress={() => setIsOpen(false)}
             color={GlobalStyles.colors.amberAccent}
             containerStyle={styles.icon}
+            size={30}
           />
         )}
       </View>
@@ -213,7 +231,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
             }`}</ElementTitle>
           </View>
           <ElementComment content={`${startDate} - ${endDate}`} />
-          {isopen ? (
+          {isOpen ? (
             <>
               <DetailArea elementDetailInfo={elementDetailInfo} />
               {majorStage.transportation && (
@@ -317,16 +335,21 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     position: 'absolute',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     zIndex: 1,
     right: 4,
     top: 5,
+    flexWrap: 'wrap',
+    width: 70,
   },
   icon: {
-    paddingHorizontal: 0,
-    marginHorizontal: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    marginHorizontal: 0,
+    marginVertical: 0,
   },
   roughDetailsContainer: {
+    marginTop: 12,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-evenly',

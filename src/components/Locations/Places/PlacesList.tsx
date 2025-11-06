@@ -222,7 +222,11 @@ const PlacesList: React.FC<PlacesListProps> = ({
             <IconButton
               icon={Icons.search}
               onPress={handleTapSearch}
-              color={searchTerm ? GlobalStyles.colors.amberAccent : undefined}
+              color={
+                search || searchTerm
+                  ? GlobalStyles.colors.amberAccent
+                  : undefined
+              }
             />
             <IconButton
               icon={isFav ? Icons.heartFilled : Icons.heartOutline}

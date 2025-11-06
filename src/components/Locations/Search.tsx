@@ -5,6 +5,8 @@ import OutsidePressHandler from 'react-native-outside-press';
 
 import Input from '../UI/form/Input';
 import { GlobalStyles } from '../../constants/styles';
+import IconButton from '../UI/IconButton';
+import { Icons } from '../../models';
 
 interface SearchProps {
   searchTerm: string;
@@ -39,11 +41,17 @@ const Search: React.FC<SearchProps> = ({
             textInputConfig={{
               value: searchTerm,
               onChangeText: inputChangedHandler,
-              cursorColor: GlobalStyles.colors.grayDark,
             }}
             customInputStyles={styles.input}
           />
         </View>
+        <IconButton
+          icon={Icons.delete}
+          color={GlobalStyles.colors.graySoft}
+          onPress={() => setSearchTerm('')}
+          size={32}
+          style={styles.icon}
+        />
       </Animated.View>
     </OutsidePressHandler>
   );
@@ -63,9 +71,11 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: GlobalStyles.colors.grayMedium,
-    color: GlobalStyles.colors.grayDark,
-    borderColor: GlobalStyles.colors.grayDark,
-    borderWidth: 0.5,
+  },
+  icon: {
+    position: 'absolute',
+    top: 24,
+    right: -3,
   },
 });
 

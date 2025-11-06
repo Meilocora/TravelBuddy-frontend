@@ -230,6 +230,9 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
                   : undefined
               }
               colorScheme={ColorScheme.complementary}
+              majorStageId={
+                stagesCtx.findMinorStagesMajorStage(minorStageId)!.id
+              }
             />
           </View>
           <View style={styles.formRow}>

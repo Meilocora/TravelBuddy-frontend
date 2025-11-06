@@ -27,8 +27,6 @@ interface MajorStageListProps {
   majorStages: MajorStage[];
 }
 
-// TODO: Bei mehreren Elementen zu kurz?!
-
 const MajorStageList: React.FC<MajorStageListProps> = ({
   journey,
   majorStages,

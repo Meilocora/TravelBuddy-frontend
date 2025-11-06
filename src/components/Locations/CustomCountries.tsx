@@ -76,7 +76,9 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
         <IconButton
           icon={Icons.search}
           onPress={handleTapSearch}
-          color={searchTerm ? GlobalStyles.colors.amberAccent : undefined}
+          color={
+            search || searchTerm ? GlobalStyles.colors.amberAccent : undefined
+          }
         />
         <IconButton
           icon={Icons.filter}

@@ -3,7 +3,12 @@ import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
-import { Icons, MajorStageStackParamList, MinorStage } from '../../models';
+import {
+  Icons,
+  JourneyBottomTabsParamsList,
+  MajorStageStackParamList,
+  MinorStage,
+} from '../../models';
 import ElementTitle from '../UI/list/ElementTitle';
 import ElementComment from '../UI/list/ElementComment';
 import {
@@ -26,6 +31,7 @@ import BusIcon from '../../../assets/bus.svg';
 import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -49,6 +55,8 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<MajorStageStackParamList>>();
+  const mapNavigation =
+    useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -105,6 +113,13 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
     });
   }
 
+  function handleTapMap() {
+    mapNavigation.navigate('Map', {
+      majorStage: undefined,
+      minorStage: minorStage,
+    });
+  }
+
   return (
     <View
       style={[
@@ -114,6 +129,12 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
       ]}
     >
       <View style={styles.buttonsContainer}>
+        <IconButton
+          icon={Icons.mapFilled}
+          color={GlobalStyles.colors.purpleAccent}
+          onPress={handleTapMap}
+          containerStyle={styles.icon}
+        />
         <IconButton
           icon={Icons.edit}
           color={GlobalStyles.colors.purpleAccent}
@@ -126,6 +147,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
             onPress={() => setIsOpen(true)}
             color={GlobalStyles.colors.purpleAccent}
             containerStyle={styles.icon}
+            size={30}
           />
         ) : (
           <IconButton
@@ -133,6 +155,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
             onPress={() => setIsOpen(false)}
             color={GlobalStyles.colors.purpleAccent}
             containerStyle={styles.icon}
+            size={30}
           />
         )}
       </View>
@@ -222,7 +245,7 @@ const styles = StyleSheet.create({
   },
   currentOuterContainer: {
     borderColor: 'gold',
-    elevation: 6,
+    elevation: 10,
     shadowColor: 'gold',
   },
   inactiveOuterContainer: {
@@ -254,16 +277,21 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     position: 'absolute',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     zIndex: 1,
     right: 4,
     top: 5,
+    flexWrap: 'wrap',
+    width: 70,
   },
   icon: {
-    paddingHorizontal: 0,
-    marginHorizontal: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    marginHorizontal: 0,
+    marginVertical: 0,
   },
   roughDetailsContainer: {
+    marginTop: 12,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-evenly',
