@@ -7,6 +7,7 @@ import {
   ActivityFormValues,
   ButtonMode,
   ColorScheme,
+  FormLimits,
   MapLocation,
 } from '../../../models';
 import Input from '../../UI/form/Input';
@@ -184,7 +185,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Name'
-              maxLength={15}
+              maxLength={FormLimits.activityName}
               invalid={!inputs.name.isValid}
               errors={inputs.name.errors}
               mandatory
@@ -197,7 +198,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Description'
-              maxLength={150}
+              maxLength={FormLimits.activitiesDescription}
               invalid={!inputs.description.isValid}
               errors={inputs.description.errors}
               textInputConfig={{
@@ -210,7 +211,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Place'
-              maxLength={20}
+              maxLength={FormLimits.place}
               invalid={!inputs.place.isValid}
               errors={inputs.place.errors}
               textInputConfig={{

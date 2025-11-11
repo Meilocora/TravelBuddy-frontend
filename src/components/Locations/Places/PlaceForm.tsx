@@ -5,6 +5,7 @@ import Input from '../../UI/form/Input';
 import {
   ButtonMode,
   ColorScheme,
+  FormLimits,
   Icons,
   MapLocation,
   PlaceFormValues,
@@ -198,7 +199,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Name'
-              maxLength={20}
+              maxLength={FormLimits.place}
               invalid={!inputs.name.isValid}
               errors={inputs.name.errors}
               mandatory
@@ -229,7 +230,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Description'
-              maxLength={100}
+              maxLength={FormLimits.placeDescription}
               invalid={!inputs.description.isValid}
               errors={inputs.description.errors}
               textInputConfig={{
@@ -349,7 +350,6 @@ const styles = StyleSheet.create({
   deleteContainer: {
     width: '100%',
     marginHorizontal: 'auto',
-    marginTop: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },

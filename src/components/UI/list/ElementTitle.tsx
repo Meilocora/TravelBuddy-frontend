@@ -11,7 +11,7 @@ const ElementTitle: React.FC<ElementTitleProps> = ({
   style,
 }): ReactElement => {
   return (
-    <Text style={[styles.title, style]} numberOfLines={1}>
+    <Text style={[styles.title, style]} numberOfLines={2}>
       {children}
     </Text>
   );

@@ -11,6 +11,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import {
+  FormLimits,
   Icons,
   MajorStageStackParamList,
   MinorStage,
@@ -218,7 +219,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
               icon={Icons.delete}
               color={GlobalStyles.colors.error200}
               onPress={deleteHandler}
-              size={36}
+              size={FormLimits.deleteSize}
             />
           </View>
         )}
@@ -233,7 +234,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     alignItems: 'center',
-    marginTop: 18,
   },
 });
 

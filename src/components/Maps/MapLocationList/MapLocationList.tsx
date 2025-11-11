@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     height: Dimensions.get('window').height * 0.7,
+    maxWidth: '85%',
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',

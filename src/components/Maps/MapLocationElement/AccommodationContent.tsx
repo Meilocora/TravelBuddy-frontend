@@ -44,7 +44,7 @@ const AccommodationContent: React.FC<AccommodationContentProps> = ({
       <View style={styles.textRow}>
         <View style={[styles.rowElement, { width: '100%' }]}>
           {!accommodation.link ? (
-            <Text style={styles.header} ellipsizeMode='tail' numberOfLines={1}>
+            <Text style={styles.header} ellipsizeMode='tail' numberOfLines={2}>
               {accommodation.place}
             </Text>
           ) : (
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: 'black',
+    maxWidth: '80%',
   },
   linkHeader: {
     fontSize: 20,
@@ -121,6 +122,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     fontSize: 14,
     fontStyle: 'italic',
+    maxWidth: '90%',
   },
   text: {
     marginVertical: 2,

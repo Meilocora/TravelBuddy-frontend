@@ -62,7 +62,7 @@ const MapLocationListElement: React.FC<MapLocationListElementProps> = ({
           style={[styles.icon, done && styles.iconDone]}
         />
       )}
-      <Text numberOfLines={1}>{location.data.name}</Text>
+      <Text numberOfLines={2}>{location.data.name}</Text>
     </Pressable>
   );
 };

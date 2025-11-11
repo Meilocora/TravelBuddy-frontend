@@ -71,12 +71,7 @@ const Planning: React.FC<PlanningProps> = ({
     navigation.setOptions({
       title: journey?.name,
       headerRight: () => (
-        <IconButton
-          icon={Icons.add}
-          onPress={handleAddMajorStage}
-          color={GlobalStyles.colors.grayMedium}
-          size={32}
-        />
+        <IconButton icon={Icons.add} onPress={handleAddMajorStage} size={32} />
       ),
     });
   }, [navigation, journey]);

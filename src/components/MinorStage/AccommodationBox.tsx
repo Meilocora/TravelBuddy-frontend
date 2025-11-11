@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     left: '50%',
     top: -12,
     transform: [{ translateX: -60 }],
-    backgroundColor: GlobalStyles.colors.graySoft,
+    backgroundColor: GlobalStyles.colors.purpleSoft,
     paddingHorizontal: 10,
   },
   row: {

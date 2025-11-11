@@ -19,7 +19,13 @@ import MapView, {
 } from 'react-native-maps';
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
 
-import { ColorScheme, PlaceToVisit, StackParamList, Location } from '../models';
+import {
+  ColorScheme,
+  PlaceToVisit,
+  StackParamList,
+  Location,
+  FormLimits,
+} from '../models';
 import Modal from '../components/UI/Modal';
 import { GlobalStyles } from '../constants/styles';
 import Button from '../components/UI/Button';
@@ -137,7 +143,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       latitudeDelta: 0.1,
       longitudeDelta: 0.04,
     });
-    setTitle(name.substring(0, 20));
+    setTitle(name.substring(0, FormLimits.place));
     setHasLocation(true);
     setIsInitialLoad(false); // Prevent future auto-calculations
     setShowModal(true);
@@ -152,7 +158,9 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         latitudeDelta: 0.1,
         longitudeDelta: 0.04,
       });
-      setTitle(place.structuredFormat.mainText.text.substring(0, 20));
+      setTitle(
+        place.structuredFormat.mainText.text.substring(0, FormLimits.place)
+      );
       setHasLocation(true);
       setIsInitialLoad(false); // Prevent future auto-calculations
       setShowModal(true);

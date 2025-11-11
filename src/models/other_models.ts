@@ -115,3 +115,20 @@ export type FilterKey =
   | 'accommodations'
   | 'places'
   | 'transportations';
+
+export enum FormLimits {
+  journeyName = 30,
+  journeyDescription = 500,
+  majorStageTitle = 30,
+  majorStageAdditionalInfos = 500,
+  minorStageTitle = 30,
+  place = 50,
+  placeDescription = 100,
+  countryBestTimeToVisit = 100,
+  countryGeneralInformation = 500,
+  countryVisumRegulations = 100,
+  activityName = 50,
+  activitiesDescription = 150,
+  spendingName = 30,
+  deleteSize = 62,
+}

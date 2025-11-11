@@ -202,7 +202,9 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
                   size={18}
                   containerStyle={styles.icon}
                 />
-                <Text>{minorStage.accommodation.place}</Text>
+                <Text style={styles.text} numberOfLines={2}>
+                  {minorStage.accommodation.place}
+                </Text>
               </View>
               {minorStage.transportation && IconComponent && (
                 <View style={styles.roughDetailsRow}>
@@ -300,6 +302,10 @@ const styles = StyleSheet.create({
   roughDetailsRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  text: {
+    maxWidth: '80%',
+    flexWrap: 'wrap',
   },
 });
 

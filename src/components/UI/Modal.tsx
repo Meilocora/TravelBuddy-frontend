@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '80%',
     padding: 24,
-    backgroundColor: GlobalStyles.colors.graySoftSemi,
+    backgroundColor: GlobalStyles.colors.graySoft,
     borderRadius: 20,
   },
   title: {

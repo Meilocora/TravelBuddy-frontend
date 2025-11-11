@@ -5,6 +5,7 @@ import {
   ColorScheme,
   CustomCountry,
   CustomCountryFormValues,
+  FormLimits,
   Icons,
 } from '../../../models';
 import Input from '../../UI/form/Input';
@@ -214,7 +215,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
             ) : (
               <Input
                 label='Best Time to Visit'
-                maxLength={50}
+                maxLength={FormLimits.countryBestTimeToVisit}
                 invalid={!inputs.best_time_to_visit.isValid}
                 errors={inputs.best_time_to_visit.errors}
                 isEditing={isEditing}
@@ -239,7 +240,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
             ) : (
               <Input
                 label='General Information'
-                maxLength={300}
+                maxLength={FormLimits.countryGeneralInformation}
                 invalid={!inputs.general_information.isValid}
                 errors={inputs.general_information.errors}
                 isEditing={isEditing}
@@ -265,7 +266,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
             ) : (
               <Input
                 label='Visum Regulations'
-                maxLength={100}
+                maxLength={FormLimits.countryVisumRegulations}
                 invalid={!inputs.visum_regulations.isValid}
                 errors={inputs.visum_regulations.errors}
                 isEditing={isEditing}
@@ -291,7 +292,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
               <IconButton
                 icon={Icons.delete}
                 onPress={deleteHandler}
-                size={36}
+                size={FormLimits.deleteSize}
                 color={GlobalStyles.colors.error500}
               />
             )}

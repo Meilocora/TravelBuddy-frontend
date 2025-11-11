@@ -95,7 +95,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     >
       <Pressable onPress={() => setIsOpened(!isOpened)}>
         <View style={styles.row}>
-          <Text style={styles.name} ellipsizeMode='tail' numberOfLines={1}>
+          <Text style={styles.name} ellipsizeMode='tail' numberOfLines={3}>
             {place.name}
           </Text>
           <View style={styles.buttonsContainer}>
@@ -172,13 +172,14 @@ const styles = StyleSheet.create({
   },
   name: {
     color: GlobalStyles.colors.graySoft,
-    fontSize: 16,
-    maxWidth: '50%',
-    marginLeft: 10,
+    fontSize: 14,
+    maxWidth: '60%',
+    flexGrow: 3,
+    paddingLeft: 6,
   },
   description: {
     color: GlobalStyles.colors.graySoft,
-    fontSize: 14,
+    fontSize: 12,
     fontStyle: 'italic',
     marginLeft: 4,
   },
@@ -190,6 +191,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    maxWidth: '100%',
   },
   halfRow: {
     flexDirection: 'row',
@@ -199,12 +201,14 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginHorizontal: 4,
+    flexWrap: 'wrap',
+    maxWidth: '40%',
   },
   button: {
     marginHorizontal: 0,
-    paddingHorizontal: 4,
+    paddingHorizontal: 0,
+    marginVertical: 0,
+    paddingVertical: 0,
   },
   additionalContainer: {
     marginHorizontal: 8,

@@ -36,7 +36,6 @@ interface ActivityListElementProps {
   minorStage: MinorStage;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
-  isOver: boolean;
   customCountryId: number;
 }
 
@@ -45,7 +44,6 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
   minorStage,
   handleEdit,
   handleDelete,
-  isOver,
   customCountryId,
 }) => {
   const [isOpened, setIsOpened] = useState(false);
@@ -78,7 +76,7 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
           <Text
             style={listElementStyles.name}
             ellipsizeMode='tail'
-            numberOfLines={1}
+            numberOfLines={2}
           >
             {activity.name}
           </Text>
@@ -117,13 +115,14 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
                   <Text
                     style={listElementStyles.description}
                     ellipsizeMode='tail'
-                    numberOfLines={1}
+                    numberOfLines={3}
                   >
                     {activity.place}
                   </Text>
                 </View>
               )}
-              {activity.costs && (
+
+              {activity.costs ? (
                 <View style={listElementStyles.rowElement}>
                   <Text style={listElementStyles.subtitle}>Costs: </Text>
                   <Text
@@ -134,7 +133,7 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
                     {formatAmount(activity.costs)}
                   </Text>
                 </View>
-              )}
+              ) : undefined}
             </View>
             <View style={listElementStyles.row}>
               <View style={listElementStyles.rowElement}>
@@ -170,7 +169,7 @@ const listElementStyles = StyleSheet.create({
   },
   name: {
     color: GlobalStyles.colors.graySoft,
-    fontSize: 16,
+    fontSize: 14,
     maxWidth: '65%',
   },
   mainRow: {
@@ -180,20 +179,19 @@ const listElementStyles = StyleSheet.create({
     marginLeft: 8,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 8,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   rowElement: {
-    maxWidth: '50%',
+    maxWidth: '85%',
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 4,
   },
   buttonsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginHorizontal: 4,
+    marginHorizontal: 2,
   },
   button: {
     marginHorizontal: 0,
@@ -211,7 +209,7 @@ const listElementStyles = StyleSheet.create({
   description: {
     marginVertical: 2,
     color: GlobalStyles.colors.graySoft,
-    fontSize: 14,
+    fontSize: 12,
     fontStyle: 'italic',
   },
 });
@@ -249,7 +247,6 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
               handleEdit={handleEdit}
               handleDelete={handleDelete}
               key={generateRandomString()}
-              isOver={isOver}
               customCountryId={customCountryId}
             />
           ))}

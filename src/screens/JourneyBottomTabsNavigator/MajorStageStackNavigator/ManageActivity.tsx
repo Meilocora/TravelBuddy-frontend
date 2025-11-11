@@ -8,7 +8,12 @@ import {
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Activity, Icons, MajorStageStackParamList } from '../../../models';
+import {
+  Activity,
+  FormLimits,
+  Icons,
+  MajorStageStackParamList,
+} from '../../../models';
 import { RouteProp } from '@react-navigation/native';
 import ComplementaryGradient from '../../../components/UI/LinearGradients/ComplementaryGradient';
 import { GlobalStyles } from '../../../constants/styles';
@@ -156,7 +161,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
               icon={Icons.delete}
               color={GlobalStyles.colors.error200}
               onPress={deleteHandler}
-              size={36}
+              size={FormLimits.deleteSize}
             />
           </View>
         )}
@@ -171,7 +176,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     alignItems: 'center',
-    marginTop: 18,
   },
 });
 

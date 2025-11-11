@@ -14,6 +14,7 @@ import {
   JourneyValues,
   Journey,
   Icons,
+  FormLimits,
 } from '../../models';
 import JourneyForm from '../../components/Journeys/ManageJourney/JourneyForm';
 import IconButton from '../../components/UI/IconButton';
@@ -193,7 +194,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
               icon={Icons.delete}
               color={GlobalStyles.colors.error200}
               onPress={deleteHandler}
-              size={36}
+              size={FormLimits.deleteSize}
             />
           </View>
         )}
@@ -208,7 +209,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     alignItems: 'center',
-    marginTop: 18,
   },
 });
 

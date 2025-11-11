@@ -7,6 +7,7 @@ import {
   JourneyFormValues,
   JourneyValues,
   Journey,
+  FormLimits,
 } from '../../../models';
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
@@ -214,7 +215,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
         <View>
           <Input
             label='Name'
-            maxLength={15}
+            maxLength={FormLimits.journeyName}
             invalid={!inputs.name.isValid}
             errors={inputs.name.errors}
             mandatory
@@ -225,7 +226,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
           />
           <Input
             label='Description'
-            maxLength={300}
+            maxLength={FormLimits.journeyDescription}
             invalid={!inputs.description.isValid}
             errors={inputs.description.errors}
             textInputConfig={{
@@ -237,7 +238,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Spent Money'
-              maxLength={100}
+              maxLength={0}
               invalid={!inputs.spent_money.isValid}
               textInputConfig={{
                 readOnly: true,

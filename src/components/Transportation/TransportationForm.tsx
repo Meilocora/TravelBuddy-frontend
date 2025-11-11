@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   ButtonMode,
   ColorScheme,
+  FormLimits,
   MajorStage,
   MapLocation,
   MinorStage,
@@ -364,7 +365,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
         <View style={styles.formRow}>
           <Input
             label='Place of departure'
-            maxLength={20}
+            maxLength={FormLimits.place}
             invalid={!inputs.place_of_departure.isValid}
             errors={inputs.place_of_departure.errors}
             mandatory
@@ -398,7 +399,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
         <View style={styles.formRow}>
           <Input
             label='Place of arrival'
-            maxLength={20}
+            maxLength={FormLimits.place}
             invalid={!inputs.place_of_arrival.isValid}
             errors={inputs.place_of_arrival.errors}
             mandatory

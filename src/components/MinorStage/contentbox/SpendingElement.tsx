@@ -59,7 +59,7 @@ const SpendingListElement: React.FC<SpendingListElementProps> = ({
             <View style={[listElementStyles.rowElement, { width: '40%' }]}>
               <Text
                 ellipsizeMode='tail'
-                numberOfLines={1}
+                numberOfLines={2}
                 style={[
                   index % 2 === 0
                     ? listElementStyles.evenText

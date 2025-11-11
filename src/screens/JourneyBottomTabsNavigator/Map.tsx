@@ -1,7 +1,18 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ReactElement, useCallback, useContext, useState } from 'react';
+import {
+  ReactElement,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
-import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import {
+  NavigationProp,
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import Constants from 'expo-constants';
 import MapView, { LatLng, Region } from 'react-native-maps';
 import MapViewDirections, {
@@ -10,8 +21,10 @@ import MapViewDirections, {
 
 import {
   ColorScheme,
+  Icons,
   JourneyBottomTabsParamsList,
   Location,
+  StackParamList,
 } from '../../models';
 import MapsMarker from '../../components/Maps/MapsMarker';
 import MapScopeSelector, {
@@ -31,6 +44,8 @@ import MapLocationElement from '../../components/Maps/MapLocationElement/MapLoca
 import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
 import { UserContext } from '../../store/user-context';
 import { formatRouteDuration, generateRandomString } from '../../utils';
+import { GlobalStyles } from '../../constants/styles';
+import IconButton from '../../components/UI/IconButton';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
@@ -68,9 +83,8 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const journeyId = stagesCtx.selectedJourneyId!;
   const journey = stagesCtx.findJourney(journeyId);
 
-  // TODO: über Layouteffect => getBack()
-  const minorStage = route.params.minorStage;
-  const majorStage = route.params.majorStage;
+  const minorStage = route.params?.minorStage;
+  const majorStage = route.params?.majorStage;
 
   const [mapScope, setMapScope] = useState<StageData>(
     majorStage
@@ -140,6 +154,46 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       };
     }, [journeyId, minorStage, majorStage])
   );
+
+  const stagesNavigation = useNavigation<NavigationProp<StackParamList>>();
+
+  function handleGoBack() {
+    if (minorStage) {
+      const localMajorStageId = stagesCtx.findMinorStagesMajorStage(
+        minorStage.id
+      )!.id;
+      stagesNavigation.navigate('JourneyBottomTabsNavigator', {
+        screen: 'MajorStageStackNavigator',
+        params: {
+          screen: 'MinorStages',
+          params: {
+            journeyId: journeyId,
+            majorStageId: localMajorStageId,
+          },
+        },
+      });
+    } else {
+      stagesNavigation.navigate('JourneyBottomTabsNavigator', {
+        screen: 'Planning',
+        params: {
+          journeyId: journeyId,
+        },
+      });
+    }
+  }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: ({}) => (
+        <IconButton
+          color={GlobalStyles.colors.grayDark}
+          size={24}
+          icon={Icons.arrowBack}
+          onPress={handleGoBack}
+        />
+      ),
+    });
+  }, [navigation, majorStage]);
 
   function handlePressListElement(location: Location) {
     setRegion({

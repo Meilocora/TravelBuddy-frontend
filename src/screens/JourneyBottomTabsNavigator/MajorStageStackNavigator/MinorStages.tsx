@@ -21,7 +21,6 @@ import ComplementaryGradient from '../../../components/UI/LinearGradients/Comple
 import { GlobalStyles } from '../../../constants/styles';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import MinorStageList from '../../../components/MinorStage/MinorStageList';
-import { validateIsOver } from '../../../utils';
 import InfoText from '../../../components/UI/InfoText';
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../../store/stages-context';
@@ -58,10 +57,6 @@ const MinorStages: React.FC<MinorStagesProps> = ({
         display: 'none',
       },
     });
-    // return () =>
-    // navigation.getParent()?.setOptions({
-    // tabBarStyle: { backgroundColor: GlobalStyles.colors.greenBg },
-    // });
   }, [navigation]);
 
   useEffect(() => {
@@ -94,16 +89,10 @@ const MinorStages: React.FC<MinorStagesProps> = ({
     navigation.setOptions({
       headerTitle: () => <HeaderTitle title={majorStage!.title} />,
       headerRight: () => (
-        <IconButton
-          icon={Icons.add}
-          onPress={handleAddMinorStage}
-          color={GlobalStyles.colors.grayDark}
-          size={32}
-        />
+        <IconButton icon={Icons.add} onPress={handleAddMinorStage} size={32} />
       ),
       headerLeft: ({}) => (
         <IconButton
-          color={GlobalStyles.colors.grayDark}
           size={24}
           icon={Icons.arrowBack}
           onPress={() => {

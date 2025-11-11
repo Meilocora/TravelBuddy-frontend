@@ -55,16 +55,6 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     activatePopup();
   }, [route.params]);
 
-  useEffect(() => {
-    function activatePopup() {
-      if (authCtx.username) {
-        setPopupText(`Welcome ${authCtx.username}!`);
-      }
-    }
-
-    activatePopup();
-  }, [authCtx]);
-
   // Fetch all data here, because the users always starts on this screen
   useEffect(() => {
     async function getData() {

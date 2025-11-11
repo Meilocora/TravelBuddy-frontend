@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import {
   ButtonMode,
   ColorScheme,
+  FormLimits,
   MajorStage,
   MajorStageFormValues,
   MajorStageValues,
@@ -229,7 +230,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
             <View style={styles.titleWrapper}>
               <Input
                 label='Title'
-                maxLength={15}
+                maxLength={FormLimits.majorStageTitle}
                 invalid={!inputs.title.isValid}
                 errors={inputs.title.errors}
                 mandatory
@@ -254,7 +255,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Additional Information'
-              maxLength={150}
+              maxLength={FormLimits.majorStageAdditionalInfos}
               invalid={!inputs.additional_info.isValid}
               errors={inputs.additional_info.errors}
               textInputConfig={{
@@ -267,7 +268,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Spent Money'
-              maxLength={100}
+              maxLength={0}
               invalid={!inputs.spent_money.isValid}
               textInputConfig={{
                 readOnly: true,

@@ -5,6 +5,7 @@ import { Checkbox } from 'react-native-paper';
 import {
   ButtonMode,
   ColorScheme,
+  FormLimits,
   MapLocation,
   MinorStage,
   MinorStageFormValues,
@@ -274,7 +275,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
             <View style={styles.titleWrapper}>
               <Input
                 label='Title'
-                maxLength={20}
+                maxLength={FormLimits.minorStageTitle}
                 invalid={!inputs.title.isValid}
                 errors={inputs.title.errors}
                 mandatory
@@ -300,7 +301,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Spent Money'
-              maxLength={100}
+              maxLength={0}
               invalid={!inputs.spent_money.isValid}
               textInputConfig={{
                 readOnly: true,
@@ -359,7 +360,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Place'
-              maxLength={20}
+              maxLength={FormLimits.place}
               invalid={!inputs.accommodation_place.isValid}
               errors={inputs.accommodation_place.errors}
               textInputConfig={{

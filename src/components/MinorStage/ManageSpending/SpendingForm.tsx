@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import {
   ButtonMode,
   ColorScheme,
+  FormLimits,
   Spending,
   SpendingFormValues,
 } from '../../../models';
@@ -160,7 +161,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
           <View style={styles.formRow}>
             <Input
               label='Name'
-              maxLength={15}
+              maxLength={FormLimits.spendingName}
               invalid={!inputs.name.isValid}
               errors={inputs.name.errors}
               mandatory

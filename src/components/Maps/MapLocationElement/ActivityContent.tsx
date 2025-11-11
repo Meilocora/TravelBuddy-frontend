@@ -41,7 +41,7 @@ const ActivityContent: React.FC<ActivityContentProps> = ({
       <View style={styles.textRow}>
         <View style={[styles.rowElement, { width: '100%' }]}>
           {!activity.link ? (
-            <Text style={styles.header} ellipsizeMode='tail' numberOfLines={1}>
+            <Text style={styles.header} ellipsizeMode='tail' numberOfLines={2}>
               {activity.name}
             </Text>
           ) : (
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: 'black',
+    maxWidth: '80%',
   },
   linkHeader: {
     fontSize: 20,
@@ -129,6 +130,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     fontSize: 14,
     fontStyle: 'italic',
+    maxWidth: '90%',
   },
   text: {
     marginVertical: 2,

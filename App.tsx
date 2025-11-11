@@ -53,24 +53,23 @@ import LocationPickMap from './src/screens/LocationPickMap';
 import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
+import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
-// CountrySelector überarbeiten analog u PlacesList
-// Liste for RoutePlanningList mit erweiterten Funktionen ... also fix List Design
-// Liste für MapLocationList mit erweiterten Funktionen
-// Button zum Map-Screen für MajorStage (neben FilterSettings) und einzelne MinorStage
-// In LocationPickMap auch PlacesToVisit darstellen => so leichter auswählbar bei neuer minorStage für Accommodation
-// ShowMap => OnPress direkt LocationToVisit hinzufügen für customCountry
-// TODO: maxLength aller Bezeichnungen überdenken
+// Map anpassen
+// maxLength aller Bezeichnungen überdenken => dazu zentrales Interface o.ä. (auch im backend)
+// Delete Buttons synchronisieren
+// BottomTabs active design anpassen
 
 // PRIO 2 \\
-// TODO: Checks für ValidationLog erweitern
+// TODO: CurrenciesModal analog zu PlacesList anpassen und zus. Infos einfügen (+ "EU" besser in die Mitte bringen)
 // TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 
 // PRIO 3 \\
-// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar)
+// TODO: Checks für ValidationLog erweitern
+// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
@@ -89,7 +88,7 @@ navTheme.colors.background = 'transparent';
 const AuthStack = () => {
   return (
     <>
-      <MainGradient />
+      <AuthGradient />
       <Auth.Navigator
         screenOptions={{
           headerShown: false,
@@ -122,9 +121,14 @@ const BottomTabsNavigator = () => {
             paddingTop: 5,
             paddingBottom: 5,
           },
+          tabBarItemStyle: {
+            borderRadius: 15,
+            maxWidth: '27%',
+            marginHorizontal: 'auto',
+          },
           tabBarInactiveTintColor: GlobalStyles.colors.greenDark,
           tabBarActiveTintColor: GlobalStyles.colors.greenAccent,
-          tabBarIconStyle: { color: GlobalStyles.colors.grayDark },
+          // tabBarActiveBackgroundColor: GlobalStyles.colors.greenBgSemi,
           tabBarLabelStyle: {
             fontSize: 14,
           },
@@ -138,7 +142,7 @@ const BottomTabsNavigator = () => {
               }}
             />
           ),
-          // TODO: Add headerLeft for a refresh Button
+          // TODO: Add headerLeft for a refresh Button => better in User and here Chatbot Button
         })}
       >
         <BottomTabs.Screen
@@ -216,8 +220,14 @@ const JourneyBottomTabsNavigator = () => {
             paddingTop: 5,
             paddingBottom: 5,
           },
+          tabBarItemStyle: {
+            borderRadius: 15,
+            maxWidth: '27%',
+            marginHorizontal: 'auto',
+          },
           tabBarInactiveTintColor: GlobalStyles.colors.amberDark,
           tabBarActiveTintColor: GlobalStyles.colors.amberAccent,
+          // tabBarActiveBackgroundColor: GlobalStyles.colors.amberDark,
           tabBarLabelStyle: {
             fontSize: 14,
           },
@@ -417,12 +427,10 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        // Ionicons-Font vorladen (falls nötig)
+        // Ionicons-Font vorladen
         await Font.loadAsync(Ionicons.font);
-        console.log('Ionicons font loaded successfully');
       } catch (err) {
         console.error('Ionicons font loading failed:', err);
-        // Wenn du möchtest, kannst du hier ein Flag setzen, um einen Fallback oder Hinweis zu zeigen.
       } finally {
         setReady(true);
       }

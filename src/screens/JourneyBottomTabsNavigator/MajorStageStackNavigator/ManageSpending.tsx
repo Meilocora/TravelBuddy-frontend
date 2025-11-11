@@ -8,7 +8,12 @@ import {
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Icons, MajorStageStackParamList, Spending } from '../../../models';
+import {
+  FormLimits,
+  Icons,
+  MajorStageStackParamList,
+  Spending,
+} from '../../../models';
 import { RouteProp } from '@react-navigation/native';
 import ComplementaryGradient from '../../../components/UI/LinearGradients/ComplementaryGradient';
 import { GlobalStyles } from '../../../constants/styles';
@@ -151,7 +156,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
               icon={Icons.delete}
               color={GlobalStyles.colors.error200}
               onPress={deleteHandler}
-              size={46}
+              size={FormLimits.deleteSize}
             />
           </View>
         )}

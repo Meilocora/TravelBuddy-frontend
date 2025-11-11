@@ -13,6 +13,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import {
+  FormLimits,
   Icons,
   JourneyBottomTabsParamsList,
   MajorStageStackParamList,
@@ -208,7 +209,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
                 icon={Icons.delete}
                 color={GlobalStyles.colors.error200}
                 onPress={deleteHandler}
-                size={36}
+                size={FormLimits.deleteSize}
               />
             </View>
           )}

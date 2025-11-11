@@ -18,6 +18,7 @@ import {
   JourneyBottomTabsParamsList,
   Icons,
   MajorStageStackParamList,
+  FormLimits,
 } from '../../../models';
 import { formatDateString, generateRandomString } from '../../../utils';
 import Modal from '../../../components/UI/Modal';
@@ -187,7 +188,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
               icon={Icons.delete}
               color={GlobalStyles.colors.error200}
               onPress={deleteHandler}
-              size={36}
+              size={FormLimits.deleteSize}
             />
           </View>
         )}
@@ -202,7 +203,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     alignItems: 'center',
-    marginTop: 18,
   },
 });
 
