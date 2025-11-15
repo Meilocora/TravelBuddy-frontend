@@ -7,11 +7,15 @@ import {
   Location,
   LocationType,
   MajorStage,
+  MapScopeType,
   MinorStage,
   PlaceToVisit,
   TransportationType,
 } from '../models';
 import { parseDate, parseDateAndTime } from './formatting';
+import { useContext } from 'react';
+import { StagesContext } from '../store/stages-context';
+import { CustomCountryContext } from '../store/custom-country-context';
 
 const GOOGLE_API_KEY =
   Constants.expoConfig?.extra?.googleApiKey ||
@@ -123,7 +127,8 @@ export async function getRegionForLocations(
 }
 
 export function getMapLocationsFromJourney(
-  journey: Journey
+  journey: Journey,
+  showPastLocations: boolean
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -256,11 +261,19 @@ export function getMapLocationsFromJourney(
     }
   }
 
+  if (!showPastLocations) {
+    const filteredLocations = locations.filter(
+      (location) => location.done === false
+    );
+    return filteredLocations || undefined;
+  }
+
   return locations || undefined;
 }
 
 export function getMapLocationsFromMajorStage(
-  majorStage: MajorStage
+  majorStage: MajorStage,
+  showPastLocations: boolean
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -385,12 +398,20 @@ export function getMapLocationsFromMajorStage(
     }
   }
 
+  if (!showPastLocations) {
+    const filteredLocations = locations.filter(
+      (location) => location.done === false
+    );
+    return filteredLocations || undefined;
+  }
+
   return locations || undefined;
 }
 
 export function getMapLocationsFromMinorStage(
   minorStage: MinorStage,
-  majorStage: MajorStage
+  majorStage: MajorStage,
+  showPastLocations: boolean
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -476,14 +497,25 @@ export function getMapLocationsFromMinorStage(
     }
   }
 
+  if (!showPastLocations) {
+    const filteredLocations = locations.filter(
+      (location) => location.done === false
+    );
+    return filteredLocations || undefined;
+  }
+
   return locations || undefined;
 }
 
-export function addColor(locations: Location[], stageType: string): Location[] {
+export function addColor(
+  locations: Location[],
+  stageType: MapScopeType
+): Location[] {
   if (stageType === 'Journey') {
     const uniqueMajorStageNames = Array.from(
       new Set(locations.map((location) => location.belonging))
     );
+
     if (uniqueMajorStageNames.length > 1) {
       const colors = generateColorsSet(uniqueMajorStageNames.length);
 
@@ -503,7 +535,8 @@ export function addColor(locations: Location[], stageType: string): Location[] {
       return locations;
     } else {
       locations.forEach((location) => {
-        delete location.color;
+        // delete location.color;
+        location.color = undefined;
       });
       return locations;
     }
@@ -546,6 +579,43 @@ export function addColor(locations: Location[], stageType: string): Location[] {
     });
     return locations;
   }
+}
+
+/**
+ * Gets the locations of the remaining places to visit in the specified countries, that are not connected to the shown stage
+ */
+export function getRemainingCountriesPlacesLocations(
+  countryIds: number[],
+  assignedLocations: Location[] | undefined,
+  findCountriesPlaces: (countryId: number) => PlaceToVisit[] | undefined,
+  showAllPlaces: boolean
+): Location[] {
+  if (!showAllPlaces) {
+    return [];
+  }
+
+  const remainingLocations: Location[] = [];
+
+  for (const countryId of countryIds) {
+    const allPlaces = findCountriesPlaces(countryId);
+
+    if (!allPlaces) continue;
+    for (const place of allPlaces) {
+      const isAlreadyAssigned = assignedLocations?.some(
+        (location) =>
+          location.data.name === place.name &&
+          location.locationType === LocationType.placeToVisit &&
+          location.data.latitude === place.latitude &&
+          location.data.longitude === place.longitude
+      );
+
+      if (!isAlreadyAssigned) {
+        remainingLocations.push(formatPlaceToLocation(place));
+      }
+    }
+  }
+
+  return remainingLocations;
 }
 
 export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {

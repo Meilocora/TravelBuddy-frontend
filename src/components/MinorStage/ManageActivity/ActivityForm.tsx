@@ -47,6 +47,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
   const minorStage = stagesCtx.findMinorStage(minorStageId);
+  const majorStage = stagesCtx.findMinorStagesMajorStage(minorStageId);
 
   const maxAvailableMoney = Math.max(
     Math.round(
@@ -234,6 +235,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
               majorStageId={
                 stagesCtx.findMinorStagesMajorStage(minorStageId)!.id
               }
+              countryId={majorStage?.country.id}
             />
           </View>
           <View style={styles.formRow}>

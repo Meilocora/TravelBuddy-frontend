@@ -108,7 +108,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
       )}
       <View style={styles.buttonContainer}>
         <IconButton
-          icon={Icons.settings}
+          icon={openModal ? Icons.settingsFilled : Icons.settingsOutline}
           onPress={() => setOpenModal((prevValue) => !prevValue)}
           color={GlobalStyles.colors.grayMedium}
         />

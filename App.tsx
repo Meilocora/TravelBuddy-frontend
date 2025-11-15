@@ -56,18 +56,12 @@ import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
-// Map anpassen
-// maxLength aller Bezeichnungen überdenken => dazu zentrales Interface o.ä. (auch im backend)
-// Delete Buttons synchronisieren
-// BottomTabs active design anpassen
-
-// PRIO 2 \\
 // TODO: CurrenciesModal analog zu PlacesList anpassen und zus. Infos einfügen (+ "EU" besser in die Mitte bringen)
 // TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 
-// PRIO 3 \\
+// PRIO 2 \\
 // TODO: Checks für ValidationLog erweitern
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
 // TODO: Outsource inputChangedHandler and related handlers from the Forms

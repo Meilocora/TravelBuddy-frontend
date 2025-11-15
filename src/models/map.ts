@@ -32,3 +32,5 @@ export interface Location {
   transportationType?: TransportationType;
   color?: string;
 }
+
+export type MapScopeType = 'Journey' | 'MajorStage' | 'MinorStage';

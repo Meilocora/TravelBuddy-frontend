@@ -385,6 +385,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               }
               colorScheme={ColorScheme.complementary}
               majorStageId={majorStageId}
+              countryId={majorStage?.country.id}
             />
           </View>
           <View style={styles.formRow}>

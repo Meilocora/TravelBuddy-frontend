@@ -27,7 +27,7 @@ import {
   FormLimits,
 } from '../models';
 import Modal from '../components/UI/Modal';
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import Button from '../components/UI/Button';
 import {
   formatPlaceToLocation,
@@ -101,7 +101,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   }
   if (majorStageId) {
     const journey = stagesCtx.findMajorStagesJourney(majorStageId)!;
-    journeysLocations = getMapLocationsFromJourney(journey);
+    journeysLocations = getMapLocationsFromJourney(journey, true);
   }
 
   // Update the useEffect
@@ -236,6 +236,9 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         onPress={route.params.onPressMarker ? undefined : selectLocationHandler}
         onPoiClick={handlePoiClick}
         style={styles.map}
+        mapType='standard'
+        userInterfaceStyle='light'
+        customMapStyle={lightMapStyle}
       >
         {initialLocation && hasLocation && !minorStageId && (
           <Marker

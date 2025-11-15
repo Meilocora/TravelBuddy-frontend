@@ -30,7 +30,6 @@ interface MapLocationListProps {
   mode: MapViewDirectionsMode;
   toggleButtonVisibility: () => void;
   showContent: { button: boolean; list: boolean };
-  setMode: (mode: MapViewDirectionsMode) => void;
   onPress: (location: Location) => void;
 }
 
@@ -40,7 +39,6 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
   mode,
   toggleButtonVisibility,
   showContent,
-  setMode,
   onPress,
 }): ReactElement => {
   const [selectedLocation, setSelectedLocation] = useState<
@@ -130,44 +128,6 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
             onOutsidePress={toggleButtonVisibility}
             style={styles.innerContainer}
           >
-            <View style={styles.buttonRow}>
-              <IconButton
-                icon={Icons.walk}
-                onPress={() => setMode('WALKING')}
-                color={
-                  mode === 'WALKING'
-                    ? GlobalStyles.colors.amberAccent
-                    : GlobalStyles.colors.grayDark
-                }
-                containerStyle={
-                  mode === 'WALKING' ? styles.activeButton : styles.button
-                }
-              />
-              <IconButton
-                icon={Icons.bicycle}
-                onPress={() => setMode('BICYCLING')}
-                color={
-                  mode === 'BICYCLING'
-                    ? GlobalStyles.colors.amberAccent
-                    : GlobalStyles.colors.grayDark
-                }
-                containerStyle={
-                  mode === 'BICYCLING' ? styles.activeButton : styles.button
-                }
-              />
-              <IconButton
-                icon={Icons.car}
-                onPress={() => setMode('DRIVING')}
-                color={
-                  mode === 'DRIVING'
-                    ? GlobalStyles.colors.amberAccent
-                    : GlobalStyles.colors.grayDark
-                }
-                containerStyle={
-                  mode === 'DRIVING' ? styles.activeButton : styles.button
-                }
-              />
-            </View>
             <View style={styles.iconsContainer}>
               <Pressable
                 style={[
@@ -249,7 +209,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     height: Dimensions.get('window').height * 0.7,
-    maxWidth: '85%',
+    width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -278,27 +238,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '40%',
     zIndex: 1,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    marginBottom: 5,
-    marginHorizontal: 'auto',
-  },
-  button: {
-    padding: 2,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'black',
-  },
-  activeButton: {
-    padding: 2,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: GlobalStyles.colors.amberAccent,
-    backgroundColor: GlobalStyles.colors.amberSoft,
-  },
-  buttonText: {
-    color: GlobalStyles.colors.grayDark,
   },
 });
 

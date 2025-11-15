@@ -42,13 +42,15 @@ export enum Icons {
   walk = 'walk',
   bicycle = 'bicycle',
   car = 'car',
-  settings = 'settings-outline',
+  settingsOutline = 'settings-outline',
+  settingsFilled = 'settings',
   goTo = 'arrow-forward-circle',
   arrowLeft = 'chevron-back',
   activity = 'flash',
   routePlanner = 'git-merge-outline',
   openDetails = 'caret-down-outline',
   closeDetails = 'caret-up-outline',
+  toggle = 'toggle',
 }
 
 export enum ButtonMode {

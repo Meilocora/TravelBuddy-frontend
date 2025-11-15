@@ -48,8 +48,6 @@ const PlacesSelection = ({
   minorStageId,
 }: PlacesSelectionProps): ReactElement => {
   const navigation = useNavigation<NavigationProp<StackParamList>>();
-  const mapNavigation =
-    useNavigation<NativeStackNavigationProp<StackParamList>>();
   const [fetchedData, setFetchedData] = useState<string[]>([]);
   const [customCountryId, setCustomCountryId] = useState<number | null>(null);
   const [averageRegion, setAverageRegion] = useState<Region>();

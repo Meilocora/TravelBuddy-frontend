@@ -62,7 +62,7 @@ const JourneysList: React.FC = ({}): ReactElement => {
       )}
       <View style={styles.buttonContainer}>
         <IconButton
-          icon={Icons.settings}
+          icon={openModal ? Icons.settingsFilled : Icons.settingsOutline}
           onPress={() => setOpenModal(!openModal)}
           color={GlobalStyles.colors.grayDark}
         />

@@ -12,7 +12,7 @@ import { RouteProp } from '@react-navigation/native';
 import MapView, { MapPressEvent, Marker, Region } from 'react-native-maps';
 
 import { StackParamList } from '../models';
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import MapsMarker from '../components/Maps/MapsMarker';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import {
@@ -93,6 +93,9 @@ const ShowMap: React.FC<ShowMapProps> = ({
         style={styles.map}
         showsUserLocation
         showsMyLocationButton
+        mapType='standard'
+        userInterfaceStyle='light'
+        customMapStyle={lightMapStyle}
       >
         {customCountryCtx.findCountriesPlaces(customCountryId)!.map((place) => {
           return (

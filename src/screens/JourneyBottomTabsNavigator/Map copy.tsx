@@ -5,13 +5,13 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
 import {
   NavigationProp,
   RouteProp,
+  useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
@@ -25,6 +25,7 @@ import {
   Icons,
   JourneyBottomTabsParamsList,
   Location,
+  MapScopeType,
   StackParamList,
 } from '../../models';
 import MapsMarker from '../../components/Maps/MapsMarker';
@@ -45,12 +46,11 @@ import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
 import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
 import { UserContext } from '../../store/user-context';
-import { formatRouteDuration, generateRandomString } from '../../utils';
+import { formatRouteDuration } from '../../utils';
 import IconButton from '../../components/UI/IconButton';
 import MapSettings from '../../components/Maps/MapSettings';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import { lightMapStyle } from '../../constants/styles';
-import { usePersistedState } from '../../hooks/usePersistedState';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
@@ -59,23 +59,19 @@ interface MapProps {
 
 const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const [showSettings, setShowSettings] = useState(false);
-  const [showPastLocations, setShowPastLocations] = usePersistedState(
-    'map_show_past_locations',
-    false
-  );
-  const [showAllPlaces, setShowAllPlaces] = usePersistedState(
-    'map_show_all_places',
-    false
-  );
-  const [directionsMode, setDirectionsMode] =
-    usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
+  const [showPastLocations, setShowPastLocations] = useState(false);
+  const [showAllPlaces, setShowAllPlaces] = useState(false);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [shownLocations, setShownLocations] = useState<Location[]>([]);
+  const [region, setRegion] = useState<Region | null>(null);
   const [directionDestination, setDirectionDestination] =
     useState<LatLng | null>(null);
-  const [region, setRegion] = useState<Region | null>(null);
   const [routeInfo, setRouteInfo] = useState<{
     distance: number;
     duration: number;
   } | null>(null);
+  const [directionsMode, setDirectionsMode] =
+    useState<MapViewDirectionsMode>('DRIVING');
   const [popupText, setPopupText] = useState<string | undefined>();
   const [pressedLocation, setPressedLocation] = useState<
     Location | undefined
@@ -97,133 +93,140 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const journeyId = stagesCtx.selectedJourneyId!;
   const journey = stagesCtx.findJourney(journeyId);
 
-  const stagesNavigation = useNavigation<NavigationProp<StackParamList>>();
-
   const minorStage = route.params?.minorStage;
   const majorStage = route.params?.majorStage;
 
-  // 1) mapScope nur ABLEITEN (keinen lokalen State benutzen)
-  const mapScope = useMemo(() => {
-    if (route.params?.minorStage) {
-      const ms = route.params.minorStage;
-      return { stageType: 'MinorStage' as const, id: ms.id, name: ms.title };
-    }
-    if (route.params?.majorStage) {
-      const ma = route.params.majorStage;
-      return { stageType: 'MajorStage' as const, id: ma.id, name: ma.title };
-    }
-    return {
-      stageType: 'Journey' as const,
-      id: journeyId,
-      name: journey!.name,
-    };
-  }, [
-    route.params?.minorStage?.id,
-    route.params?.majorStage?.id,
-    journeyId,
-    journey?.name,
-  ]);
+  const [mapScope, setMapScope] = useState<StageData>({
+    stageType: 'Journey',
+    id: journeyId,
+    name: journey!.name,
+  });
 
-  // 2) Scope-Wechsel NUR über die Navigation-Params
-  const handleChangeMapScope = useCallback(
-    (next: StageData) => {
-      // UI-/Routing-Zustände zurücksetzen
-      setDirectionDestination(null);
-      setPressedLocation(undefined);
-      setRoutePoints(undefined);
-      setRouteInfo(null);
+  useEffect(() => {
+    if (majorStage) {
+      setMapScope({
+        stageType: 'MajorStage',
+        id: majorStage.id,
+        name: majorStage.title,
+      });
+    } else if (minorStage) {
+      setMapScope({
+        stageType: 'MinorStage',
+        id: minorStage.id,
+        name: minorStage.title,
+      });
+    } else {
+      setMapScope({
+        stageType: 'Journey',
+        id: journeyId,
+        name: journey!.name,
+      });
+    }
+  }, [journey, majorStage, minorStage]);
 
-      if (next.stageType === 'MinorStage') {
-        const ms = stagesCtx.findMinorStage(next.id)!;
-        navigation.setParams({ minorStage: ms, majorStage: undefined });
-      } else if (next.stageType === 'MajorStage') {
-        const ma = stagesCtx.findMajorStage(next.id)!;
-        navigation.setParams({ majorStage: ma, minorStage: undefined });
-      } else {
-        navigation.setParams({ majorStage: undefined, minorStage: undefined });
+  useFocusEffect(
+    useCallback(() => {
+      // get data when the screen comes into focus
+      async function getLocations() {
+        let locations: Location[] | undefined;
+        let countrylocs: Location[] | undefined;
+        let mapScopeType: MapScopeType;
+
+        // TODO: Wird auch neu berechnet, wenn nur showAllPlaces angepasst wird
+        if (majorStage) {
+          mapScopeType = 'MajorStage';
+          // setMapScope({
+          //   stageType: 'MajorStage',
+          //   id: majorStage.id,
+          //   name: majorStage.title,
+          // });
+        } else if (minorStage) {
+          mapScopeType = 'MinorStage';
+          // setMapScope({
+          //   stageType: 'MinorStage',
+          //   id: minorStage.id,
+          //   name: minorStage.title,
+          // });
+        } else {
+          mapScopeType = 'Journey';
+          // setMapScope({
+          //   stageType: 'Journey',
+          //   id: journeyId,
+          //   name: journey!.name,
+          // });
+        }
+
+        if (minorStage) {
+          const localMajorStage = stagesCtx.findMinorStagesMajorStage(
+            minorStage.id
+          );
+          locations = getMapLocationsFromMinorStage(
+            minorStage,
+            localMajorStage!,
+            showPastLocations
+          );
+          countrylocs = getRemainingCountriesPlacesLocations(
+            [localMajorStage?.country.id!],
+            locations,
+            customCountryCtx.findCountriesPlaces,
+            showAllPlaces
+          );
+        } else if (majorStage) {
+          locations = getMapLocationsFromMajorStage(
+            majorStage,
+            showPastLocations
+          );
+          countrylocs = getRemainingCountriesPlacesLocations(
+            [majorStage?.country.id!],
+            locations,
+            customCountryCtx.findCountriesPlaces,
+            showAllPlaces
+          );
+        } else {
+          locations = getMapLocationsFromJourney(journey!, showPastLocations);
+          const countryIds: number[] = [];
+          if (!journey?.countries) {
+            countrylocs = undefined;
+          } else {
+            for (const country of journey?.countries) {
+              countryIds.push(country.id);
+            }
+          }
+          countrylocs = getRemainingCountriesPlacesLocations(
+            countryIds,
+            locations,
+            customCountryCtx.findCountriesPlaces,
+            showAllPlaces
+          );
+        }
+
+        if (locations) {
+          setLocations(locations);
+          let coloredLocations = addColor(locations, mapScopeType);
+          coloredLocations = coloredLocations.concat(countrylocs);
+          setShownLocations(coloredLocations);
+          // Filter locations that could be way off to calculate an accurate region for the MapView
+          const relevantLocations = locations.filter(
+            (location) =>
+              location.locationType !== 'transportation_departure' &&
+              location.locationType !== 'transportation_arrival'
+          );
+          setRegion(await getRegionForLocations(relevantLocations));
+        }
       }
-    },
-    [navigation, stagesCtx]
+
+      getLocations();
+
+      return () => {
+        // Cleanup function to reset all states when the screen goes out of focus
+        setLocations([]);
+        setShownLocations([]);
+        setPressedLocation(undefined);
+      };
+    }, [journeyId, minorStage, majorStage, showAllPlaces, showPastLocations])
   );
 
-  // 3) ABLEITBARE Daten: base → country → shown
-  const baseLocations = useMemo(() => {
-    if (route.params?.minorStage) {
-      const ms = route.params.minorStage;
-      const parent = stagesCtx.findMinorStagesMajorStage(ms.id)!;
-      return getMapLocationsFromMinorStage(ms, parent, showPastLocations);
-    }
-    if (route.params?.majorStage) {
-      return getMapLocationsFromMajorStage(
-        route.params.majorStage,
-        showPastLocations
-      );
-    }
-    return getMapLocationsFromJourney(journey!, showPastLocations);
-  }, [
-    route.params?.minorStage?.id,
-    route.params?.majorStage?.id,
-    journey, // falls sich Journey-Daten ändern
-    showPastLocations,
-    stagesCtx, // Achtung: sollte stabil sein (Context-Instanz)
-  ]);
-
-  const countryIds = useMemo(() => {
-    if (route.params?.minorStage) {
-      const parent = stagesCtx.findMinorStagesMajorStage(
-        route.params.minorStage.id
-      )!;
-      return [parent.country.id!];
-    }
-    if (route.params?.majorStage) return [route.params.majorStage.country.id!];
-    return journey?.countries ? journey.countries.map((c) => c.id) : [];
-  }, [
-    route.params?.minorStage?.id,
-    route.params?.majorStage?.id,
-    journey,
-    stagesCtx,
-  ]);
-
-  const countryLocations = useMemo(() => {
-    return getRemainingCountriesPlacesLocations(
-      countryIds,
-      baseLocations,
-      customCountryCtx.findCountriesPlaces,
-      showAllPlaces
-    );
-  }, [
-    countryIds,
-    baseLocations,
-    customCountryCtx.findCountriesPlaces,
-    showAllPlaces,
-  ]);
-
-  const shownLocations = useMemo(() => {
-    return addColor(baseLocations || [], mapScope.stageType).concat(
-      countryLocations
-    );
-  }, [baseLocations, countryLocations, mapScope.stageType]);
-
-  // 4) Optional: Region neu berechnen, wenn sich die BASIS-Spots ändern
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!baseLocations) {
-        return;
-      }
-      const relevant = baseLocations.filter(
-        (l) =>
-          l.locationType !== 'transportation_departure' &&
-          l.locationType !== 'transportation_arrival'
-      );
-      if (relevant.length === 0) return;
-      const next = await getRegionForLocations(relevant);
-      if (!cancelled) setRegion(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [baseLocations, shownLocations]);
+  const stagesNavigation = useNavigation<NavigationProp<StackParamList>>();
 
   function handleGoBack() {
     if (minorStage) {
@@ -279,15 +282,87 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     setPressedLocation(location);
   }
 
-  const handleChangeDirectionsMode = useCallback(
-    (m: MapViewDirectionsMode) => setDirectionsMode(m),
-    []
-  );
-  const handleClosePopup = useCallback(() => setPopupText(undefined), []);
-  const handleCloseMapLocationElement = useCallback(
-    () => setPressedLocation(undefined),
-    []
-  );
+  function handleChangeDirectionsMode(mode: MapViewDirectionsMode) {
+    setDirectionsMode(mode);
+  }
+
+  function handleClosePopup() {
+    setPopupText(undefined);
+  }
+
+  function handleCloseMapLocationElement() {
+    setPressedLocation(undefined);
+  }
+
+  async function handleChangeMapScope(mapScope: StageData) {
+    setMapScope(mapScope);
+    setDirectionDestination(null);
+    setPressedLocation(undefined);
+    setRoutePoints(undefined);
+    setRouteInfo(null);
+
+    let filteredLocations: Location[] | undefined;
+    let countrylocs: Location[] | undefined;
+
+    if (mapScope.stageType === 'MinorStage') {
+      const minorStage = stagesCtx.findMinorStage(mapScope.id);
+      const majorStage = stagesCtx.findMinorStagesMajorStage(mapScope.id);
+      filteredLocations = getMapLocationsFromMinorStage(
+        minorStage!,
+        majorStage!,
+        showPastLocations
+      );
+      countrylocs = getRemainingCountriesPlacesLocations(
+        [majorStage?.country.id!],
+        locations,
+        customCountryCtx.findCountriesPlaces,
+        showAllPlaces
+      );
+    } else if (mapScope.stageType === 'MajorStage') {
+      const majorStage = stagesCtx.findMajorStage(mapScope.id);
+      filteredLocations = getMapLocationsFromMajorStage(
+        majorStage!,
+        showPastLocations
+      );
+      countrylocs = getRemainingCountriesPlacesLocations(
+        [majorStage?.country.id!],
+        locations,
+        customCountryCtx.findCountriesPlaces,
+        showAllPlaces
+      );
+    } else {
+      filteredLocations = locations;
+      const countryIds: number[] = [];
+      if (!journey?.countries) {
+        countrylocs = undefined;
+      } else {
+        for (const country of journey?.countries) {
+          countryIds.push(country.id);
+        }
+      }
+      countrylocs = getRemainingCountriesPlacesLocations(
+        countryIds,
+        locations,
+        customCountryCtx.findCountriesPlaces,
+        showAllPlaces
+      );
+    }
+    if (!filteredLocations) {
+      return;
+    }
+    // Filter locations that could be way off to calculate an accurate region for the MapView
+    const relevantLocations = filteredLocations.filter(
+      (location) =>
+        location.locationType !== 'transportation_departure' &&
+        location.locationType !== 'transportation_arrival'
+    );
+
+    let coloredLocations = addColor(filteredLocations, mapScope.stageType);
+    coloredLocations = coloredLocations.concat(countrylocs);
+    setShownLocations(coloredLocations);
+
+    return setRegion(await getRegionForLocations(relevantLocations));
+  }
 
   function handleHideButtons(identifier: 'locationList' | 'routePlanner') {
     if (identifier === 'locationList') {
@@ -334,8 +409,6 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             setShowAllPlaces((prevValue) => !prevValue)
           }
           showAllPlaces={showAllPlaces}
-          mode={directionsMode}
-          setMode={handleChangeDirectionsMode}
         />
       )}
       {popupText && (
@@ -351,32 +424,27 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         value={mapScope}
       />
       <MapLocationList
-        locations={shownLocations || []}
+        locations={shownLocations}
         mapScope={mapScope.name}
         mode={directionsMode}
+        setMode={handleChangeDirectionsMode}
         onPress={handlePressListElement}
         toggleButtonVisibility={() => handleHideButtons('locationList')}
         showContent={showContent[0]}
       />
       <RoutePlanner
-        locations={shownLocations || []}
+        locations={shownLocations}
         mapScope={mapScope}
         mode={directionsMode}
+        setMode={handleChangeDirectionsMode}
         toggleButtonVisibility={() => handleHideButtons('routePlanner')}
         showContent={showContent[1]}
         setRoutePoints={setRoutePoints}
       />
       <MapView
         style={styles.map}
-        initialRegion={
-          region ?? {
-            latitude: 20,
-            longitude: 0,
-            latitudeDelta: 80,
-            longitudeDelta: 80, // Fallback
-          }
-        }
-        {...(region ? { region } : {})}
+        initialRegion={region!}
+        region={region!}
         onPress={() => {}}
         mapType='standard'
         userInterfaceStyle='light'
@@ -421,11 +489,11 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             }}
           />
         )}
-        {shownLocations.map((location, index) => {
+        {shownLocations.map((location) => {
           const isActive = pressedLocation && location === pressedLocation;
           return (
             <MapsMarker
-              key={generateRandomString()}
+              key={location.belonging + location.data.name + location.id}
               location={location}
               active={isActive}
             />

@@ -59,12 +59,15 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   let minStartDate: Date;
   let maxStartDate: Date;
   const stagesCtx = useContext(StagesContext);
+  let majorStage;
 
   let bg = GlobalStyles.colors.amberSoft;
   if (majorStageId !== undefined) {
     stage = stagesCtx.findMajorStage(majorStageId)!;
+    majorStage = stage;
   } else {
     stage = stagesCtx.findMinorStage(minorStageId!)!;
+    majorStage = stagesCtx.findMinorStagesMajorStage(stage.id);
     bg = GlobalStyles.colors.purpleSoft;
   }
 
@@ -394,6 +397,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
             }
             iconColor={!inputs.departure_latitude.isValid ? 'red' : undefined}
             majorStageId={majorStageId}
+            countryId={majorStage?.country.id}
           />
         </View>
         <View style={styles.formRow}>
@@ -424,6 +428,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
             }
             iconColor={!inputs.arrival_latitude.isValid ? 'red' : undefined}
             majorStageId={majorStageId}
+            countryId={majorStage?.country.id}
           />
         </View>
         <View style={styles.formRow}>

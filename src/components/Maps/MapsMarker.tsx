@@ -18,6 +18,7 @@ import TrainDepartureIcon from '../../../assets/train_departure.svg';
 import OtherArrivalIcon from '../../../assets/other_arrival.svg';
 import OtherDepartureIcon from '../../../assets/other_departure.svg';
 import { Location } from '../../models';
+import { GlobalStyles } from '../../constants/styles';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   accommodation: AccommodationIcon,
@@ -55,7 +56,7 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
   const { description, locationType, transportationType, data, color, done } =
     location;
 
-  const markerColor = active ? 'blue' : color;
+  const markerColor = active ? GlobalStyles.colors.grayDark : color;
 
   const markerRef = useRef<MapMarker>(null);
 
@@ -75,7 +76,7 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
 
   useEffect(() => {
     // After a short delay, stop tracking view changes to prevent flicker
-    const timeout = setTimeout(() => setTracksViewChanges(false), 500);
+    const timeout = setTimeout(() => setTracksViewChanges(false), 1);
     return () => clearTimeout(timeout);
   }, [iconKey, markerColor, done]); // rerun if icon or color changes
 
