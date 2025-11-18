@@ -70,7 +70,7 @@ const CountriesSelection = ({
 
         if (searchTerm !== '') {
           countries = countries.filter((country) =>
-            country.toLowerCase().startsWith(searchTerm.toLowerCase())
+            country.toLowerCase().includes(searchTerm.toLowerCase())
           );
         }
 

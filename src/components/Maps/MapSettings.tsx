@@ -51,7 +51,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
     .onEnd((event) => {
       if (isDismissing.value) return; // bereits unterwegs -> nichts tun
 
-      if (event.translationY > -100) {
+      if (event.translationY < 50) {
         // Starte das Slide-Down bis außerhalb des Screens, dann runOnJS(onCancel)
         isDismissing.value = true;
         translateY.value = withSpring(
@@ -97,7 +97,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
               color={
                 mode === 'WALKING'
                   ? GlobalStyles.colors.amberAccent
-                  : GlobalStyles.colors.grayDark
+                  : GlobalStyles.colors.graySoft
               }
               containerStyle={
                 mode === 'WALKING' ? styles.activeButton : styles.button
@@ -109,7 +109,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
               color={
                 mode === 'BICYCLING'
                   ? GlobalStyles.colors.amberAccent
-                  : GlobalStyles.colors.grayDark
+                  : GlobalStyles.colors.graySoft
               }
               containerStyle={
                 mode === 'BICYCLING' ? styles.activeButton : styles.button
@@ -121,7 +121,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
               color={
                 mode === 'DRIVING'
                   ? GlobalStyles.colors.amberAccent
-                  : GlobalStyles.colors.grayDark
+                  : GlobalStyles.colors.graySoft
               }
               containerStyle={
                 mode === 'DRIVING' ? styles.activeButton : styles.button
@@ -146,7 +146,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 3,
+    zIndex: 1,
     width: '100%',
     height: '27%',
     backgroundColor: GlobalStyles.colors.grayMedium,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: 'black',
+    borderColor: GlobalStyles.colors.graySoft,
   },
   activeButton: {
     padding: 2,

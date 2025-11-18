@@ -118,6 +118,14 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     setInputs((currInputs) => {
       return {
         ...currInputs,
+        ...(inputs.name.value === '' &&
+          location.title && {
+            name: {
+              value: location.title,
+              isValid: true,
+              errors: [],
+            },
+          }),
         ...(location.title && {
           place: {
             value: location.title,

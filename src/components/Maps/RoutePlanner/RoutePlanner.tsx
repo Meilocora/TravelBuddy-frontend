@@ -78,7 +78,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
 
   function handlePressPlannedRoute() {
     const customLocations = getRouteLocationsNamesFromLocations(locations);
-    setRouteLocations(customLocations);
+
+    // Limit to 25 locations maximum (Google Maps API constraint)
+    const limitedLocations = customLocations.slice(0, 25);
+
+    setRouteLocations(limitedLocations);
     setPlannedButtonVisible(false);
   }
 

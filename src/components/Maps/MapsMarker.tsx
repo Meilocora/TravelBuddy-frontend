@@ -58,6 +58,8 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
 
   const markerColor = active ? GlobalStyles.colors.grayDark : color;
 
+  const semi = done || location.belonging === 'countryLocation';
+
   const markerRef = useRef<MapMarker>(null);
 
   function handlePressMarker() {
@@ -98,7 +100,7 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
             width={width}
             height={heigth}
             fill={markerColor || 'black'}
-            style={done && styles.iconDone}
+            style={semi ? styles.iconDone : styles.icon}
           />
         )}
       </View>
@@ -107,8 +109,12 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
 };
 
 const styles = StyleSheet.create({
+  icon: {
+    zIndex: 2,
+  },
   iconDone: {
     opacity: 0.75,
+    zIndex: 1,
   },
 });
 

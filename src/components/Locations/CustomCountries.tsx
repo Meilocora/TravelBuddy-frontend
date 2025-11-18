@@ -53,7 +53,7 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
 
   if (searchTerm !== '') {
     countries = countries.filter((country) =>
-      country.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+      country.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 

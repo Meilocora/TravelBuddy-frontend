@@ -610,7 +610,10 @@ export function getRemainingCountriesPlacesLocations(
       );
 
       if (!isAlreadyAssigned) {
-        remainingLocations.push(formatPlaceToLocation(place));
+        const location = formatPlaceToLocation(place);
+        location.belonging = 'countryLocation';
+        location['color'] = 'gray';
+        remainingLocations.push(location);
       }
     }
   }

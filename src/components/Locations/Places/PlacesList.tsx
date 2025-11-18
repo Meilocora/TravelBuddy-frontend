@@ -77,7 +77,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
       if (searchTerm !== '') {
         places = places.filter((place) =>
-          place.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+          place.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 

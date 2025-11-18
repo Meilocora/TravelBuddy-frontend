@@ -9,6 +9,7 @@ interface RoutePlannerListElementProps {
   onPress: () => void;
   onRemove: (name: string) => void;
   onLongPress: () => void;
+  index: number;
   subtitle?: string;
   isActive?: boolean;
 }
@@ -18,6 +19,7 @@ const RoutePlannerListElement: React.FC<RoutePlannerListElementProps> = ({
   onPress,
   onRemove,
   onLongPress,
+  index,
   subtitle,
   isActive,
 }): ReactElement => {
@@ -32,6 +34,7 @@ const RoutePlannerListElement: React.FC<RoutePlannerListElementProps> = ({
         onLongPress={onLongPress}
       >
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        <Text style={styles.index}>{index + 1}</Text>
         <Text
           style={[styles.name, isActive && styles.active]}
           numberOfLines={1}
@@ -71,12 +74,20 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontStyle: 'italic',
   },
+  index: {
+    fontSize: 12,
+    position: 'absolute',
+    // left: '48%',
+    width: 200,
+    textAlign: 'center',
+    top: -17,
+    fontStyle: 'italic',
+  },
   name: {
     fontSize: 14,
     textAlign: 'center',
     marginVertical: 2,
     paddingVertical: 6,
-    paddingHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
     width: 200,

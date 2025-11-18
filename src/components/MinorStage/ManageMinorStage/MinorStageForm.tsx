@@ -177,21 +177,24 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
   }
 
   function handlePickLocation(location: MapLocation) {
-    if (location.title) {
-      setInputs((currInputs) => {
-        return {
-          ...currInputs,
+    setInputs((currInputs) => {
+      return {
+        ...currInputs,
+        ...(inputs.title.value === '' &&
+          location.title && {
+            title: {
+              value: location.title!,
+              isValid: true,
+              errors: [],
+            },
+          }),
+        ...(location.title && {
           accommodation_place: {
             value: location.title!,
             isValid: true,
             errors: [],
           },
-        };
-      });
-    }
-    setInputs((currInputs) => {
-      return {
-        ...currInputs,
+        }),
         accommodation_latitude: {
           value: location.lat,
           isValid: true,

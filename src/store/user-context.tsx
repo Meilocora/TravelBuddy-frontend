@@ -18,7 +18,7 @@ export const UserContext = createContext<UserContextType>({
   currentLocation: undefined,
   setCurrentLocation: () => {},
   timezoneoffset: 0,
-  localCurrency: { currency: 'EUR', conversionRate: 1 },
+  localCurrency: { code: 'EUR', name: 'Euro', symbol: '€', conversionRate: 1 },
   currencies: [],
   fetchUserData: async () => {},
 });
@@ -33,7 +33,9 @@ export default function UserContextProvider({
   );
   const [timezoneoffset, setTimezoneOffset] = useState<number>(0);
   const [localCurrency, setLocalCurrency] = useState<CurrencyInfo>({
-    currency: 'EUR',
+    code: 'EUR',
+    name: 'Euro',
+    symbol: '€',
     conversionRate: 1,
   });
   const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
@@ -51,8 +53,10 @@ export default function UserContextProvider({
     } else {
       setTimezoneOffset(userDataResponse.offset || 0);
       setLocalCurrency({
-        currency: userDataResponse.localCurrency || 'EUR',
-        conversionRate: userDataResponse.conversionRate || 1,
+        code: userDataResponse.localCurrency?.code || 'EUR',
+        name: userDataResponse.localCurrency?.name || 'Euro',
+        symbol: userDataResponse.localCurrency?.symbol || '€',
+        conversionRate: userDataResponse.localCurrency?.conversionRate || 1,
       });
     }
 
@@ -66,26 +70,24 @@ export default function UserContextProvider({
 
   function sortCurrencies(currencies: CurrencyInfo[]) {
     // Get standard currencies first
-    const eur = currencies.filter((c) => c.currency === 'EUR')[0];
-    const usd = currencies.filter((c) => c.currency === 'USD')[0];
+    const eur = currencies.filter((c) => c.code === 'EUR')[0];
+    const usd = currencies.filter((c) => c.code === 'USD')[0];
     // Remove duplicates for localCurrency, EUR, USD
     const filtered = currencies.filter(
       (c) =>
-        c.currency !== localCurrency.currency &&
-        c.currency !== 'EUR' &&
-        c.currency !== 'USD'
+        c.code !== localCurrency.code && c.code !== 'EUR' && c.code !== 'USD'
     );
 
     // Sort the rest alphabetically by currency
-    filtered.sort((a, b) => a.currency!.localeCompare(b.currency!));
+    filtered.sort((a, b) => a.code!.localeCompare(b.code!));
 
     // Build the final list
     const sorted = [
       localCurrency,
-      localCurrency.currency !== 'EUR' ? eur : undefined,
-      localCurrency.currency !== 'USD' ? usd : undefined,
+      localCurrency.code !== 'EUR' ? eur : undefined,
+      localCurrency.code !== 'USD' ? usd : undefined,
       ...filtered,
-    ].filter((c): c is CurrencyInfo => c?.currency !== undefined);
+    ].filter((c): c is CurrencyInfo => c?.code !== undefined);
 
     setCurrencies(sorted);
   }

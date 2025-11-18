@@ -17,7 +17,6 @@ import InfoText from '../../components/UI/InfoText';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { validateIsOver } from '../../utils';
 import { StagesContext } from '../../store/stages-context';
-import { GlobalStyles } from '../../constants/styles';
 
 interface PlanningProps {
   navigation: NativeStackNavigationProp<

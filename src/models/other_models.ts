@@ -7,7 +7,9 @@ export interface Costs {
 }
 
 export interface CurrencyInfo {
-  currency: string;
+  code: string;
+  name: string;
+  symbol: string;
   conversionRate: number;
 }
 

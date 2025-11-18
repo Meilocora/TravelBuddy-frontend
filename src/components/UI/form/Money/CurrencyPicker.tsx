@@ -1,5 +1,12 @@
 import { ReactElement, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Pressable, ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  ViewStyle,
+  Modal,
+} from 'react-native';
 
 import { CurrencyInfo } from '../../../../models';
 import { formatAmount } from '../../../../utils';
@@ -7,6 +14,7 @@ import Input from '../Input';
 import { GlobalStyles } from '../../../../constants/styles';
 import CurrenciesModal from './CurrenciesModal';
 import { UserContext } from '../../../../store/user-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface CurrencyPickerProps {
   unconvertedValue: string;
@@ -27,7 +35,9 @@ const CurrencyPicker: React.FC<CurrencyPickerProps> = ({
   const userCtx = useContext(UserContext);
 
   const localCurrency: CurrencyInfo = {
-    currency: userCtx.localCurrency.currency,
+    code: userCtx.localCurrency.code,
+    name: userCtx.localCurrency.name,
+    symbol: userCtx.localCurrency.symbol,
     conversionRate: userCtx.localCurrency.conversionRate,
   };
 
@@ -81,22 +91,29 @@ const CurrencyPicker: React.FC<CurrencyPickerProps> = ({
 
   return (
     <>
-      {showModal && userCtx.currencies && (
-        <CurrenciesModal
-          onCloseModal={() => setShowModal(false)}
-          onSelectCurrency={selectCurrency}
-        />
-      )}
+      <Modal
+        visible={showModal && !!userCtx.currencies}
+        transparent
+        animationType='slide'
+        onRequestClose={() => setShowModal(false)}
+      >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <CurrenciesModal
+            onCloseModal={() => setShowModal(false)}
+            onSelectCurrency={selectCurrency}
+          />
+        </GestureHandlerRootView>
+      </Modal>
       <View style={[styles.container, style]}>
         <View style={styles.currencySymbol}>
           <Pressable
             onPress={() => setShowModal(true)}
             style={({ pressed }) => pressed && styles.pressed}
           >
-            <Text style={styles.currencyText}>{chosenCurrency.currency}</Text>
+            <Text style={styles.currencyText}>{chosenCurrency.symbol}</Text>
           </Pressable>
         </View>
-        {chosenCurrency.currency !== 'EUR' && placeHolder !== '' && (
+        {chosenCurrency.code !== 'EUR' && placeHolder !== '' && (
           <Input
             label=''
             maxLength={100}
@@ -121,7 +138,7 @@ const styles = StyleSheet.create({
   currencySymbol: {
     justifyContent: 'center',
     alignSelf: 'flex-start',
-    marginTop: 32,
+    marginTop: 33,
     backgroundColor: GlobalStyles.colors.grayDark,
     paddingVertical: 3,
     paddingHorizontal: 4,
@@ -134,8 +151,9 @@ const styles = StyleSheet.create({
   currencyText: {
     fontSize: 22,
     color: GlobalStyles.colors.graySoft,
-    fontWeight: 'bold',
     fontStyle: 'italic',
+    width: 45,
+    textAlign: 'center',
   },
 });
 

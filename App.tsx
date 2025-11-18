@@ -56,14 +56,13 @@ import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
-// TODO: CurrenciesModal analog zu PlacesList anpassen und zus. Infos einfügen (+ "EU" besser in die Mitte bringen)
-// TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
+// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 
 // PRIO 2 \\
 // TODO: Checks für ValidationLog erweitern
-// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
+// TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations

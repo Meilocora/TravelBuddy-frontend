@@ -2,11 +2,11 @@ import { AxiosResponse } from 'axios';
 
 import api from './api';
 import { LatLng } from 'react-native-maps';
+import { CurrencyInfo } from '../../models';
 
 export interface FetchUserDataProps {
   offset?: number;
-  localCurrency?: string;
-  conversionRate?: number;
+  localCurrency?: CurrencyInfo;
   status: number;
   error?: string;
 }
@@ -30,9 +30,9 @@ export const fetchUsersData = async (
       return { status: response.data.status, error: response.data.error };
     }
 
-    const { offset, localCurrency, conversionRate, status } = response.data;
+    const { offset, localCurrency, status } = response.data;
 
-    return { offset, localCurrency, conversionRate, status };
+    return { offset, localCurrency, status };
   } catch (error) {
     // Error from frontend
     return { status: 500, error: 'Could not fetch data!' };

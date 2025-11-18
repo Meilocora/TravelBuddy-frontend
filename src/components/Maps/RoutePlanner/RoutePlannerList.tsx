@@ -67,6 +67,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
             onPress={() => handlePressElement(0)}
             onRemove={handleRemoveElement}
             onLongPress={() => {}}
+            index={1}
           />
           <RoutePlannerListElement
             name={routeElements[1] || ''}
@@ -74,6 +75,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
             onPress={() => handlePressElement(1)}
             onRemove={handleRemoveElement}
             onLongPress={() => {}}
+            index={2}
           />
         </>
       )}
@@ -99,6 +101,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
                       : ''
                   }
                   isActive={isActive}
+                  index={index}
                 />
                 {index !== routeElements.length - 1 && (
                   <View style={styles.seperator}></View>
@@ -111,7 +114,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
           }}
         />
       )}
-      {routeElements.length > 1 && (
+      {routeElements.length > 1 && routeElements.length < 25 && (
         <Button
           onPress={handlePressButton}
           colorScheme={ColorScheme.neutral}
