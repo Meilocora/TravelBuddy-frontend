@@ -49,7 +49,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#ebe3cd',
+        color: '#f5f0e8',
       },
     ],
   },
@@ -57,7 +57,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#523735',
+        color: '#3d3d3d',
       },
     ],
   },
@@ -65,7 +65,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.stroke',
     stylers: [
       {
-        color: '#f5f1e6',
+        color: '#ffffff',
       },
     ],
   },
@@ -74,7 +74,7 @@ export const lightMapStyle = [
     elementType: 'geometry.stroke',
     stylers: [
       {
-        color: '#c9b2a6',
+        color: '#d4c4bd',
       },
     ],
   },
@@ -83,7 +83,7 @@ export const lightMapStyle = [
     elementType: 'geometry.stroke',
     stylers: [
       {
-        color: '#dcd2be',
+        color: '#e8e0d5',
       },
     ],
   },
@@ -92,7 +92,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#ae9e90',
+        color: '#9e9e9e',
       },
     ],
   },
@@ -101,7 +101,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#dfd2ae',
+        color: '#e8e8d8',
       },
     ],
   },
@@ -110,7 +110,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#dfd2ae',
+        color: '#e8e8d8',
       },
     ],
   },
@@ -119,7 +119,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#93817c',
+        color: '#888888',
       },
     ],
   },
@@ -128,7 +128,7 @@ export const lightMapStyle = [
     elementType: 'geometry.fill',
     stylers: [
       {
-        color: '#a5b076',
+        color: '#c8e6c9',
       },
     ],
   },
@@ -137,7 +137,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#447530',
+        color: '#558b2f',
       },
     ],
   },
@@ -146,7 +146,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#f5f1e6',
+        color: '#ffffff',
       },
     ],
   },
@@ -200,7 +200,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#806b63',
+        color: '#757575',
       },
     ],
   },
@@ -209,7 +209,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#dfd2ae',
+        color: '#e8e8d8',
       },
     ],
   },
@@ -218,7 +218,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#8f7d77',
+        color: '#888888',
       },
     ],
   },
@@ -227,7 +227,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.stroke',
     stylers: [
       {
-        color: '#ebe3cd',
+        color: '#f5f5f5',
       },
     ],
   },
@@ -236,7 +236,7 @@ export const lightMapStyle = [
     elementType: 'geometry',
     stylers: [
       {
-        color: '#dfd2ae',
+        color: '#e8e8d8',
       },
     ],
   },
@@ -245,7 +245,7 @@ export const lightMapStyle = [
     elementType: 'geometry.fill',
     stylers: [
       {
-        color: '#b9d3c2',
+        color: '#b3e5fc',
       },
     ],
   },
@@ -254,7 +254,7 @@ export const lightMapStyle = [
     elementType: 'labels.text.fill',
     stylers: [
       {
-        color: '#92998d',
+        color: '#616161',
       },
     ],
   },
