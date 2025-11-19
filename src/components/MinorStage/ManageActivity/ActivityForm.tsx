@@ -230,6 +230,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
             />
             <LocationPicker
               onPickLocation={handlePickLocation}
+              onPressMarker={handlePickLocation}
               pickedLocation={
                 inputs.latitude.value && inputs.longitude.value
                   ? {

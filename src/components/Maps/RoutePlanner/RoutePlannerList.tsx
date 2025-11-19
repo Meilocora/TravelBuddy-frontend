@@ -67,7 +67,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
             onPress={() => handlePressElement(0)}
             onRemove={handleRemoveElement}
             onLongPress={() => {}}
-            index={1}
+            index={0}
           />
           <RoutePlannerListElement
             name={routeElements[1] || ''}
@@ -75,7 +75,7 @@ const RoutePlannerList: React.FC<RoutePlannerListProps> = ({
             onPress={() => handlePressElement(1)}
             onRemove={handleRemoveElement}
             onLongPress={() => {}}
-            index={2}
+            index={1}
           />
         </>
       )}

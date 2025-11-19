@@ -184,9 +184,12 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     }
   }
 
-  function handlePressMarker(name: string) {
+  function handlePressMarker(name: string, lat: number, lng: number) {
     if (route.params.onPressMarker) {
-      route.params.onPressMarker(name);
+      route.params.onPressMarker({ title: name, lat, lng });
+      navigation.goBack();
+    } else if (route.params.onAddLocation) {
+      route.params.onAddLocation(name);
     }
   }
 
@@ -244,8 +247,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
           <Marker
             title={title}
             coordinate={{
-              latitude: region.latitude,
-              longitude: region.longitude,
+              latitude: route.params.initialLat,
+              longitude: route.params.initialLng,
             }}
           />
         )}
@@ -277,7 +280,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
               location={loc}
               key={generateRandomString()}
               active={loc.done}
-              onPressMarker={() => {}}
+              onPressMarker={handlePressMarker}
             />
           ))}
       </MapView>

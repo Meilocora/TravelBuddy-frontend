@@ -56,6 +56,7 @@ import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
+// TODO: Locations => Button für Weltkarte mit allen Locations
 // TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen

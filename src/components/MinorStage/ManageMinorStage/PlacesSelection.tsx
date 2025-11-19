@@ -130,7 +130,7 @@ const PlacesSelection = ({
         initialLat: averageRegion.latitude,
         initialLng: averageRegion.longitude,
         onPickLocation: (location: MapLocation) => {},
-        onPressMarker: (name: string) => {
+        onAddLocation: (name: string) => {
           handlePressMarker(name);
         },
         hasLocation: true,

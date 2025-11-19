@@ -382,6 +382,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
           />
           <LocationPicker
             onPickLocation={handleDeparturePickLocation}
+            onPressMarker={handleDeparturePickLocation}
             pickedLocation={
               inputs.departure_latitude.value &&
               inputs.departure_longitude.value
@@ -414,6 +415,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
           />
           <LocationPicker
             onPickLocation={handleArrivalPickLocation}
+            onPressMarker={handleArrivalPickLocation}
             pickedLocation={
               inputs.arrival_latitude.value && inputs.arrival_longitude.value
                 ? {

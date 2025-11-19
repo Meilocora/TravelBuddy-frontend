@@ -376,6 +376,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
             />
             <LocationPicker
               onPickLocation={handlePickLocation}
+              onPressMarker={handlePickLocation}
               pickedLocation={
                 inputs.accommodation_latitude.value &&
                 inputs.accommodation_longitude.value

@@ -44,7 +44,7 @@ const width = 32;
 interface MapsMarkerProps {
   location: Location;
   active?: boolean;
-  onPressMarker?: (name: string) => void;
+  onPressMarker?: (name: string, lat: number, lng: number) => void;
 }
 
 const MapsMarker: React.FC<MapsMarkerProps> = ({
@@ -64,7 +64,11 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
 
   function handlePressMarker() {
     if (onPressMarker) {
-      onPressMarker(location.data.name);
+      onPressMarker(
+        location.data.name,
+        location.data.latitude,
+        location.data.longitude
+      );
     }
   }
 

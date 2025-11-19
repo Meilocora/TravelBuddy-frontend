@@ -146,7 +146,7 @@ const MapSettings: React.FC<MapSettingsProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 1,
+    zIndex: 3,
     width: '100%',
     height: '27%',
     backgroundColor: GlobalStyles.colors.grayMedium,

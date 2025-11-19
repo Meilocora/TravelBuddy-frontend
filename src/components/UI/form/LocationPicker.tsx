@@ -19,6 +19,7 @@ import {
 interface LocationPickerProps {
   pickedLocation?: MapLocation;
   onPickLocation: (location: MapLocation) => void;
+  onPressMarker: (location: MapLocation) => void;
   iconColor?: string;
   colorScheme?: ColorScheme;
   countryId?: number;
@@ -28,6 +29,7 @@ interface LocationPickerProps {
 const LocationPicker: React.FC<LocationPickerProps> = ({
   pickedLocation,
   onPickLocation,
+  onPressMarker,
   iconColor,
   colorScheme = ColorScheme.primary,
   countryId,
@@ -78,6 +80,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       initialLng: longitude,
       onPickLocation: (location: MapLocation) => {
         onPickLocation(location);
+      },
+      onPressMarker({ title, lat, lng }) {
+        onPressMarker({ title, lat, lng });
       },
       onResetLocation: handleResetLocation,
       hasLocation: hasInitialLocation,

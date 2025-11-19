@@ -205,6 +205,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
             />
             <LocationPicker
               onPickLocation={handlePickLocation}
+              onPressMarker={handlePickLocation}
               pickedLocation={
                 inputs.latitude.value && inputs.longitude.value
                   ? {

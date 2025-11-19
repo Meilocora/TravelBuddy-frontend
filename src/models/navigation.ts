@@ -68,7 +68,8 @@ export type StackParamList = {
     hasLocation: boolean;
     colorScheme?: ColorScheme;
     customCountryId?: number;
-    onPressMarker?: (name: string) => void;
+    onPressMarker?: (location: MapLocation) => void;
+    onAddLocation?: (name: string) => void;
     minorStageId?: number;
     majorStageId?: number;
   };
