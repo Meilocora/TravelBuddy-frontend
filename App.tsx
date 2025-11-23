@@ -56,18 +56,18 @@ import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
-// TODO: Locations => Button für Weltkarte mit allen Locations
-// TODO: Custom Country hinzufügen lassen inkl. Umrechnungskurs (zus. Attribute => isCustom, dann alles bearbeitbar + löschbar), zusätzlich "visited" auswählen können
+// TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
+// TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
+
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 
 // PRIO 2 \\
+// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Checks für ValidationLog erweitern
-// TODO: Data auch lokal speichern und ggf. abrufen, falls kein Internet
+// TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
-// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
-// TODO: Chatbot, that interacts with the app?! => that can make journeys
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();

@@ -38,13 +38,13 @@ const iconMap: { [key: string]: React.FC<any> } = {
   transportation_arrival_other: OtherArrivalIcon,
 };
 
-const heigth = 32;
-const width = 32;
+const heigth = 30;
+const width = 30;
 
 interface MapsMarkerProps {
   location: Location;
   active?: boolean;
-  onPressMarker?: (name: string, lat: number, lng: number) => void;
+  onPressMarker?: (location: Location) => void;
 }
 
 const MapsMarker: React.FC<MapsMarkerProps> = ({
@@ -56,7 +56,7 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
   const { description, locationType, transportationType, data, color, done } =
     location;
 
-  const markerColor = active ? GlobalStyles.colors.grayDark : color;
+  const markerColor = active ? GlobalStyles.colors.visited : color;
 
   const semi = done || location.belonging === 'countryLocation';
 
@@ -64,11 +64,7 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
 
   function handlePressMarker() {
     if (onPressMarker) {
-      onPressMarker(
-        location.data.name,
-        location.data.latitude,
-        location.data.longitude
-      );
+      onPressMarker(location);
     }
   }
 
@@ -104,6 +100,8 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
             width={width}
             height={heigth}
             fill={markerColor || 'black'}
+            stroke={location.favourite ? 'red' : 'white'}
+            strokeWidth={location.favourite ? 6 : 4}
             style={semi ? styles.iconDone : styles.icon}
           />
         )}

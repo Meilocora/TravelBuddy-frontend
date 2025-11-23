@@ -23,6 +23,7 @@ export enum LocationType {
 
 export interface Location {
   id?: number;
+  placeId?: number;
   belonging: string;
   locationType: LocationType;
   data: LocationData;
@@ -31,6 +32,7 @@ export interface Location {
   description?: string;
   transportationType?: TransportationType;
   color?: string;
+  favourite?: boolean;
 }
 
 export type MapScopeType = 'Journey' | 'MajorStage' | 'MinorStage';

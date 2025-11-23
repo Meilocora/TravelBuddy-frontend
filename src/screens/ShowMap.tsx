@@ -9,9 +9,9 @@ import {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import MapView, { MapPressEvent, Marker, Region } from 'react-native-maps';
+import MapView, { MapPressEvent, Region } from 'react-native-maps';
 
-import { StackParamList } from '../models';
+import { Icons, Location, StackParamList } from '../models';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import MapsMarker from '../components/Maps/MapsMarker';
 import HeaderTitle from '../components/UI/HeaderTitle';
@@ -21,6 +21,7 @@ import {
 } from '../utils/location';
 import { CustomCountryContext } from '../store/custom-country-context';
 import { generateRandomString } from '../utils';
+import IconButton from '../components/UI/IconButton';
 
 interface ShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ShowMap'>;
@@ -34,8 +35,10 @@ const ShowMap: React.FC<ShowMapProps> = ({
   const customCountryCtx = useContext(CustomCountryContext);
 
   const location = route.params.location;
-  const customCountryId = route.params.customCountryId;
+  const customCountryIds = route.params.customCountryIds;
 
+  const [isFav, setIsFav] = useState(true);
+  const [isVisited, setIsVisited] = useState(true);
   const [region, setRegion] = useState<Region>({
     latitude: location?.data.latitude || 0,
     longitude: location?.data.longitude || 0,
@@ -43,18 +46,31 @@ const ShowMap: React.FC<ShowMapProps> = ({
     longitudeDelta: 0.04,
   });
 
-  // Update the useEffect
+  let shownLocations: Location[] = [];
+  for (const id of customCountryIds) {
+    const placesToVisit = customCountryCtx.findCountriesPlaces(id);
+    const newLocations = placesToVisit
+      ? placesToVisit.map(formatPlaceToLocation)
+      : [];
+    shownLocations.push(...newLocations);
+  }
+
+  if (!isFav) {
+    shownLocations = shownLocations.filter((place) => place.favourite === true);
+  }
+
+  if (!isVisited) {
+    shownLocations = shownLocations.filter((place) => place.done !== true);
+  }
+
   useEffect(() => {
     async function calculateRegion() {
-      if (!location) {
-        const placesToVisit =
-          customCountryCtx.findCountriesPlaces(customCountryId);
-        const locationsToVisit = placesToVisit!.map(formatPlaceToLocation);
-        setRegion(await getRegionForLocations(locationsToVisit));
+      if (shownLocations) {
+        setRegion(await getRegionForLocations(shownLocations));
       }
     }
     calculateRegion();
-  }, []);
+  }, [route.params]);
 
   let headerstyle = { backgroundColor: GlobalStyles.colors.greenBg };
   if (route.params?.colorScheme === 'complementary') {
@@ -67,21 +83,39 @@ const ShowMap: React.FC<ShowMapProps> = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <HeaderTitle title={'Map'} />,
+      headerRight: () => (
+        <>
+          <IconButton
+            icon={Icons.heartOutline}
+            onPress={() => setIsFav((prevValue) => !prevValue)}
+            size={26}
+            color={!isFav ? 'red' : 'black'}
+          />
+          <IconButton
+            icon={Icons.eyeOn}
+            onPress={() => setIsVisited((prevValue) => !prevValue)}
+            size={26}
+            color={isVisited ? 'blue' : 'black'}
+          />
+        </>
+      ),
       headerStyle: headerstyle,
       headerTintColor: GlobalStyles.colors.grayDark,
     });
-  }, []);
+  }, [isFav, isVisited]);
 
   function handlePressMap(event: MapPressEvent) {
     const lat = event.nativeEvent.coordinate.latitude;
     const lng = event.nativeEvent.coordinate.longitude;
 
-    navigation.navigate('ManagePlaceToVisit', {
-      placeId: null,
-      countryId: customCountryId,
-      lat: lat,
-      lng: lng,
-    });
+    if (customCountryIds.length === 1) {
+      navigation.navigate('ManagePlaceToVisit', {
+        placeId: null,
+        countryId: customCountryIds[0],
+        lat: lat,
+        lng: lng,
+      });
+    }
   }
 
   return (
@@ -97,24 +131,10 @@ const ShowMap: React.FC<ShowMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
-        {customCountryCtx.findCountriesPlaces(customCountryId)!.map((place) => {
-          return (
-            <MapsMarker
-              location={formatPlaceToLocation(place)}
-              key={generateRandomString()}
-            />
-          );
-        })}
-        {location && (
-          <Marker
-            title={location.data.name}
-            coordinate={{
-              latitude: location.data.latitude,
-              longitude: location.data.longitude,
-            }}
-            description={location.description}
-          />
-        )}
+        {shownLocations &&
+          shownLocations.map((loc) => {
+            return <MapsMarker location={loc} key={generateRandomString()} />;
+          })}
       </MapView>
     </View>
   );

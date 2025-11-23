@@ -10,6 +10,7 @@ export interface PlaceToVisit {
   latitude: number;
   longitude: number;
   link?: string;
+  minorStageIds?: number[];
 }
 
 export interface PlaceValues {
@@ -22,6 +23,7 @@ export interface PlaceValues {
   latitude?: number;
   longitude?: number;
   link?: string;
+  minorStageIds?: number[];
 }
 
 export interface PlaceFormValues {

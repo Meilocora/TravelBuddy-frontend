@@ -51,6 +51,7 @@ export enum Icons {
   openDetails = 'caret-down-outline',
   closeDetails = 'caret-up-outline',
   toggle = 'toggle',
+  earth = 'earth',
 }
 
 export enum ButtonMode {

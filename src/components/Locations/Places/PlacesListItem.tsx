@@ -1,6 +1,7 @@
 import { ReactElement, useContext, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import {
   Icons,
@@ -17,14 +18,15 @@ import {
   toggleFavoritePlace,
   toggleVisitedPlace,
 } from '../../../utils/http/place_to_visit';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import { CustomCountryContext } from '../../../store/custom-country-context';
+import { StagesContext } from '../../../store/stages-context';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
   index?: number;
   onToggleFavorite: (placeId: number) => void;
   onToggleVisited: (placeId: number) => void;
-  onRemovePlace?: (name: string) => void;
+  onRemovePlace?: (placeId: number) => void;
   majorStageId?: number;
 }
 
@@ -39,20 +41,29 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   const [isOpened, setIsOpened] = useState(false);
   const navigation = useNavigation<NavigationProp<StackParamList>>();
   const placesCtx = useContext(PlaceContext);
+  const countryCtx = useContext(CustomCountryContext);
+  const stagesCtx = useContext(StagesContext);
 
   async function handleToggleFavorite() {
     const response = await toggleFavoritePlace(place.id);
     if (!response.error) {
       placesCtx.toggleFavorite(place.id);
       onToggleFavorite(place.id);
+      await stagesCtx.fetchStagesData();
+      await countryCtx.fetchUsersCustomCountries();
+      await placesCtx.fetchPlacesToVisit();
     }
   }
 
   async function handleToggleVisited() {
     const response = await toggleVisitedPlace(place.id);
+    countryCtx.customCountries[0].visited;
     if (!response.error) {
       placesCtx.toggleVisited(place.id);
       onToggleVisited(place.id);
+      await stagesCtx.fetchStagesData();
+      await countryCtx.fetchUsersCustomCountries();
+      await placesCtx.fetchPlacesToVisit();
     }
   }
 
@@ -65,7 +76,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   }
 
   function handleRemove() {
-    onRemovePlace?.(place.name);
+    onRemovePlace?.(place.id);
   }
 
   function handleShowLocation() {
@@ -83,7 +94,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: majorStageId ? 'complementary' : 'primary',
-      customCountryId: place.countryId,
+      customCountryIds: [place.countryId],
     });
   }
 

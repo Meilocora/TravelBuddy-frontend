@@ -138,7 +138,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
   function handleShowOnMap() {
     navigation.navigate('ShowMap', {
-      customCountryId: countryId,
+      customCountryIds: [countryId],
     });
   }
 

@@ -10,6 +10,7 @@ interface CustomCountryContextType {
   deleteCustomCountry: (customCountryId: number) => void;
   updateCustomCountry: (customCountry: CustomCountry) => void;
   findCountriesPlaces: (countryId: number) => PlaceToVisit[] | undefined;
+  getCustomCountriesIds: () => number[] | undefined;
 }
 
 export const CustomCountryContext = createContext<CustomCountryContextType>({
@@ -19,6 +20,7 @@ export const CustomCountryContext = createContext<CustomCountryContextType>({
   deleteCustomCountry: () => {},
   updateCustomCountry: () => {},
   findCountriesPlaces: () => undefined,
+  getCustomCountriesIds: () => undefined,
 });
 
 export default function CustomCountryContextProvider({
@@ -81,6 +83,15 @@ export default function CustomCountryContextProvider({
     return placesToVisit.length > 0 ? placesToVisit : undefined;
   }
 
+  function getCustomCountriesIds() {
+    let idList = [];
+    for (const country of customCountries) {
+      idList.push(country.id);
+    }
+
+    return idList;
+  }
+
   const value = {
     customCountries,
     fetchUsersCustomCountries,
@@ -88,6 +99,7 @@ export default function CustomCountryContextProvider({
     deleteCustomCountry,
     updateCustomCountry,
     findCountriesPlaces,
+    getCustomCountriesIds,
   };
 
   return (

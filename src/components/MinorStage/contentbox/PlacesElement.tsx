@@ -19,8 +19,8 @@ import { StagesContext } from '../../../store/stages-context';
 interface PlacesElementProps {
   majorStageId: number;
   minorStage: MinorStage;
-  handleAdd: (name: string) => void;
-  handleDelete: (name: string) => void;
+  handleAdd: (placeId: number) => void;
+  handleDelete: (placeId: number) => void;
 }
 
 const PlacesElement: React.FC<PlacesElementProps> = ({

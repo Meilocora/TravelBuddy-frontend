@@ -186,12 +186,12 @@ export const toggleVisitedPlace = async (
 };
 
 export const addMinorStageToPlace = async (
-  name: string,
+  placeId: number,
   minorStageId: number
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/add-minor-stage-to-place/${name}/${minorStageId}`
+      `${prefix}/add-minor-stage-to-place/${placeId}/${minorStageId}`
     );
 
     // Error from backend
@@ -207,11 +207,12 @@ export const addMinorStageToPlace = async (
 };
 
 export const removeMinorStageFromPlace = async (
-  name: string
+  placeId: number,
+  minorStageId: number
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/remove-minor-stage-from-place/${name}`
+      `${prefix}/remove-minor-stage-from-place/${placeId}/${minorStageId}`
     );
 
     // Error from backend

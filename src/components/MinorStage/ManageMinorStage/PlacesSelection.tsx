@@ -15,6 +15,7 @@ import {
   ColorScheme,
   Icons,
   MapLocation,
+  PlaceToVisit,
   StackParamList,
 } from '../../../models';
 import { FetchPlacesProps } from '../../../utils/http';
@@ -30,8 +31,8 @@ import { StagesContext } from '../../../store/stages-context';
 
 interface PlacesSelectionProps {
   onFetchRequest: (countryName: string) => Promise<FetchPlacesProps>;
-  onAddHandler: (addedItem: string) => void;
-  onRemoveHandler: (removedItem: string) => void;
+  onAddHandler: (placeId: number) => void;
+  onRemoveHandler: (placeId: number) => void;
   onCloseModal: () => void;
   chosenPlaces: string[];
   countryName: string;
@@ -48,7 +49,7 @@ const PlacesSelection = ({
   minorStageId,
 }: PlacesSelectionProps): ReactElement => {
   const navigation = useNavigation<NavigationProp<StackParamList>>();
-  const [fetchedData, setFetchedData] = useState<string[]>([]);
+  const [fetchedData, setFetchedData] = useState<PlaceToVisit[]>([]);
   const [customCountryId, setCustomCountryId] = useState<number | null>(null);
   const [averageRegion, setAverageRegion] = useState<Region>();
 
@@ -83,11 +84,11 @@ const PlacesSelection = ({
       setCustomCountryId(countryId!);
 
       if (places) {
-        const names = places.map((item) => item.name);
-        const namesNotChosen = names.filter(
-          (name) => !chosenPlaces.includes(name)
+        // const names = places.map((item) => item.name);
+        const placesNotChosen = places.filter(
+          (place) => !chosenPlaces.includes(place.name)
         );
-        setFetchedData(namesNotChosen);
+        setFetchedData(placesNotChosen);
       }
     }
 
@@ -103,16 +104,18 @@ const PlacesSelection = ({
     return () => clearTimeout(timer); // Clear the timer if component unmounts or fetchedData changes
   }, [fetchedData, onCloseModal]);
 
-  function handlePressListElement(item: string) {
-    onAddHandler(item);
+  function handlePressListElement(place: PlaceToVisit) {
+    onAddHandler(place.id);
   }
 
-  function handlePressMarker(name: string) {
-    const partOfStage = minorStage!.placesToVisit?.some((p) => p.name === name);
+  function handlePressMarker(location: Location) {
+    const partOfStage = minorStage!.placesToVisit?.some(
+      (p) => p.name === location.data.name
+    );
     if (partOfStage) {
-      onRemoveHandler(name);
+      onRemoveHandler(location.placeId!);
     } else {
-      onAddHandler(name);
+      onAddHandler(location.placeId!);
     }
   }
 
@@ -130,8 +133,8 @@ const PlacesSelection = ({
         initialLat: averageRegion.latitude,
         initialLng: averageRegion.longitude,
         onPickLocation: (location: MapLocation) => {},
-        onAddLocation: (name: string) => {
-          handlePressMarker(name);
+        onAddLocation: (location: Location) => {
+          handlePressMarker(location);
         },
         hasLocation: true,
         colorScheme: ColorScheme.complementary,
@@ -157,12 +160,20 @@ const PlacesSelection = ({
         </View>
         <ScrollView style={styles.list}>
           {fetchedData.map((item) => (
-            <ListItem
-              key={generateRandomString()}
-              onPress={handlePressListElement.bind(item)}
+            <Pressable
+              key={item.id}
+              onPress={() => handlePressListElement(item)}
+              style={({ pressed }) => [
+                styles.listElementContainer,
+                ,
+                pressed && styles.pressed,
+              ]}
+              android_ripple={{ color: GlobalStyles.colors.grayMedium }}
             >
-              {item}
-            </ListItem>
+              <Text style={[styles.listElementText]} numberOfLines={1}>
+                {item.name}
+              </Text>
+            </Pressable>
           ))}
         </ScrollView>
         <Button
@@ -179,6 +190,12 @@ const PlacesSelection = ({
     content = (
       <>
         <View style={styles.mapButtonContainer}></View>
+        <IconButton
+          icon={Icons.map}
+          onPress={handlePressMapButton}
+          color={GlobalStyles.colors.graySoft}
+          containerStyle={styles.mapButton}
+        />
         <InfoText content='No items found...' style={styles.info} />
         <View style={{ flexDirection: 'row' }}>
           <Button
@@ -269,6 +286,22 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 'auto',
     alignSelf: 'center',
+  },
+  listElementContainer: {
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: GlobalStyles.colors.grayDark,
+    marginVertical: 5,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  listElementText: {
+    fontSize: 20,
+    color: GlobalStyles.colors.grayDark,
+    flexWrap: 'wrap',
   },
 });
 

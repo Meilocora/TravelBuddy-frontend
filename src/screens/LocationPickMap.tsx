@@ -91,12 +91,13 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       );
 
       // Filter out places that are already assigned to any minorStage
-      if (placesToVisit && assignedPlaces) {
-        placesToVisit = placesToVisit.filter(
-          (place) =>
-            !assignedPlaces.some((assigned) => assigned.name === place.name)
-        );
-      }
+      // TODO: Delete
+      // if (placesToVisit && assignedPlaces) {
+      //   placesToVisit = placesToVisit.filter(
+      //     (place) =>
+      //       !assignedPlaces.some((assigned) => assigned.name === place.name)
+      //   );
+      // }
     }
   }
   if (majorStageId) {
@@ -184,12 +185,16 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     }
   }
 
-  function handlePressMarker(name: string, lat: number, lng: number) {
+  function handlePressMarker(location: Location) {
     if (route.params.onPressMarker) {
-      route.params.onPressMarker({ title: name, lat, lng });
+      route.params.onPressMarker({
+        title: location.data.name,
+        lat: location.data.latitude,
+        lng: location.data.longitude,
+      });
       navigation.goBack();
     } else if (route.params.onAddLocation) {
-      route.params.onAddLocation(name);
+      route.params.onAddLocation(location);
     }
   }
 

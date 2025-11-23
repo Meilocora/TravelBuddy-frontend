@@ -65,7 +65,7 @@ const ActivityListElement: React.FC<ActivityListElementProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: 'complementary',
-      customCountryId: customCountryId,
+      customCountryIds: [customCountryId],
     });
   }
 

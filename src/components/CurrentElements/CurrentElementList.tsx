@@ -89,7 +89,7 @@ const CurrentElementList: React.FC<
     mapNavigation.navigate('ShowMap', {
       location: location,
       colorScheme: 'complementary',
-      customCountryId: currentMajorStage?.country.id!,
+      customCountryIds: [currentMajorStage?.country.id!],
     });
   }
 
@@ -111,7 +111,7 @@ const CurrentElementList: React.FC<
     mapNavigation.navigate('ShowMap', {
       location: location,
       colorScheme: transportationStageType,
-      customCountryId: currentMajorStage?.country.id!,
+      customCountryIds: [currentMajorStage?.country.id!],
     });
   }
 

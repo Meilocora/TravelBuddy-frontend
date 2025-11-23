@@ -624,6 +624,7 @@ export function getRemainingCountriesPlacesLocations(
 export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
   return {
     belonging: 'Unknown',
+    placeId: placeToVisit.id,
     locationType: LocationType.placeToVisit,
     data: {
       name: placeToVisit.name,
@@ -632,6 +633,7 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
     },
     done: placeToVisit.visited,
     description: placeToVisit.description || '',
+    favourite: placeToVisit.favorite,
   };
 }
 

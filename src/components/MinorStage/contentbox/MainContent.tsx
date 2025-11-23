@@ -61,13 +61,13 @@ const MainContent: React.FC<MainContentProps> = ({
     });
   }
 
-  async function handleAddPlace(name: string) {
-    await addMinorStageToPlace(name, minorStage.id);
+  async function handleAddPlace(placeId: number) {
+    await addMinorStageToPlace(placeId, minorStage.id);
     stagesCtx.fetchStagesData();
   }
 
-  async function handleRemovePlace(name: string) {
-    await removeMinorStageFromPlace(name);
+  async function handleRemovePlace(placeId: number) {
+    await removeMinorStageFromPlace(placeId, minorStage.id);
     stagesCtx.fetchStagesData();
   }
 

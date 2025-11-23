@@ -40,7 +40,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
     navigation.navigate('ShowMap', {
       location: location,
       colorScheme: 'complementary',
-      customCountryId: customCountryId,
+      customCountryIds: [customCountryId],
     });
   }
 

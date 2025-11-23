@@ -63,7 +63,7 @@ export const TransportElementInfopoint: React.FC<
     navigation.navigate('ShowMap', {
       location: mapLocation,
       colorScheme: colorScheme,
-      customCountryId: customCountryId,
+      customCountryIds: [customCountryId],
     });
   }
 

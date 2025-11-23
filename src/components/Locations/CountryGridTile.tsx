@@ -14,8 +14,6 @@ interface CountryGridTileProps {
   index: number;
 }
 
-// TODO: Visited muss auswählbar sein oder automatisch, wenn PlaceToVisit auf visited gestellt wurde
-
 const CountryGridTile: React.FC<CountryGridTileProps> = ({
   country,
   index,
