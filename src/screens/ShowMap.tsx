@@ -2,6 +2,7 @@ import 'react-native-get-random-values';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -9,9 +10,9 @@ import {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import MapView, { MapPressEvent, Region } from 'react-native-maps';
+import MapView, { MapPressEvent, Marker, Region } from 'react-native-maps';
 
-import { Icons, Location, StackParamList } from '../models';
+import { Icons, Location, MapType, StackParamList } from '../models';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import MapsMarker from '../components/Maps/MapsMarker';
 import HeaderTitle from '../components/UI/HeaderTitle';
@@ -22,6 +23,8 @@ import {
 import { CustomCountryContext } from '../store/custom-country-context';
 import { generateRandomString } from '../utils';
 import IconButton from '../components/UI/IconButton';
+import MapLocationElement from '../components/Maps/MapLocationElement/MapLocationElement';
+import { usePersistedState } from '../hooks/usePersistedState';
 
 interface ShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ShowMap'>;
@@ -45,6 +48,13 @@ const ShowMap: React.FC<ShowMapProps> = ({
     latitudeDelta: 0.1,
     longitudeDelta: 0.04,
   });
+  const [pressedLocation, setPressedLocation] = useState<
+    Location | undefined
+  >();
+  const [mapType, setMapType] = usePersistedState<MapType>(
+    'map_type',
+    'standard'
+  );
 
   let shownLocations: Location[] = [];
   for (const id of customCountryIds) {
@@ -65,7 +75,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
 
   useEffect(() => {
     async function calculateRegion() {
-      if (shownLocations) {
+      if (shownLocations && !location) {
         setRegion(await getRegionForLocations(shownLocations));
       }
     }
@@ -118,6 +128,11 @@ const ShowMap: React.FC<ShowMapProps> = ({
     }
   }
 
+  const handleCloseMapLocationElement = useCallback(
+    () => setPressedLocation(undefined),
+    []
+  );
+
   return (
     <View style={styles.container}>
       <MapView
@@ -127,15 +142,38 @@ const ShowMap: React.FC<ShowMapProps> = ({
         style={styles.map}
         showsUserLocation
         showsMyLocationButton
-        mapType='standard'
+        mapType={mapType}
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
+        {location && (
+          <Marker
+            title={location.data.name}
+            coordinate={{
+              latitude: location.data.latitude,
+              longitude: location.data.longitude,
+            }}
+          />
+        )}
         {shownLocations &&
           shownLocations.map((loc) => {
-            return <MapsMarker location={loc} key={generateRandomString()} />;
+            const isActive = pressedLocation && location === pressedLocation;
+            return (
+              <MapsMarker
+                location={loc}
+                key={generateRandomString()}
+                active={isActive}
+                onPressMarker={setPressedLocation.bind(location)}
+              />
+            );
           })}
       </MapView>
+      {pressedLocation && (
+        <MapLocationElement
+          location={pressedLocation}
+          onClose={handleCloseMapLocationElement}
+        />
+      )}
     </View>
   );
 };

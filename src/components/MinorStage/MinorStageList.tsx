@@ -1,8 +1,7 @@
 import { ReactElement, useContext, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import MinorStageListElement from './MinorStageListElement';
-import { generateRandomString } from '../../utils/generator';
 import InfoCurtain from '../UI/InfoCurtain';
 import {
   ColorScheme,
@@ -128,6 +127,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
       )}
       <DraggableFlatList
         data={shownMinorStages}
+        nestedScrollEnabled
         keyExtractor={(item) => item.id.toString()}
         style={styles.listContainer}
         renderItem={({ item, getIndex, drag, isActive }) => {

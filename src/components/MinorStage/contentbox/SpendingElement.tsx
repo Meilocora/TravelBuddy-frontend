@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 
 import { ButtonMode, ColorScheme, MinorStage, Spending } from '../../../models';
 import Button from '../../UI/Button';
@@ -43,10 +36,10 @@ const SpendingListElement: React.FC<SpendingListElementProps> = ({
           <Text style={listElementStyles.headerText}>Amount</Text>
         </View>
       </View>
-      <ScrollView>
+      <View>
         {spendings.map((spending, index) => (
           <Pressable
-            key={generateRandomString()}
+            key={spending.id!.toString()}
             onPress={() => handleEdit(spending.id!)}
             style={[
               listElementStyles.row,
@@ -98,7 +91,7 @@ const SpendingListElement: React.FC<SpendingListElementProps> = ({
             </View>
           </Pressable>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -106,7 +99,6 @@ const SpendingListElement: React.FC<SpendingListElementProps> = ({
 const listElementStyles = StyleSheet.create({
   container: {
     marginVertical: 5,
-    maxHeight: 200,
     paddingBottom: 5,
     borderBottomColor: GlobalStyles.colors.purpleDark,
     borderBottomWidth: 2,
@@ -180,13 +172,12 @@ const SpendingElement: React.FC<SpendingElementProps> = ({
           <Text style={styles.infoText}>No spendings found...</Text>
         </View>
       ) : (
-        <ScrollView style={{ maxHeight: screenHeight / 3 }}>
+        <View>
           <SpendingListElement
             spendings={minorStage.costs.spendings!}
             handleEdit={handleEdit}
-            key={generateRandomString()}
           />
-        </ScrollView>
+        </View>
       )}
       <View style={styles.buttonContainer}>
         <Button
@@ -203,7 +194,6 @@ const SpendingElement: React.FC<SpendingElementProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     width: '100%',
   },
   infoContainer: {

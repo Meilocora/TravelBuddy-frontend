@@ -15,6 +15,7 @@ import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import {
+  addDaysToDateString,
   createMinorStage,
   formatAmount,
   formatDate,
@@ -56,8 +57,6 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
   const stagesCtx = useContext(StagesContext);
   const majorStage = stagesCtx.findMajorStage(majorStageId);
 
-  const minStartDate = majorStage!.scheduled_start_time;
-  const maxEndDate = majorStage!.scheduled_end_time;
   let maxAvailableMoney = majorStage!.costs.budget;
 
   const minorStages = majorStage!.minorStages;
@@ -81,17 +80,35 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     ? defaultValues?.position ?? 1
     : positions[positions.length - 1];
 
+  const minStartDate = majorStage!.scheduled_start_time;
+  const priorMinorStage = minorStages?.find(
+    (stage) => stage.position === initialPosition - 1
+  );
+
+  const initialStartTimeValue = defaultValues
+    ? defaultValues.scheduled_start_time
+    : priorMinorStage
+    ? addDaysToDateString(priorMinorStage.scheduled_end_time)
+    : null;
+  const initialEndTimeValue = defaultValues
+    ? defaultValues.scheduled_end_time
+    : priorMinorStage
+    ? addDaysToDateString(priorMinorStage.scheduled_end_time)
+    : null;
+
+  const maxEndDate = majorStage!.scheduled_end_time;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [inputs, setInputs] = useState<MinorStageFormValues>({
     title: { value: defaultValues?.title || '', isValid: true, errors: [] },
     scheduled_start_time: {
-      value: defaultValues?.scheduled_start_time || null,
+      value: initialStartTimeValue,
       isValid: true,
       errors: [],
     },
     scheduled_end_time: {
-      value: defaultValues?.scheduled_end_time || null,
+      value: initialEndTimeValue,
       isValid: true,
       errors: [],
     },

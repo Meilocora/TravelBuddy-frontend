@@ -25,6 +25,7 @@ import {
   Icons,
   JourneyBottomTabsParamsList,
   Location,
+  MapType,
   StackParamList,
 } from '../../models';
 import MapsMarker from '../../components/Maps/MapsMarker';
@@ -69,6 +70,10 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   );
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
+  const [mapType, setMapType] = usePersistedState<MapType>(
+    'map_type',
+    'standard'
+  );
   const [directionDestination, setDirectionDestination] =
     useState<LatLng | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
@@ -336,6 +341,8 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           showAllPlaces={showAllPlaces}
           mode={directionsMode}
           setMode={handleChangeDirectionsMode}
+          setMapType={setMapType}
+          mapType={mapType}
         />
       )}
       {popupText && (
@@ -378,7 +385,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         }
         {...(region ? { region } : {})}
         onPress={() => {}}
-        mapType='standard'
+        mapType={mapType}
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
@@ -421,13 +428,14 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             }}
           />
         )}
-        {shownLocations.map((location, index) => {
+        {shownLocations.map((location) => {
           const isActive = pressedLocation && location === pressedLocation;
           return (
             <MapsMarker
               key={generateRandomString()}
               location={location}
               active={isActive}
+              onPressMarker={setPressedLocation.bind(location)}
             />
           );
         })}

@@ -49,29 +49,72 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
   const userCtx = useContext(UserContext);
 
+  // TODO: Speichere die Languages direkt im backend korrekt und lösche dafür das hier raus
   const languages = getLanguageNames(country.languages);
   const population = formatQuantity(country.population);
   let currency = country.currencies;
 
   const currencyObj = userCtx.currencies?.find((c) =>
     Array.isArray(country.currencies)
-      ? country.currencies.includes(c.currency)
-      : c.currency === country.currencies
+      ? country.currencies.includes(c.code)
+      : c.code === country.currencies
   );
 
-  if (currencyObj && currencyObj.currency !== 'EUR') {
-    currency = `${currencyObj.currency} ~ ${(
+  if (currencyObj && currencyObj.code !== 'EUR') {
+    currency = `${currencyObj.code} ~ ${(
       1 / currencyObj.conversionRate
     ).toFixed(2)}€`;
 
     if (switchConversion) {
       currency = `1€ ~ ${currencyObj.conversionRate.toFixed(2)} ${
-        currencyObj.currency
+        currencyObj.code
       }`;
     }
   }
 
+  // TODO: Delete Code everywhere and make Currencies larger instead (with all infos available)
+
   const [inputs, setInputs] = useState<CustomCountryFormValues>({
+    code: {
+      value: country?.code || null,
+      isValid: true,
+      errors: [],
+    },
+    timezones: {
+      value: country?.timezones || null,
+      isValid: true,
+      errors: [],
+    },
+    currencies: {
+      value: country?.currencies || null,
+      isValid: true,
+      errors: [],
+    },
+    languages: {
+      value: country?.languages || null,
+      isValid: true,
+      errors: [],
+    },
+    capital: {
+      value: country?.capital || null,
+      isValid: true,
+      errors: [],
+    },
+    population: {
+      value: country?.population || null,
+      isValid: true,
+      errors: [],
+    },
+    region: {
+      value: country?.region || null,
+      isValid: true,
+      errors: [],
+    },
+    subregion: {
+      value: country?.subregion || null,
+      isValid: true,
+      errors: [],
+    },
     visum_regulations: {
       value: country?.visum_regulations || null,
       isValid: true,
@@ -165,13 +208,45 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
         )}
         <ScrollView>
           <View style={styles.formRow}>
-            <InfoPoint
-              title='Capital'
-              value={country.capital || 'No data...'}
-            />
-            <InfoPoint title='Code' value={country.code || 'No data...'} />
+            {!isEditing ? (
+              <>
+                <InfoPoint
+                  title='Capital'
+                  value={country.capital || 'No data...'}
+                />
+                <InfoPoint title='Code' value={country.code || 'No data...'} />
+              </>
+            ) : (
+              <>
+                <Input
+                  label='Capital'
+                  maxLength={FormLimits.countryCapital}
+                  invalid={!inputs.capital.isValid}
+                  errors={inputs.capital.errors}
+                  isEditing={isEditing}
+                  style={styles.input}
+                  textInputConfig={{
+                    value: inputs.capital.value?.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'capital'),
+                  }}
+                />
+                <Input
+                  label='Code'
+                  maxLength={FormLimits.countryCode}
+                  invalid={!inputs.code.isValid}
+                  errors={inputs.code.errors}
+                  isEditing={isEditing}
+                  style={styles.input}
+                  textInputConfig={{
+                    value: inputs.code.value?.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'code'),
+                  }}
+                />
+              </>
+            )}
           </View>
           <View style={styles.formRow}>
+            {/* TODO: Use CurrenciesModal here + Add a "add Currency" button */}
             <Pressable
               style={{ width: '50%' }}
               onPress={() => setSwitchConversion((prevValue) => !prevValue)}
@@ -179,32 +254,112 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
               <InfoPoint
                 title='Currencies'
                 value={currency || 'No data...'}
-                touchable={currencyObj && currencyObj.currency !== 'EUR'}
+                touchable={currencyObj && currencyObj.code !== 'EUR'}
               />
             </Pressable>
-            <InfoPoint
-              title='Population'
-              value={population?.toString() || 'No data...'}
-            />
+            {!isEditing ? (
+              <InfoPoint
+                title='Population'
+                value={population?.toString() || 'No data...'}
+              />
+            ) : (
+              <Input
+                label='Population'
+                maxLength={FormLimits.countryLanguages}
+                invalid={!inputs.population.isValid}
+                errors={inputs.population.errors}
+                isEditing={isEditing}
+                style={styles.input}
+                textInputConfig={{
+                  keyboardType: 'decimal-pad',
+                  value: inputs.population.value?.toString(),
+                  onChangeText: inputChangedHandler.bind(this, 'population'),
+                }}
+              />
+            )}
           </View>
           <View style={styles.formRow}>
-            <InfoPoint title='Region' value={country.region || 'No data...'} />
-            <InfoPoint
-              title='Subregion'
-              value={country.subregion || 'No data...'}
-            />
+            {!isEditing ? (
+              <>
+                <InfoPoint
+                  title='Region'
+                  value={country.region || 'No data...'}
+                />
+                <InfoPoint
+                  title='Subregion'
+                  value={country.subregion || 'No data...'}
+                />
+              </>
+            ) : (
+              <>
+                <Input
+                  label='Region'
+                  maxLength={FormLimits.countryRegion}
+                  invalid={!inputs.region.isValid}
+                  errors={inputs.region.errors}
+                  isEditing={isEditing}
+                  style={styles.input}
+                  textInputConfig={{
+                    value: inputs.region.value?.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'region'),
+                  }}
+                />
+                <Input
+                  label='Subregion'
+                  maxLength={FormLimits.countrySubRegion}
+                  invalid={!inputs.subregion.isValid}
+                  errors={inputs.subregion.errors}
+                  isEditing={isEditing}
+                  style={styles.input}
+                  textInputConfig={{
+                    value: inputs.subregion.value?.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'subregion'),
+                  }}
+                />
+              </>
+            )}
           </View>
           <View style={styles.formRow}>
-            <InfoPoint
-              title='Languages'
-              value={languages?.toString() || 'No data...'}
-            />
+            {!isEditing ? (
+              <InfoPoint
+                title='Languages'
+                value={languages?.toString() || 'No data...'}
+              />
+            ) : (
+              <Input
+                label='Languages'
+                maxLength={FormLimits.countryLanguages}
+                invalid={!inputs.languages.isValid}
+                errors={inputs.languages.errors}
+                isEditing={isEditing}
+                style={styles.input}
+                textInputConfig={{
+                  value: inputs.languages.value?.toString(),
+                  onChangeText: inputChangedHandler.bind(this, 'languages'),
+                }}
+              />
+            )}
           </View>
           <View style={styles.formRow}>
-            <InfoPoint
-              title='Timezones'
-              value={country.timezones?.toString() || 'No data...'}
-            />
+            {!isEditing ? (
+              <InfoPoint
+                title='Timezones'
+                value={country.timezones?.toString() || 'No data...'}
+              />
+            ) : (
+              <Input
+                label='Timezones'
+                maxLength={FormLimits.countryTimezones}
+                invalid={!inputs.timezones.isValid}
+                errors={inputs.timezones.errors}
+                isEditing={isEditing}
+                style={styles.input}
+                textInputConfig={{
+                  value: inputs.timezones.value?.toString(),
+                  onChangeText: inputChangedHandler.bind(this, 'timezones'),
+                }}
+              />
+            )}
           </View>
           <View style={styles.formRow}>
             {!isEditing ? (
@@ -222,7 +377,6 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                 style={styles.input}
                 textInputConfig={{
                   value: inputs.best_time_to_visit.value?.toString(),
-                  placeholder: 'Enter best time to visit here',
                   onChangeText: inputChangedHandler.bind(
                     this,
                     'best_time_to_visit'
@@ -248,7 +402,6 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                 textInputConfig={{
                   multiline: true,
                   value: inputs.general_information.value?.toString(),
-                  placeholder: 'Enter general information here',
                   onChangeText: inputChangedHandler.bind(
                     this,
                     'general_information'
@@ -274,7 +427,6 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                 textInputConfig={{
                   multiline: true,
                   value: inputs.visum_regulations.value?.toString(),
-                  placeholder: 'Enter visum regulations here',
                   onChangeText: inputChangedHandler.bind(
                     this,
                     'visum_regulations'

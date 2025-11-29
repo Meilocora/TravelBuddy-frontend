@@ -21,6 +21,14 @@ export interface CustomCountry {
 }
 
 export interface CustomCountryFormValues {
+  code: Validable<string | null>;
+  timezones: Validable<string | null>;
+  currencies: Validable<string | null>;
+  languages: Validable<string[] | null>;
+  capital: Validable<string | null>;
+  population: Validable<number | null>;
+  region: Validable<string | null>;
+  subregion: Validable<string | null>;
   visum_regulations: Validable<string | null>;
   best_time_to_visit: Validable<string | null>;
   general_information: Validable<string | null>;

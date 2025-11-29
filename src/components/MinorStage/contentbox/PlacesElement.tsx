@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  Dimensions,
-  Modal,
-} from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Modal } from 'react-native';
 import { useContext, useState } from 'react';
 
 import { ButtonMode, ColorScheme, MinorStage } from '../../../models';
@@ -13,7 +6,6 @@ import Button from '../../UI/Button';
 import PlacesSelection from '../ManageMinorStage/PlacesSelection';
 import { fetchavailablePlacesByCountry } from '../../../utils/http';
 import PlacesListItem from '../../Locations/Places/PlacesListItem';
-import { generateRandomString, validateIsOver } from '../../../utils';
 import { StagesContext } from '../../../store/stages-context';
 
 interface PlacesElementProps {
@@ -61,18 +53,18 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
           <Text style={styles.infoText}>No places selected...</Text>
         </View>
       ) : (
-        <ScrollView style={{ maxHeight: screenHeight / 3 }}>
+        <View>
           {minorStage.placesToVisit!.map((place) => (
             <PlacesListItem
+              key={place.id.toString()}
               place={place}
-              key={generateRandomString()}
               onToggleFavorite={handleToggleFavourite}
               onToggleVisited={handleToggleVisited}
               onRemovePlace={handleDelete}
               majorStageId={majorStageId}
             />
           ))}
-        </ScrollView>
+        </View>
       )}
 
       <View style={styles.buttonContainer}>
@@ -105,7 +97,6 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     width: '100%',
   },
   infoContainer: {

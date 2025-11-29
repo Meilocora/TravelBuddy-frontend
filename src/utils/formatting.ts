@@ -226,3 +226,9 @@ export function formatRouteDuration(duration: number): string {
   }
   return `${hours}:${minutes}h`;
 }
+
+export function addDaysToDateString(dateString: string, days = 1): string {
+  const dateObject = parseDate(dateString);
+  dateObject.setDate(dateObject.getDate() + days);
+  return formatDate(dateObject);
+}

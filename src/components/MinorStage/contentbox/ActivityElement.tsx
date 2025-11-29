@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -24,12 +17,7 @@ import Link from '../../UI/Link';
 import { useState } from 'react';
 import { GlobalStyles } from '../../../constants/styles';
 import IconButton from '../../UI/IconButton';
-import {
-  formatAmount,
-  generateRandomString,
-  parseDate,
-  validateIsOver,
-} from '../../../utils';
+import { formatAmount, parseDate, validateIsOver } from '../../../utils';
 
 interface ActivityListElementProps {
   activity: Activity;
@@ -163,7 +151,7 @@ const listElementStyles = StyleSheet.create({
   container: {
     paddingVertical: 2,
     paddingHorizontal: 4,
-    marginVertical: 4,
+    marginVertical: 5,
     backgroundColor: GlobalStyles.colors.grayDark,
     borderRadius: 16,
   },
@@ -195,11 +183,13 @@ const listElementStyles = StyleSheet.create({
   },
   button: {
     marginHorizontal: 0,
-    paddingHorizontal: 4,
+    paddingHorizontal: 0,
+    marginVertical: 0,
+    paddingVertical: 0,
   },
   additionalContainer: {
     marginHorizontal: 8,
-    paddingBottom: 8,
+    paddingBottom: 2,
   },
   subtitle: {
     marginRight: 2,
@@ -239,18 +229,18 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
           <Text style={styles.infoText}>No activities found.</Text>
         </View>
       ) : (
-        <ScrollView style={{ maxHeight: screenHeight / 3 }}>
+        <View>
           {minorStage.activities!.map((activity) => (
             <ActivityListElement
               activity={activity}
               minorStage={minorStage}
               handleEdit={handleEdit}
               handleDelete={handleDelete}
-              key={generateRandomString()}
+              key={activity.id!.toString()}
               customCountryId={customCountryId}
             />
           ))}
-        </ScrollView>
+        </View>
       )}
       <View style={styles.buttonContainer}>
         {!isOver && (
@@ -269,7 +259,6 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     width: '100%',
   },
   infoContainer: {

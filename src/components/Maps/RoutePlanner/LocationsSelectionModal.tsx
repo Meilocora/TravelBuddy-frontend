@@ -1,4 +1,11 @@
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Button from '../../UI/Button';
 import {
   ButtonMode,
@@ -71,9 +78,16 @@ const LocationsSelectionModal: React.FC<LocationsSelectionModalProps> = ({
       transparent
       animationType='fade'
       onRequestClose={() => setShowModal(false)}
+      statusBarTranslucent
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.listContainer}>
+      <Pressable
+        style={styles.modalOverlay}
+        onPress={() => setShowModal(false)}
+      >
+        <Pressable
+          style={styles.listContainer}
+          onPress={(e) => e.stopPropagation()}
+        >
           <View style={styles.iconsContainer}>
             <Pressable
               style={[
@@ -147,8 +161,8 @@ const LocationsSelectionModal: React.FC<LocationsSelectionModalProps> = ({
           >
             Dismiss
           </Button>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -175,7 +189,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   listContainer: {
-    height: '70%',
+    height: Dimensions.get('window').height * 0.7,
     width: '80%',
     alignItems: 'center',
     paddingTop: 10,

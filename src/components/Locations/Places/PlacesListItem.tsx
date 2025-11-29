@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   },
   additionalContainer: {
     marginHorizontal: 8,
-    paddingBottom: 8,
+    paddingBottom: 2,
   },
 });
 

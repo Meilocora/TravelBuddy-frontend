@@ -25,6 +25,7 @@ import {
   StackParamList,
   Location,
   FormLimits,
+  MapType,
 } from '../models';
 import Modal from '../components/UI/Modal';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
@@ -40,6 +41,7 @@ import MapsMarker from '../components/Maps/MapsMarker';
 import { generateRandomString } from '../utils';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { StagesContext } from '../store/stages-context';
+import { usePersistedState } from '../hooks/usePersistedState';
 
 interface LocationPickMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'LocationPickMap'>;
@@ -78,6 +80,10 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     route.params.initialTitle
   );
   const [showModal, setShowModal] = useState(false);
+  const [mapType, setMapType] = usePersistedState<MapType>(
+    'map_type',
+    'standard'
+  );
 
   let placesToVisit: undefined | PlaceToVisit[];
   let journeysLocations: undefined | Location[];
@@ -89,15 +95,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         customCountryId,
         minorStageId
       );
-
-      // Filter out places that are already assigned to any minorStage
-      // TODO: Delete
-      // if (placesToVisit && assignedPlaces) {
-      //   placesToVisit = placesToVisit.filter(
-      //     (place) =>
-      //       !assignedPlaces.some((assigned) => assigned.name === place.name)
-      //   );
-      // }
     }
   }
   if (majorStageId) {
@@ -244,7 +241,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         onPress={route.params.onPressMarker ? undefined : selectLocationHandler}
         onPoiClick={handlePoiClick}
         style={styles.map}
-        mapType='standard'
+        mapType={mapType}
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >

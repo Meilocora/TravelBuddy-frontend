@@ -11,9 +11,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 import IconButton from '../UI/IconButton';
-import { Icons } from '../../models';
+import { ButtonMode, ColorScheme, Icons, MapType } from '../../models';
 import SettingItem from './SettingItem';
 import { MapViewDirectionsMode } from 'react-native-maps-directions';
+import Button from '../UI/Button';
 
 interface MapSettingsProps {
   onClose: () => void;
@@ -22,8 +23,9 @@ interface MapSettingsProps {
   toggleShowAllPlaces: () => void;
   showAllPlaces: boolean;
   mode: MapViewDirectionsMode;
-
   setMode: (mode: MapViewDirectionsMode) => void;
+  setMapType: (newType: MapType) => void;
+  mapType: MapType;
 }
 
 const MapSettings: React.FC<MapSettingsProps> = ({
@@ -34,6 +36,8 @@ const MapSettings: React.FC<MapSettingsProps> = ({
   showAllPlaces,
   mode,
   setMode,
+  setMapType,
+  mapType,
 }): ReactElement => {
   // Drag-to-dismiss logic
   const translateY = useSharedValue(0);
@@ -138,6 +142,79 @@ const MapSettings: React.FC<MapSettingsProps> = ({
         <SettingItem onPress={toggleShowAllPlaces} state={showAllPlaces}>
           Show all Places of country
         </SettingItem>
+        <View>
+          <Text style={styles.subTitle}>Map Type</Text>
+          <View style={styles.buttonRow}>
+            <Button
+              colorScheme={ColorScheme.neutral}
+              onPress={() => setMapType('standard')}
+              mode={ButtonMode.flat}
+              textStyle={
+                mapType === 'standard'
+                  ? styles.activeTextButtonText
+                  : styles.textButtonText
+              }
+              style={
+                mapType === 'standard'
+                  ? styles.activeTextButton
+                  : styles.textButton
+              }
+            >
+              Standard
+            </Button>
+            <Button
+              colorScheme={ColorScheme.neutral}
+              onPress={() => setMapType('satellite')}
+              mode={ButtonMode.flat}
+              textStyle={
+                mapType === 'satellite'
+                  ? styles.activeTextButtonText
+                  : styles.textButtonText
+              }
+              style={
+                mapType === 'satellite'
+                  ? styles.activeTextButton
+                  : styles.textButton
+              }
+            >
+              Satellite
+            </Button>
+            <Button
+              colorScheme={ColorScheme.neutral}
+              onPress={() => setMapType('hybrid')}
+              mode={ButtonMode.flat}
+              textStyle={
+                mapType === 'hybrid'
+                  ? styles.activeTextButtonText
+                  : styles.textButtonText
+              }
+              style={
+                mapType === 'hybrid'
+                  ? styles.activeTextButton
+                  : styles.textButton
+              }
+            >
+              Hybrid
+            </Button>
+            <Button
+              colorScheme={ColorScheme.neutral}
+              onPress={() => setMapType('terrain')}
+              mode={ButtonMode.flat}
+              textStyle={
+                mapType === 'terrain'
+                  ? styles.activeTextButtonText
+                  : styles.textButtonText
+              }
+              style={
+                mapType === 'terrain'
+                  ? styles.activeTextButton
+                  : styles.textButton
+              }
+            >
+              Terrain
+            </Button>
+          </View>
+        </View>
       </Animated.View>
     </GestureDetector>
   );
@@ -148,7 +225,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 3,
     width: '100%',
-    height: '27%',
+    height: '35%',
     backgroundColor: GlobalStyles.colors.grayMedium,
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -175,6 +252,25 @@ const styles = StyleSheet.create({
     borderColor: GlobalStyles.colors.amberAccent,
     backgroundColor: GlobalStyles.colors.amberSoft,
   },
+  textButton: {
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: GlobalStyles.colors.graySoft,
+  },
+  activeTextButton: {
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: GlobalStyles.colors.amberAccent,
+    backgroundColor: GlobalStyles.colors.amberSoft,
+  },
+  textButtonText: {
+    color: GlobalStyles.colors.graySoft,
+  },
+  activeTextButtonText: {
+    color: GlobalStyles.colors.amberAccent,
+  },
   directionsRow: {
     flexDirection: 'row',
     width: '85%',
@@ -185,6 +281,12 @@ const styles = StyleSheet.create({
   text: {
     color: GlobalStyles.colors.graySoft,
     fontSize: 16,
+    textAlign: 'center',
+  },
+  subTitle: {
+    color: GlobalStyles.colors.graySoft,
+    fontSize: 18,
+    textDecorationLine: 'underline',
     textAlign: 'center',
   },
 });

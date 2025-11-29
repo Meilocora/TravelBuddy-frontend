@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react';
 
-import { CustomCountry, PlaceToVisit } from '../models';
+import { CustomCountry, Location, PlaceToVisit } from '../models';
 import { fetchCustomCountries } from '../utils/http/custom_country';
 
 interface CustomCountryContextType {
@@ -11,6 +11,7 @@ interface CustomCountryContextType {
   updateCustomCountry: (customCountry: CustomCountry) => void;
   findCountriesPlaces: (countryId: number) => PlaceToVisit[] | undefined;
   getCustomCountriesIds: () => number[] | undefined;
+  findPlacesCountry: (location: Location) => CustomCountry | undefined;
 }
 
 export const CustomCountryContext = createContext<CustomCountryContextType>({
@@ -21,6 +22,7 @@ export const CustomCountryContext = createContext<CustomCountryContextType>({
   updateCustomCountry: () => {},
   findCountriesPlaces: () => undefined,
   getCustomCountriesIds: () => undefined,
+  findPlacesCountry: () => undefined,
 });
 
 export default function CustomCountryContextProvider({
@@ -92,6 +94,18 @@ export default function CustomCountryContextProvider({
     return idList;
   }
 
+  function findPlacesCountry(location: Location) {
+    for (const country of customCountries) {
+      if (!country.placesToVisit) continue;
+      for (const place of country.placesToVisit) {
+        if (place.id === location.placeId) {
+          return country;
+        }
+      }
+    }
+    return;
+  }
+
   const value = {
     customCountries,
     fetchUsersCustomCountries,
@@ -100,6 +114,7 @@ export default function CustomCountryContextProvider({
     updateCustomCountry,
     findCountriesPlaces,
     getCustomCountriesIds,
+    findPlacesCountry,
   };
 
   return (

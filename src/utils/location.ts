@@ -254,6 +254,7 @@ export function getMapLocationsFromJourney(
                 longitude: place.longitude,
               },
               done: place.visited || false,
+              favourite: place.favorite,
             });
           }
         }
@@ -392,6 +393,7 @@ export function getMapLocationsFromMajorStage(
               longitude: place.longitude,
             },
             done: place.visited || false,
+            favourite: place.favorite,
           });
         }
       }
@@ -493,6 +495,7 @@ export function getMapLocationsFromMinorStage(
           longitude: place.longitude,
         },
         done: place.visited || false,
+        favourite: place.favorite,
       });
     }
   }

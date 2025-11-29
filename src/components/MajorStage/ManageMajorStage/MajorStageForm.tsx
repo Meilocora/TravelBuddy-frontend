@@ -13,6 +13,7 @@ import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import {
+  addDaysToDateString,
   formatAmount,
   formatDate,
   generateRandomString,
@@ -53,8 +54,6 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
   const journey = stagesCtx.findJourney(journeyId);
-  const minStartDate = journey!.scheduled_start_time;
-  const maxEndDate = journey!.scheduled_end_time;
 
   let maxAvailableMoney = journey!.costs.budget;
   const majorStages = journey!.majorStages;
@@ -78,6 +77,24 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     ? defaultValues?.position ?? 1
     : positions[positions.length - 1];
 
+  const minStartDate = journey!.scheduled_start_time;
+  const priorMajorStage = majorStages?.find(
+    (stage) => stage.position === initialPosition - 1
+  );
+
+  const initialStartTimeValue = defaultValues
+    ? defaultValues.scheduled_start_time
+    : priorMajorStage
+    ? addDaysToDateString(priorMajorStage.scheduled_end_time)
+    : null;
+  const initialEndTimeValue = defaultValues
+    ? defaultValues.scheduled_end_time
+    : priorMajorStage
+    ? addDaysToDateString(priorMajorStage.scheduled_end_time)
+    : null;
+
+  const maxEndDate = journey!.scheduled_end_time;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [changeCountry, setChangeCountry] = useState(false);
   const [updateConfirmed, setUpdateConfirmed] = useState(false);
@@ -85,12 +102,12 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
   const [inputs, setInputs] = useState<MajorStageFormValues>({
     title: { value: defaultValues?.title || '', isValid: true, errors: [] },
     scheduled_start_time: {
-      value: defaultValues?.scheduled_start_time || null,
+      value: initialStartTimeValue,
       isValid: true,
       errors: [],
     },
     scheduled_end_time: {
-      value: defaultValues?.scheduled_end_time || null,
+      value: initialEndTimeValue,
       isValid: true,
       errors: [],
     },

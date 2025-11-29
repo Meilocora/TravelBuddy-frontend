@@ -18,6 +18,7 @@ import AccommodationContent from './AccommodationContent';
 import { GlobalStyles } from '../../../constants/styles';
 import PlaceContent from './PlaceContent';
 import { Location, LocationType } from '../../../models';
+import { CustomCountryContext } from '../../../store/custom-country-context';
 
 interface MapLocationElementProps {
   location: Location;
@@ -31,20 +32,29 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
   onClose,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
+  const customCountryCtx = useContext(CustomCountryContext);
 
   let content: ReactElement;
 
   if (location.locationType === LocationType.placeToVisit) {
-    const contextResponse = stagesCtx.findPlaceToVisit(
-      location.minorStageName!,
-      location.id!
-    );
-    content = (
-      <PlaceContent
-        minorStageId={contextResponse?.minorStageId!}
-        place={contextResponse?.place!}
-      />
-    );
+    if (location.placeId) {
+      const country = customCountryCtx.findPlacesCountry(location);
+      const place = country!.placesToVisit!.find(
+        (place) => place.id === location.placeId
+      );
+      content = <PlaceContent place={place!} />;
+    } else {
+      const contextResponse = stagesCtx.findPlaceToVisit(
+        location.minorStageName!,
+        location.id!
+      );
+      content = (
+        <PlaceContent
+          minorStageId={contextResponse?.minorStageId!}
+          place={contextResponse?.place!}
+        />
+      );
+    }
   } else if (location.locationType === LocationType.accommodation) {
     const minorStage = stagesCtx.findMinorStage(location.id!);
     content = (

@@ -56,6 +56,13 @@ import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 
 // PRIO 1 \\
+// MinorStageListElement => PlacesList enableScroll
+//  => Activities way bigger than places?!
+// Map, ShowMap => onPress always DetailElement with Edit Button
+// Map Modal for Places buggy
+// Implement switch for MapType
+// Form => Date nach vorangehender Stage
+
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
 // TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
 

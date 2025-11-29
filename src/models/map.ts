@@ -36,3 +36,5 @@ export interface Location {
 }
 
 export type MapScopeType = 'Journey' | 'MajorStage' | 'MinorStage';
+
+export type MapType = 'standard' | 'satellite' | 'hybrid' | 'terrain';

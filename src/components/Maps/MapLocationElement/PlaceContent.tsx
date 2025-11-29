@@ -7,6 +7,7 @@ import {
   Icons,
   JourneyBottomTabsParamsList,
   PlaceToVisit,
+  StackParamList,
 } from '../../../models';
 import IconButton from '../../UI/IconButton';
 import { StagesContext } from '../../../store/stages-context';
@@ -14,29 +15,44 @@ import TextLink from '../../UI/TextLink';
 import { GlobalStyles } from '../../../constants/styles';
 
 interface PlaceContentProps {
-  minorStageId: number;
   place: PlaceToVisit;
+  minorStageId?: number;
 }
 
 const PlaceContent: React.FC<PlaceContentProps> = ({
-  minorStageId,
   place,
+  minorStageId,
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
 
+  const placeNavigation =
+    useNavigation<NativeStackNavigationProp<StackParamList>>();
+
   const stagesCtx = useContext(StagesContext);
-  const majorStage = stagesCtx.findMinorStagesMajorStage(minorStageId);
+  const majorStage = minorStageId
+    ? stagesCtx.findMinorStagesMajorStage(minorStageId)
+    : undefined;
   const journey = stagesCtx.findMajorStagesJourney(majorStage?.id!);
 
-  function handleGoToPlace() {
-    stagesCtx.setActiveHeaderHandler(minorStageId, 'places');
-    navigation.navigate('MajorStageStackNavigator', {
-      screen: 'MinorStages',
-      params: {
-        journeyId: journey!.id,
-        majorStageId: majorStage!.id,
-      },
+  function handleGoToStage() {
+    if (minorStageId) {
+      stagesCtx.setActiveHeaderHandler(minorStageId, 'places');
+      navigation.navigate('MajorStageStackNavigator', {
+        screen: 'MinorStages',
+        params: {
+          journeyId: journey!.id,
+          majorStageId: majorStage!.id,
+        },
+      });
+    }
+    return;
+  }
+
+  function handleEditPlace() {
+    placeNavigation.navigate('ManagePlaceToVisit', {
+      placeId: place.id,
+      countryId: place.countryId,
     });
   }
 
@@ -53,9 +69,18 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
               {place.name}
             </TextLink>
           )}
+          {minorStageId && (
+            <IconButton
+              icon={Icons.goTo}
+              onPress={handleGoToStage}
+              color={'black'}
+              containerStyle={styles.button}
+              size={24}
+            />
+          )}
           <IconButton
-            icon={Icons.goTo}
-            onPress={handleGoToPlace}
+            icon={Icons.edit}
+            onPress={handleEditPlace}
             color={'black'}
             containerStyle={styles.button}
             size={24}
@@ -68,8 +93,8 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
         </View>
       )}
       <View style={styles.textRow}>
-        {place.favorite && (
-          <View style={styles.rowElement}>
+        <View style={styles.rowElement}>
+          {place.favorite && (
             <IconButton
               icon={Icons.heartFilled}
               onPress={() => {}}
@@ -77,12 +102,8 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
               containerStyle={styles.button}
               size={24}
             />
-            <Text style={styles.text}>Favourite!</Text>
-          </View>
-        )}
-
-        {place.visited && (
-          <View style={styles.rowElement}>
+          )}
+          {place.visited && (
             <IconButton
               icon={Icons.checkmarkFilled}
               onPress={() => {}}
@@ -90,9 +111,8 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
               containerStyle={styles.button}
               size={24}
             />
-            <Text style={styles.text}>Visited!</Text>
-          </View>
-        )}
+          )}
+        </View>
       </View>
     </>
   );
