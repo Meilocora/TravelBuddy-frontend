@@ -1,5 +1,11 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { ReactElement, useContext, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+} from 'react-native';
 
 import Input from '../../UI/form/Input';
 import {
@@ -14,7 +20,6 @@ import {
 } from '../../../models';
 import Button from '../../UI/Button';
 import { GlobalStyles } from '../../../constants/styles';
-import { Checkbox } from 'react-native-paper';
 import {
   createPlace,
   deletePlace,
@@ -24,6 +29,9 @@ import IconButton from '../../UI/IconButton';
 import Modal from '../../UI/Modal';
 import { CustomCountryContext } from '../../../store/custom-country-context';
 import LocationPicker from '../../UI/form/LocationPicker';
+import ImageModal from '../../UI/ImageModal';
+import CustomCheckBox from '../../UI/form/CustomCheckBox';
+import CustomLinkInput from '../../UI/form/CustomLinkInput';
 
 type InputValidationResponse = {
   place?: PlaceToVisit;
@@ -58,6 +66,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const [inputs, setInputs] = useState<PlaceFormValues>({
     countryId: { value: defaultValues!.countryId, isValid: true, errors: [] },
     name: { value: defaultValues?.name || '', isValid: true, errors: [] },
@@ -178,6 +187,11 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
   return (
     <>
+      <ImageModal
+        link={inputs.link.value}
+        onClose={() => setShowImage(false)}
+        visible={showImage}
+      />
       {isDeleting && (
         <Modal
           title='Are you sure?'
@@ -186,119 +200,124 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
           onCancel={closeModalHandler}
         />
       )}
-      <View style={styles.formContainer}>
-        <Text style={styles.header}>
-          {isEditing ? 'Manage' : 'Add'} Place for "{countryname}"
-        </Text>
-        <View>
-          <View style={styles.formRow}>
-            <Input
-              label='Name'
-              maxLength={FormLimits.place}
-              invalid={!inputs.name.isValid}
-              errors={inputs.name.errors}
-              mandatory
-              textInputConfig={{
-                value: inputs.name.value,
-                onChangeText: inputChangedHandler.bind(this, 'name'),
-              }}
-            />
-            <LocationPicker
-              onPickLocation={handlePickLocation}
-              onPressMarker={handlePickLocation}
-              pickedLocation={
-                inputs.latitude.value && inputs.longitude.value
-                  ? {
-                      lat: inputs.latitude.value,
-                      lng: inputs.longitude.value,
-                      title: inputs.name.value,
-                    }
-                  : undefined
-              }
-              iconColor={
-                !inputs.latitude.isValid
-                  ? GlobalStyles.colors.error200
-                  : undefined
-              }
-              countryId={defaultValues!.countryId}
-            />
-          </View>
-          <View style={styles.formRow}>
-            <Input
-              label='Description'
-              maxLength={FormLimits.placeDescription}
-              invalid={!inputs.description.isValid}
-              errors={inputs.description.errors}
-              textInputConfig={{
-                multiline: true,
-                value: inputs.description.value,
-                onChangeText: inputChangedHandler.bind(this, 'description'),
-              }}
-            />
-          </View>
-          <View style={styles.formRow}>
-            <Input
-              label='Link'
-              maxLength={100}
-              invalid={!inputs.link.isValid}
-              errors={inputs.link.errors}
-              textInputConfig={{
-                value: inputs.link.value,
-                onChangeText: inputChangedHandler.bind(this, 'link'),
-              }}
-            />
-          </View>
-          <View style={styles.formRow}>
-            <View style={styles.checkBoxContainer}>
-              <Text style={styles.checkBoxLabel}>Visited?</Text>
-              <Checkbox
-                status={inputs.visited.value ? 'checked' : 'unchecked'}
-                onPress={() =>
-                  inputChangedHandler('visited', !inputs.visited.value)
-                }
-                uncheckedColor={GlobalStyles.colors.grayDark}
-                color={GlobalStyles.colors.greenAccent}
-              />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior='height'
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps='handled'
+        >
+          <View style={styles.formContainer}>
+            <Text style={styles.header}>
+              {isEditing ? 'Manage' : 'Add'} Place for "{countryname}"
+            </Text>
+            <View>
+              <View style={styles.formRow}>
+                <Input
+                  label='Name'
+                  maxLength={FormLimits.place}
+                  invalid={!inputs.name.isValid}
+                  errors={inputs.name.errors}
+                  mandatory
+                  textInputConfig={{
+                    value: inputs.name.value,
+                    onChangeText: inputChangedHandler.bind(this, 'name'),
+                  }}
+                />
+                <LocationPicker
+                  onPickLocation={handlePickLocation}
+                  onPressMarker={handlePickLocation}
+                  pickedLocation={
+                    inputs.latitude.value && inputs.longitude.value
+                      ? {
+                          lat: inputs.latitude.value,
+                          lng: inputs.longitude.value,
+                          title: inputs.name.value,
+                        }
+                      : undefined
+                  }
+                  iconColor={
+                    !inputs.latitude.isValid
+                      ? GlobalStyles.colors.error200
+                      : undefined
+                  }
+                  countryId={defaultValues!.countryId}
+                />
+              </View>
+              <View style={styles.formRow}>
+                <Input
+                  label='Description'
+                  maxLength={FormLimits.placeDescription}
+                  invalid={!inputs.description.isValid}
+                  errors={inputs.description.errors}
+                  textInputConfig={{
+                    multiline: true,
+                    value: inputs.description.value,
+                    onChangeText: inputChangedHandler.bind(this, 'description'),
+                  }}
+                />
+              </View>
+              <View style={styles.formRow}>
+                <CustomLinkInput
+                  input={inputs.link}
+                  onChangeText={inputChangedHandler.bind(this, 'link')}
+                  setShowImage={() => setShowImage(true)}
+                />
+              </View>
+              <View style={styles.formRow}>
+                <CustomCheckBox
+                  value={inputs.visited.value}
+                  mode='visited'
+                  onPress={() =>
+                    inputChangedHandler('visited', !inputs.visited.value)
+                  }
+                />
+                <CustomCheckBox
+                  value={inputs.favorite.value}
+                  mode='favorite'
+                  onPress={() =>
+                    inputChangedHandler('favorite', !inputs.favorite.value)
+                  }
+                />
+              </View>
             </View>
-            <View style={styles.checkBoxContainer}>
-              <Text style={styles.checkBoxLabel}>Favorite?</Text>
-              <Checkbox
-                status={inputs.favorite.value ? 'checked' : 'unchecked'}
-                onPress={() =>
-                  inputChangedHandler('favorite', !inputs.favorite.value)
-                }
-                uncheckedColor={GlobalStyles.colors.grayDark}
-                color={GlobalStyles.colors.greenAccent}
-              />
+            <View style={styles.buttonsContainer}>
+              <Button
+                onPress={onCancel}
+                colorScheme={ColorScheme.neutral}
+                mode={ButtonMode.flat}
+              >
+                Cancel
+              </Button>
+              <Button
+                onPress={validateInputs}
+                colorScheme={ColorScheme.neutral}
+              >
+                {submitButtonLabel}
+              </Button>
             </View>
           </View>
-        </View>
-        <View style={styles.buttonsContainer}>
-          <Button
-            onPress={onCancel}
-            colorScheme={ColorScheme.neutral}
-            mode={ButtonMode.flat}
-          >
-            Cancel
-          </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {submitButtonLabel}
-          </Button>
-        </View>
-      </View>
-      <View style={styles.deleteContainer}>
-        <IconButton
-          icon={Icons.delete}
-          onPress={deleteHandler}
-          size={62}
-          color={GlobalStyles.colors.error500}
-        />
-      </View>
+          <View style={styles.deleteContainer}>
+            <IconButton
+              icon={Icons.delete}
+              onPress={deleteHandler}
+              size={62}
+              color={GlobalStyles.colors.error500}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   formContainer: {
     marginHorizontal: 16,
     marginTop: '15%',
@@ -325,15 +344,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'stretch',
-  },
-  checkBoxContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginHorizontal: 'auto',
-    marginBottom: '5%',
-  },
-  checkBoxLabel: {
-    color: GlobalStyles.colors.grayDark,
   },
   buttonsContainer: {
     flexDirection: 'row',

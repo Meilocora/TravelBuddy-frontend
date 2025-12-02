@@ -54,23 +54,29 @@ import ShowMap from './src/screens/ShowMap';
 import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
+import Gallery from './src/screens/BottomTabsNavigator/Gallery';
+import ImageContextProvider from './src/store/image-context';
+import ManageImage from './src/screens/ManageImage';
 
 // PRIO 1 \\
-// MinorStageListElement => PlacesList enableScroll
-//  => Activities way bigger than places?!
-// Map, ShowMap => onPress always DetailElement with Edit Button
-// Map Modal for Places buggy
-// Implement switch for MapType
-// Form => Date nach vorangehender Stage
+// TODO: Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
+// Extra Screen für Bildergalerie mit Filtermöglichkeiten (Favorite, Datum -> all | 1 year | custom span, country, minorStage, place, sort by date)
+// Downloadfunktion
+// Bilder in MinorStage ansehen können
+// Bilder in CustomCountry ansehen können
+// Bilder beim PlaceToVisit ansehen können
+// Extra Filter für Map
+// TODO: Cut "AddJourney" from BottomTabs and make separate floating Button analog to Gallery
+// TODO: LocationPickMap => onPress MapView?!
 
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
 // TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
-
-// TODO: Animationen einfügen
-// TODO: Error Farben überprüfen
+// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 
 // PRIO 2 \\
-// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
+// TODO: Animationen einfügen
+// TODO: Error Farben überprüfen
+// TODO: automate generation of DiaShow for Images of a Journey
 // TODO: Checks für ValidationLog erweitern
 // TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
@@ -174,6 +180,16 @@ const BottomTabsNavigator = () => {
             presentation: 'modal',
             animation: 'fade',
           })}
+        />
+        <BottomTabs.Screen
+          name='Gallery'
+          component={Gallery}
+          options={{
+            tabBarLabel: 'Gallery',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name={Icons.images} size={size} color={color} />
+            ),
+          }}
         />
         <BottomTabs.Screen
           name='Locations'
@@ -327,57 +343,64 @@ const AuthenticatedStack = () => {
       <StagesContextProvider>
         <CustomCountryContextProvider>
           <PlaceContextProvider>
-            <Stack.Navigator
-              screenOptions={() => ({
-                headerTintColor: 'white',
-                headerStyle: {
-                  backgroundColor: GlobalStyles.colors.greenBg,
-                },
-                headerTitleAlign: 'center',
-                headerShadowVisible: false,
-                animationEnabled: false,
-              })}
-            >
-              <Stack.Screen
-                name='BottomTabsNavigator'
-                component={BottomTabsNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='UserProfile'
-                component={UserProfile}
-                options={{
-                  headerRight: ({ tintColor }) => (
-                    <IconButton
-                      color={tintColor}
-                      size={24}
-                      icon={Icons.logout}
-                      onPress={() => {
-                        authCtx.logout();
-                      }}
-                    />
-                  ),
-                }}
-              />
-              <Stack.Screen
-                name='JourneyBottomTabsNavigator'
-                component={JourneyBottomTabsNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='ManageCustomCountry'
-                component={ManageCustomCountry}
-              />
-              <Stack.Screen
-                name='ManagePlaceToVisit'
-                component={ManagePlaceToVisit}
-              />
-              <Stack.Screen
-                name='LocationPickMap'
-                component={LocationPickMap}
-              />
-              <Stack.Screen name='ShowMap' component={ShowMap} />
-            </Stack.Navigator>
+            <ImageContextProvider>
+              <Stack.Navigator
+                screenOptions={() => ({
+                  headerTintColor: 'white',
+                  headerStyle: {
+                    backgroundColor: GlobalStyles.colors.greenBg,
+                  },
+                  headerTitleAlign: 'center',
+                  headerShadowVisible: false,
+                  animationEnabled: false,
+                })}
+              >
+                <Stack.Screen
+                  name='BottomTabsNavigator'
+                  component={BottomTabsNavigator}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='UserProfile'
+                  component={UserProfile}
+                  options={{
+                    headerRight: ({ tintColor }) => (
+                      <IconButton
+                        color={tintColor}
+                        size={24}
+                        icon={Icons.logout}
+                        onPress={() => {
+                          authCtx.logout();
+                        }}
+                      />
+                    ),
+                  }}
+                />
+                <Stack.Screen
+                  name='ManageImage'
+                  component={ManageImage}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='JourneyBottomTabsNavigator'
+                  component={JourneyBottomTabsNavigator}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='ManageCustomCountry'
+                  component={ManageCustomCountry}
+                />
+                <Stack.Screen
+                  name='ManagePlaceToVisit'
+                  component={ManagePlaceToVisit}
+                />
+                <Stack.Screen
+                  name='LocationPickMap'
+                  component={LocationPickMap}
+                />
+                <Stack.Screen name='ShowMap' component={ShowMap} />
+              </Stack.Navigator>
+            </ImageContextProvider>
           </PlaceContextProvider>
         </CustomCountryContextProvider>
       </StagesContextProvider>

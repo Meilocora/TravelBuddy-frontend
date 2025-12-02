@@ -28,12 +28,10 @@ import CountryElement from '../UI/CountryElement';
 
 interface JourneyListElementProps {
   journey: Journey;
-  onDelete: (journeyId: number) => void;
 }
 
 const JourneyListElement: React.FC<JourneyListElementProps> = ({
   journey,
-  onDelete,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
 

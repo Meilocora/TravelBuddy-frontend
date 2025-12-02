@@ -1,11 +1,39 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { LatLng } from 'react-native-maps';
 
 import { CurrencyInfo } from '../models';
 import { fetchCurrencies } from '../utils/http/spending';
 import { FetchUserDataProps, fetchUsersData } from '../utils/http/user';
+import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { auth } from '../firebase';
+
+export function useFirebaseAuth() {
+  const [firebaseUserId, setFirebaseUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setFirebaseUserId(user.uid);
+      } else {
+        setFirebaseUserId(null);
+      }
+    });
+
+    // Falls noch niemand eingeloggt ist: anonym anmelden
+    if (!auth.currentUser) {
+      signInAnonymously(auth).catch((error) => {
+        console.log('Firebase anonymous sign-in error', error);
+      });
+    }
+
+    return unsubscribe;
+  }, []);
+
+  return firebaseUserId;
+}
 
 interface UserContextType {
+  userId: number | undefined;
   currentLocation: LatLng | undefined;
   setCurrentLocation: (loc: LatLng | undefined) => void;
   timezoneoffset: number;
@@ -15,6 +43,7 @@ interface UserContextType {
 }
 
 export const UserContext = createContext<UserContextType>({
+  userId: undefined,
   currentLocation: undefined,
   setCurrentLocation: () => {},
   timezoneoffset: 0,
@@ -28,6 +57,8 @@ export default function UserContextProvider({
 }: {
   children: React.ReactNode;
 }) {
+  useFirebaseAuth();
+  const [userId, setUserId] = useState<number | undefined>(undefined);
   const [currentLocation, setCurrentLocation] = useState<LatLng | undefined>(
     undefined
   );
@@ -51,6 +82,7 @@ export default function UserContextProvider({
     if (userDataResponse.error) {
       return userDataResponse.error;
     } else {
+      setUserId(userDataResponse.userId);
       setTimezoneOffset(userDataResponse.offset || 0);
       setLocalCurrency({
         code: userDataResponse.localCurrency?.code || 'EUR',
@@ -93,6 +125,7 @@ export default function UserContextProvider({
   }
 
   const value = {
+    userId,
     currentLocation,
     setCurrentLocation,
     timezoneoffset,

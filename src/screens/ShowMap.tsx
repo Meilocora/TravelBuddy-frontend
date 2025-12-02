@@ -96,16 +96,16 @@ const ShowMap: React.FC<ShowMapProps> = ({
       headerRight: () => (
         <>
           <IconButton
-            icon={Icons.heartOutline}
+            icon={!isFav ? Icons.heartFilled : Icons.heartOutline}
             onPress={() => setIsFav((prevValue) => !prevValue)}
             size={26}
-            color={!isFav ? 'red' : 'black'}
+            color='red'
           />
           <IconButton
-            icon={Icons.eyeOn}
+            icon={isVisited ? Icons.eye : Icons.eyeOn}
             onPress={() => setIsVisited((prevValue) => !prevValue)}
             size={26}
-            color={isVisited ? 'blue' : 'black'}
+            color='blue'
           />
         </>
       ),

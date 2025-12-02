@@ -1,5 +1,11 @@
 import React, { ReactElement, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import {
   ButtonMode,
@@ -211,108 +217,123 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
           onCancel={closeModalHandler}
         />
       )}
-      <View style={styles.formContainer}>
-        <View>
-          <Input
-            label='Name'
-            maxLength={FormLimits.journeyName}
-            invalid={!inputs.name.isValid}
-            errors={inputs.name.errors}
-            mandatory
-            textInputConfig={{
-              value: inputs.name.value,
-              onChangeText: inputChangedHandler.bind(this, 'name'),
-            }}
-          />
-          <Input
-            label='Description'
-            maxLength={FormLimits.journeyDescription}
-            invalid={!inputs.description.isValid}
-            errors={inputs.description.errors}
-            textInputConfig={{
-              multiline: true,
-              value: inputs.description.value,
-              onChangeText: inputChangedHandler.bind(this, 'description'),
-            }}
-          />
-          <View style={styles.formRow}>
-            <Input
-              label='Spent Money'
-              maxLength={0}
-              invalid={!inputs.spent_money.isValid}
-              textInputConfig={{
-                readOnly: true,
-                placeholder: formatAmount(inputs.spent_money.value),
-              }}
-            />
-            <Input
-              label='Budget'
-              maxLength={6}
-              invalid={!inputs.budget.isValid}
-              errors={inputs.budget.errors}
-              textInputConfig={{
-                keyboardType: 'decimal-pad',
-                value: inputs.budget.value.toString(),
-                onChangeText: inputChangedHandler.bind(this, 'budget'),
-              }}
-            />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior='height'
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps='handled'
+        >
+          <View style={styles.formContainer}>
+            <View>
+              <Input
+                label='Name'
+                maxLength={FormLimits.journeyName}
+                invalid={!inputs.name.isValid}
+                errors={inputs.name.errors}
+                mandatory
+                textInputConfig={{
+                  value: inputs.name.value,
+                  onChangeText: inputChangedHandler.bind(this, 'name'),
+                }}
+              />
+              <Input
+                label='Description'
+                maxLength={FormLimits.journeyDescription}
+                invalid={!inputs.description.isValid}
+                errors={inputs.description.errors}
+                textInputConfig={{
+                  multiline: true,
+                  value: inputs.description.value,
+                  onChangeText: inputChangedHandler.bind(this, 'description'),
+                }}
+              />
+              <View style={styles.formRow}>
+                <Input
+                  label='Spent Money'
+                  maxLength={0}
+                  invalid={!inputs.spent_money.isValid}
+                  textInputConfig={{
+                    readOnly: true,
+                    placeholder: formatAmount(inputs.spent_money.value),
+                  }}
+                />
+                <Input
+                  label='Budget'
+                  maxLength={6}
+                  invalid={!inputs.budget.isValid}
+                  errors={inputs.budget.errors}
+                  textInputConfig={{
+                    keyboardType: 'decimal-pad',
+                    value: inputs.budget.value.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'budget'),
+                  }}
+                />
+              </View>
+              <View style={styles.formRow}>
+                <ExpoDatePicker
+                  handleChange={handleChangeDate}
+                  inputIdentifier='scheduled_start_time'
+                  invalid={!inputs.scheduled_start_time.isValid}
+                  errors={inputs.scheduled_start_time.errors}
+                  value={inputs.scheduled_start_time.value?.toString()}
+                  label='Starts on'
+                  maximumDate={
+                    inputs.scheduled_end_time.value
+                      ? parseDate(inputs.scheduled_end_time.value)
+                      : undefined
+                  }
+                />
+                <ExpoDatePicker
+                  handleChange={handleChangeDate}
+                  inputIdentifier='scheduled_end_time'
+                  invalid={!inputs.scheduled_end_time.isValid}
+                  errors={inputs.scheduled_end_time.errors}
+                  value={inputs.scheduled_end_time.value?.toString()}
+                  label='Ends on'
+                  minimumDate={
+                    inputs.scheduled_start_time.value
+                      ? parseDate(inputs.scheduled_start_time.value)
+                      : undefined
+                  }
+                />
+              </View>
+              <CountriesSelectionForm
+                onAddCountry={handleAddCountry}
+                onDeleteCountry={handleDeleteCountry}
+                invalid={!inputs.countries.isValid}
+                defaultCountryNames={defaultCountriesNames}
+              />
+            </View>
+            <View style={styles.buttonsContainer}>
+              <Button
+                onPress={onCancel}
+                colorScheme={ColorScheme.neutral}
+                mode={ButtonMode.flat}
+              >
+                Cancel
+              </Button>
+              <Button
+                onPress={validateInputs.bind(this, undefined)}
+                colorScheme={ColorScheme.neutral}
+              >
+                {submitButtonLabel}
+              </Button>
+            </View>
           </View>
-          <View style={styles.formRow}>
-            <ExpoDatePicker
-              handleChange={handleChangeDate}
-              inputIdentifier='scheduled_start_time'
-              invalid={!inputs.scheduled_start_time.isValid}
-              errors={inputs.scheduled_start_time.errors}
-              value={inputs.scheduled_start_time.value?.toString()}
-              label='Starts on'
-              maximumDate={
-                inputs.scheduled_end_time.value
-                  ? parseDate(inputs.scheduled_end_time.value)
-                  : undefined
-              }
-            />
-            <ExpoDatePicker
-              handleChange={handleChangeDate}
-              inputIdentifier='scheduled_end_time'
-              invalid={!inputs.scheduled_end_time.isValid}
-              errors={inputs.scheduled_end_time.errors}
-              value={inputs.scheduled_end_time.value?.toString()}
-              label='Ends on'
-              minimumDate={
-                inputs.scheduled_start_time.value
-                  ? parseDate(inputs.scheduled_start_time.value)
-                  : undefined
-              }
-            />
-          </View>
-          <CountriesSelectionForm
-            onAddCountry={handleAddCountry}
-            onDeleteCountry={handleDeleteCountry}
-            invalid={!inputs.countries.isValid}
-            defaultCountryNames={defaultCountriesNames}
-          />
-        </View>
-        <View style={styles.buttonsContainer}>
-          <Button
-            onPress={onCancel}
-            colorScheme={ColorScheme.neutral}
-            mode={ButtonMode.flat}
-          >
-            Cancel
-          </Button>
-          <Button
-            onPress={validateInputs.bind(this, undefined)}
-            colorScheme={ColorScheme.neutral}
-          >
-            {submitButtonLabel}
-          </Button>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   formContainer: {
     marginHorizontal: 16,
     marginVertical: 8,

@@ -25,6 +25,7 @@ import { deleteActivity } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
 import { generateRandomString } from '../../../utils';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageActivityProps {
   navigation: NativeStackNavigationProp<
@@ -48,6 +49,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
 
   const { minorStageId, activityId } = route.params;
   const isEditing = !!activityId;
@@ -100,7 +102,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
         activityId!
       );
       if (!error && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         navigation.goBack();
       } else {
         setError(error!);
@@ -122,7 +124,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
         setError(error);
         return;
       } else if (activity && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         navigation.goBack();
       }
     } else {
@@ -130,7 +132,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
         setError(error);
         return;
       } else if (activity && status === 201) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         navigation.goBack();
       }
     }

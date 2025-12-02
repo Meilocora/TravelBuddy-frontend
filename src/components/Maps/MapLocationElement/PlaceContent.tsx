@@ -1,5 +1,5 @@
-import { ReactElement, useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ReactElement, useContext, useState } from 'react';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -13,6 +13,8 @@ import IconButton from '../../UI/IconButton';
 import { StagesContext } from '../../../store/stages-context';
 import TextLink from '../../UI/TextLink';
 import { GlobalStyles } from '../../../constants/styles';
+import ImageModal from '../../UI/ImageModal';
+import { isImageLink } from '../../../utils';
 
 interface PlaceContentProps {
   place: PlaceToVisit;
@@ -23,6 +25,7 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
   place,
   minorStageId,
 }): ReactElement => {
+  const [showImage, setShowImage] = useState(false);
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
 
@@ -58,6 +61,13 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
 
   return (
     <>
+      {isImageLink(place.link) && (
+        <ImageModal
+          link={place.link!}
+          onClose={() => setShowImage(false)}
+          visible={showImage}
+        />
+      )}
       <View style={styles.textRow}>
         <View style={[styles.rowElement, { width: '100%' }]}>
           {!place.link ? (
@@ -91,6 +101,15 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
         <View style={styles.textRow}>
           <Text style={styles.description}>{place.description}</Text>
         </View>
+      )}
+      {place.link && isImageLink(place.link) && (
+        <Pressable onPress={() => setShowImage(true)} style={styles.imageRow}>
+          <Image
+            source={{ uri: place.link }}
+            style={styles.image}
+            resizeMode='cover'
+          />
+        </Pressable>
       )}
       <View style={styles.textRow}>
         <View style={styles.rowElement}>
@@ -151,6 +170,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
     maxWidth: '90%',
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginVertical: 10,
+  },
+  image: {
+    width: '90%',
+    height: 200,
+    borderRadius: 8,
   },
   text: {
     marginVertical: 2,

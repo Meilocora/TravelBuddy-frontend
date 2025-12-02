@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useContext,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import { ReactElement, useContext, useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
@@ -30,6 +24,7 @@ import Modal from '../../components/UI/Modal';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../store/stages-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { useAppData } from '../../hooks/useAppData';
 
 interface ManageJourneyProps {
   route: ManageJourneyRouteProp;
@@ -50,6 +45,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
   const editedJourneyId = route.params?.journeyId;
   let isEditing = !!editedJourneyId;
 
@@ -113,7 +109,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
     try {
       const { error, status } = await deleteJourney(editedJourneyId!);
       if (!error && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = 'Journey successfully deleted!';
         navigation.navigate('AllJourneys', { popupText: popupText });
       } else {
@@ -149,7 +145,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
         setError(error);
         return;
       } else if (journey && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = 'Journey successfully updated!';
         navigation.navigate('AllJourneys', { popupText: popupText });
       }
@@ -158,7 +154,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
         setError(error);
         return;
       } else if (journey && status === 201) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = 'Journey successfully created!';
         navigation.navigate('AllJourneys', { popupText: popupText });
       }

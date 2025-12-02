@@ -20,6 +20,10 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
+      },
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos."
       }
     },
     "android": {
@@ -33,7 +37,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#dee2e6"
       },
-      "package": "com.meilocora.travelbuddy"
+      "package": "com.meilocora.travelbuddy",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -45,7 +54,14 @@
       "googleApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos to upload images.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
+      ]
     ]
   }
 }

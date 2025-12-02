@@ -1,7 +1,6 @@
 import React, {
   ReactElement,
   useContext,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -29,6 +28,7 @@ import MajorStageForm from '../../../components/MajorStage/ManageMajorStage/Majo
 import { deleteMajorStage } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageMajorStageProps {
   navigation: NativeStackNavigationProp<
@@ -55,6 +55,8 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
+
   const editedMajorStageId = route.params?.majorStageId;
   const journeyId = route.params.journeyId;
   let isEditing = !!editedMajorStageId;
@@ -97,7 +99,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
     try {
       const { error, status } = await deleteMajorStage(editedMajorStageId!);
       if (!error && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = `Major Stage successfully deleted!`;
         planningNavigation.navigate('Planning', {
           journeyId: journeyId,
@@ -136,7 +138,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         setError(error);
         return;
       } else if (majorStage && status === 200) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = `"${majorStage.title}" successfully updated!`;
         planningNavigation.navigate('Planning', {
           journeyId: journeyId,
@@ -148,7 +150,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         setError(error);
         return;
       } else if (majorStage && status === 201) {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const popupText = `"${majorStage.title}" successfully created!`;
         planningNavigation.navigate('Planning', {
           journeyId: journeyId,

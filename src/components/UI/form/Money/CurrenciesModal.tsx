@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: '85%',
-    maxHeight: '75%',
+    maxHeight: 520,
     marginHorizontal: 'auto',
     borderBottomWidth: 2,
     borderTopWidth: 2,

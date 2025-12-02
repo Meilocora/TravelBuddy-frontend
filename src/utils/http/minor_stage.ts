@@ -47,7 +47,7 @@ export const createMinorStage = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not create minor stage! Backend connection error...',
+      error: 'Could not create minor stage! Backend request failed.',
     };
   }
 };
@@ -83,7 +83,7 @@ export const updateMinorStage = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not update minor stage! Backend connection error...',
+      error: 'Could not update minor stage! Backend request failed.',
     };
   }
 };
@@ -106,7 +106,7 @@ export const deleteMinorStage = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not delete minor stage! Backend connection error...',
+      error: 'Could not delete minor stage! Backend request failed.',
     };
   }
 };
@@ -130,7 +130,7 @@ export const swapMinorStages = async (
     // Error from frontend
     return {
       status: 500,
-      error: 'Could not swap minor stages! Backend connection error...',
+      error: 'Could not swap minor stages! Backend request failed.',
     };
   }
 };

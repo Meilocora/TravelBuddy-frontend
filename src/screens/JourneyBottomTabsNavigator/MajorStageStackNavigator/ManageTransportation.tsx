@@ -4,7 +4,6 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -28,6 +27,7 @@ import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
 import { generateRandomString } from '../../../utils';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageTransportationProps {
   navigation: NativeStackNavigationProp<
@@ -58,6 +58,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
 
   let { journeyId, majorStageId, minorStageId, transportationId } =
     route.params;
@@ -111,14 +112,14 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       );
       if (!error && status === 200) {
         if (majorStageId) {
-          stagesCtx.fetchStagesData();
+          triggerRefresh();
           const popupText = `Transportation successfully deleted!`;
           planningNavigation.navigate('Planning', {
             journeyId: journeyId!,
             popupText: popupText,
           });
         } else if (minorStageId) {
-          stagesCtx.fetchStagesData();
+          triggerRefresh();
           const popupText = `Transportation successfully deleted!`;
           navigation.navigate('MinorStages', {
             journeyId: journeyId!,
@@ -161,7 +162,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       (transportation && status === 201)
     ) {
       if (mode === 'major') {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const majorStageTitle = stagesCtx.findMajorStage(majorStageId!)?.title;
         const popupText =
           status === 200
@@ -172,7 +173,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
           popupText: popupText,
         });
       } else if (mode === 'minor') {
-        stagesCtx.fetchStagesData();
+        triggerRefresh();
         const minorStage = stagesCtx.findMinorStage(minorStageId!);
         const popupText =
           status === 200

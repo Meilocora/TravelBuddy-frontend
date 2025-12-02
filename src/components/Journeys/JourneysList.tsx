@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, RefreshControlProps } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { Icons, StageFilter } from '../../models';
@@ -7,17 +7,18 @@ import JourneyListElement from './JourneysListElement';
 import { validateIsOver } from '../../utils';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
-import { deleteJourney } from '../../utils/http';
-import Modal from '../UI/Modal';
 import { StagesContext } from '../../store/stages-context';
 import { GlobalStyles } from '../../constants/styles';
 
-const JourneysList: React.FC = ({}): ReactElement => {
+interface JourneysListProps {
+  refreshControl?: React.ReactElement<RefreshControlProps>;
+}
+
+const JourneysList: React.FC<JourneysListProps> = ({
+  refreshControl,
+}): ReactElement => {
   const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [deleteJourneyId, setDeleteJourneyId] = useState<number | null>(null);
-
   const stagesCtx = useContext(StagesContext);
 
   const shownJourneys = stagesCtx.journeys.filter((journey) => {
@@ -32,34 +33,8 @@ const JourneysList: React.FC = ({}): ReactElement => {
     setOpenModal(false);
   }
 
-  function handlePressDelete(journeyId: number) {
-    setOpenDeleteModal(true);
-    setDeleteJourneyId(journeyId);
-  }
-
-  function closeDeleteModal() {
-    setOpenDeleteModal(false);
-    setDeleteJourneyId(null);
-  }
-
-  async function handleDelete() {
-    const { error, status } = await deleteJourney(deleteJourneyId!);
-    if (!error && status === 200) {
-      stagesCtx.fetchStagesData();
-    }
-    setOpenDeleteModal(false);
-  }
-
   return (
     <View style={styles.container}>
-      {openDeleteModal && (
-        <Modal
-          title='Are you sure?'
-          content={`The Journey and all it's Major and Minor Stages will be deleted permanently!`}
-          onConfirm={handleDelete}
-          onCancel={closeDeleteModal}
-        />
-      )}
       <View style={styles.buttonContainer}>
         <IconButton
           icon={openModal ? Icons.settingsFilled : Icons.settingsOutline}
@@ -72,12 +47,13 @@ const JourneysList: React.FC = ({}): ReactElement => {
       )}
       <FlatList
         data={shownJourneys}
+        refreshControl={refreshControl}
         renderItem={({ item, index }) => (
           <Animated.View
             entering={FadeInDown.delay(index * 200).duration(1000)}
             exiting={FadeOutDown}
           >
-            <JourneyListElement journey={item} onDelete={handlePressDelete} />
+            <JourneyListElement journey={item} />
             {index === shownJourneys.length - 1 && (
               <View style={{ height: 75 }}></View>
             )}

@@ -7,6 +7,7 @@ import PlacesSelection from '../ManageMinorStage/PlacesSelection';
 import { fetchavailablePlacesByCountry } from '../../../utils/http';
 import PlacesListItem from '../../Locations/Places/PlacesListItem';
 import { StagesContext } from '../../../store/stages-context';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface PlacesElementProps {
   majorStageId: number;
@@ -24,6 +25,8 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
   const [openSelection, setOpenSelection] = useState(false);
 
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
+
   const majorStage = stagesCtx.findMinorStagesMajorStage(minorStage.id);
   const countryName = majorStage!.country.name;
 
@@ -37,11 +40,11 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
   }
 
   async function handleToggleFavourite(placeId: number) {
-    stagesCtx.fetchStagesData();
+    triggerRefresh();
   }
 
   async function handleToggleVisited(placeId: number) {
-    stagesCtx.fetchStagesData();
+    triggerRefresh();
   }
 
   const screenHeight = Dimensions.get('window').height;

@@ -27,6 +27,7 @@ import PlacesList from '../components/Locations/Places/PlacesList';
 import MainGradient from '../components/UI/LinearGradients/MainGradient';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { generateRandomString } from '../utils';
+import { useAppData } from '../hooks/useAppData';
 
 interface ManageCustomCountryProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManageCustomCountry'>;
@@ -42,6 +43,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
   const [isShowingPlaces, setIsShowingPlaces] = useState(false);
 
   const customCountryCtx = useContext(CustomCountryContext);
+  const { triggerRefresh } = useAppData();
   const countryId = route.params.countryId;
 
   const country = customCountryCtx.customCountries.find(
@@ -80,6 +82,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
       setError(error);
     } else if (status === 200 && customCountry) {
       customCountryCtx.updateCustomCountry(customCountry);
+      triggerRefresh();
       setIsEditing(false);
     }
   }
@@ -93,6 +96,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
       setError(error);
     } else if (status === 200) {
       customCountryCtx.deleteCustomCountry(countryId);
+      triggerRefresh();
       const popupText = `"${countryName}" successfully deleted!`;
       secondaryNavigation.navigate('Locations', { popupText: popupText });
     }

@@ -89,13 +89,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   let journeysLocations: undefined | Location[];
   if (customCountryId) {
     placesToVisit = customCountryCtx.findCountriesPlaces(customCountryId);
-
-    if (minorStageId) {
-      const assignedPlaces = stagesCtx.findAssignedPlaces(
-        customCountryId,
-        minorStageId
-      );
-    }
   }
   if (majorStageId) {
     const journey = stagesCtx.findMajorStagesJourney(majorStageId)!;
@@ -238,7 +231,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       <MapView
         initialRegion={region!}
         region={region}
-        onPress={route.params.onPressMarker ? undefined : selectLocationHandler}
+        // TODO: Nimmt hier eigene Koordinate?!
+        onPress={selectLocationHandler}
         onPoiClick={handlePoiClick}
         style={styles.map}
         mapType={mapType}

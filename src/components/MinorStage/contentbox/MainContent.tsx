@@ -15,6 +15,7 @@ import ActivityElement from './ActivityElement';
 import SpendingElement from './SpendingElement';
 import { validateIsOver } from '../../../utils';
 import { StagesContext } from '../../../store/stages-context';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface MainContentProps {
   journeyId: number;
@@ -39,6 +40,8 @@ const MainContent: React.FC<MainContentProps> = ({
   minorStage,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
+
   const customCountryId = stagesCtx.findMajorStage(majorStageId)!.country.id;
   const navigation =
     useNavigation<NativeStackNavigationProp<MajorStageStackParamList>>();
@@ -62,12 +65,12 @@ const MainContent: React.FC<MainContentProps> = ({
 
   async function handleAddPlace(placeId: number) {
     await addMinorStageToPlace(placeId, minorStage.id);
-    stagesCtx.fetchStagesData();
+    triggerRefresh();
   }
 
   async function handleRemovePlace(placeId: number) {
     await removeMinorStageFromPlace(placeId, minorStage.id);
-    stagesCtx.fetchStagesData();
+    triggerRefresh();
   }
 
   function handleAddActivity() {
@@ -85,7 +88,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
   async function handleDeleteActivity(id: number) {
     await deleteActivity(id);
-    stagesCtx.fetchStagesData();
+    triggerRefresh();
   }
 
   function handleAddSpending() {

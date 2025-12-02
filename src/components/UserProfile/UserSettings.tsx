@@ -38,8 +38,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({}): ReactElement => {
             </View>
             <View style={styles.rowElement}>
               <Text style={styles.text}>
-                {userCtx.localCurrency.currency}{' '}
-                {userCtx.localCurrency.currency !== 'EUR' &&
+                {userCtx.localCurrency.name} ({userCtx.localCurrency.symbol}){' '}
+                {userCtx.localCurrency.code !== 'EUR' &&
                   `~ ${(1 / userCtx.localCurrency.conversionRate).toFixed(2)}€`}
               </Text>
             </View>

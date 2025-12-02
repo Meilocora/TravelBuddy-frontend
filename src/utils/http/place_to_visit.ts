@@ -34,7 +34,10 @@ export const fetchPlaces = async (): Promise<FetchPlacesProps> => {
     return { places, status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch places!' };
+    return {
+      status: 500,
+      error: 'Could not fetch places! Backend request failed.',
+    };
   }
 };
 
@@ -57,7 +60,10 @@ export const fetchavailablePlacesByCountry = async (
     return { places, countryId, status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch places!' };
+    return {
+      status: 500,
+      error: 'Could not fetch places! Backend request failed.',
+    };
   }
 };
 
@@ -92,7 +98,10 @@ export const createPlace = async (
     return { place: response.data.place, status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create place!' };
+    return {
+      status: 500,
+      error: 'Could not create place! Backend request failed.',
+    };
   }
 };
 
@@ -121,7 +130,10 @@ export const updatePlace = async (
     return { place: response.data.place, status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update place!' };
+    return {
+      status: 500,
+      error: 'Could not update place! Backend request failed.',
+    };
   }
 };
 
@@ -141,7 +153,10 @@ export const deletePlace = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete place!' };
+    return {
+      status: 500,
+      error: 'Could not delete place! Backend request failed.',
+    };
   }
 };
 
@@ -161,7 +176,11 @@ export const toggleFavoritePlace = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not change favorite state of place!' };
+    return {
+      status: 500,
+      error:
+        'Could not change favorite state of place! Backend request failed.',
+    };
   }
 };
 
@@ -181,7 +200,10 @@ export const toggleVisitedPlace = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not change visited state of place!' };
+    return {
+      status: 500,
+      error: 'Could not change visited state of place! Backend request failed.',
+    };
   }
 };
 
@@ -202,7 +224,11 @@ export const addMinorStageToPlace = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not change add minor stage to place!' };
+    return {
+      status: 500,
+      error:
+        'Could not change add minor stage to place! Backend request failed.',
+    };
   }
 };
 
@@ -223,6 +249,9 @@ export const removeMinorStageFromPlace = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not remove minor stage from place!' };
+    return {
+      status: 500,
+      error: 'Could not remove minor stage from place! Backend request failed.',
+    };
   }
 };

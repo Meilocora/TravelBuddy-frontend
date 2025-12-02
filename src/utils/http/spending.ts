@@ -45,7 +45,10 @@ export const createSpending = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create spending!' };
+    return {
+      status: 500,
+      error: 'Could not create spending! Backend request failed.',
+    };
   }
 };
 
@@ -81,7 +84,10 @@ export const updateSpending = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update spending!' };
+    return {
+      status: 500,
+      error: 'Could not update spending! Backend request failed.',
+    };
   }
 };
 
@@ -104,7 +110,10 @@ export const deleteSpending = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete spending!' };
+    return {
+      status: 500,
+      error: 'Could not delete spending! Backend request failed.',
+    };
   }
 };
 
@@ -131,6 +140,9 @@ export const fetchCurrencies = async (): Promise<FetchCurrenciesProps> => {
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch currencies!' };
+    return {
+      status: 500,
+      error: 'Could not fetch currencies! Backend request failed.',
+    };
   }
 };

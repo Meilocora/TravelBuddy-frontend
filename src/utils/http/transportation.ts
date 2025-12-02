@@ -54,7 +54,10 @@ export const createTransportation = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create transportation!' };
+    return {
+      status: 500,
+      error: 'Could not create transportation! Backend request failed.',
+    };
   }
 };
 
@@ -99,7 +102,10 @@ export const updateTransportation = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update transportation!' };
+    return {
+      status: 500,
+      error: 'Could not update transportation! Backend request failed.',
+    };
   }
 };
 
@@ -130,6 +136,9 @@ export const deleteTransportation = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete transportation!' };
+    return {
+      status: 500,
+      error: 'Could not delete transportation! Backend request failed.',
+    };
   }
 };

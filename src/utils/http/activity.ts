@@ -45,7 +45,10 @@ export const createActivity = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create activity!' };
+    return {
+      status: 500,
+      error: 'Could not create activity! Backend request failed.',
+    };
   }
 };
 
@@ -81,7 +84,10 @@ export const updateActivity = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update activity!' };
+    return {
+      status: 500,
+      error: 'Could not update activity! Backend request failed.',
+    };
   }
 };
 
@@ -104,6 +110,9 @@ export const deleteActivity = async (
     };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete activity!' };
+    return {
+      status: 500,
+      error: 'Could not delete activity! Backend request failed.',
+    };
   }
 };

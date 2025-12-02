@@ -55,6 +55,7 @@ const Popup: React.FC<PopupProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+    maxWidth: '50%',
     top: 10,
     left: 5,
     justifyContent: 'center',
@@ -70,8 +71,8 @@ const styles = StyleSheet.create({
     opacity: 0.92,
   },
   popupContent: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
 });
 

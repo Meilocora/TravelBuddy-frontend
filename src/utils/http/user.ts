@@ -5,6 +5,7 @@ import { LatLng } from 'react-native-maps';
 import { CurrencyInfo } from '../../models';
 
 export interface FetchUserDataProps {
+  userId?: number;
   offset?: number;
   localCurrency?: CurrencyInfo;
   status: number;
@@ -30,11 +31,14 @@ export const fetchUsersData = async (
       return { status: response.data.status, error: response.data.error };
     }
 
-    const { offset, localCurrency, status } = response.data;
+    const { userId, offset, localCurrency, status } = response.data;
 
-    return { offset, localCurrency, status };
+    return { userId, offset, localCurrency, status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch data!' };
+    return {
+      status: 500,
+      error: 'Could not fetch data! Backend request failed.',
+    };
   }
 };

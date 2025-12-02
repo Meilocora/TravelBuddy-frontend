@@ -45,7 +45,10 @@ export const createUser = async (
       status: response.data.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not create user!' };
+    return {
+      status: 500,
+      error: 'Could not create user! Backend request failed.',
+    };
   }
 };
 
@@ -76,7 +79,10 @@ export const loginUser = async (
       status: response.data.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not login user!' };
+    return {
+      status: 500,
+      error: 'Could not login user! Backend request failed.',
+    };
   }
 };
 
@@ -103,7 +109,10 @@ export const fetchUserInfos = async (): Promise<FetchUserInfosProps> => {
     return { username, email, status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch data!' };
+    return {
+      status: 500,
+      error: 'Could not fetch data! Backend request failed.',
+    };
   }
 };
 
@@ -140,7 +149,10 @@ export const changeUsername = async (
       status: response.data.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not change username!' };
+    return {
+      status: 500,
+      error: 'Could not change username! Backend request failed.',
+    };
   }
 };
 
@@ -175,6 +187,9 @@ export const changePassword = async (
       status: response.data.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not change password!' };
+    return {
+      status: 500,
+      error: 'Could not change password! Backend request failed.',
+    };
   }
 };

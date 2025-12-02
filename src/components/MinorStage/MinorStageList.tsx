@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import MinorStageListElement from './MinorStageListElement';
@@ -11,20 +11,14 @@ import {
   StageFilter,
   StagesPositionDict,
 } from '../../models';
-import {
-  deleteMinorStage,
-  swapMinorStages,
-  validateIsOver,
-  validateOrders,
-} from '../../utils';
-import Modal from '../UI/Modal';
+import { swapMinorStages, validateIsOver, validateOrders } from '../../utils';
 import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
-import { StagesContext } from '../../store/stages-context';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import Animated, { FadeInRight } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 import ErrorOverlay from '../UI/ErrorOverlay';
+import { useAppData } from '../../hooks/useAppData';
 
 interface MinorStageListProps {
   majorStage: MajorStage;
@@ -39,13 +33,8 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
   const [openModal, setOpenModal] = useState<boolean>(false);
 
-  // TODO: This here needed? Deletion goes via the Form!
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [deleteMinorStageId, setDeleteMinorStageId] = useState<number | null>(
-    null
-  );
+  const { triggerRefresh } = useAppData();
 
-  const stagesCtx = useContext(StagesContext);
   const shownMinorStages = minorStages.filter((minorStage) => {
     if (filter === StageFilter.current) {
       return !validateIsOver(minorStage.scheduled_end_time); // Only include major stages that haven't ended
@@ -56,19 +45,6 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   function handleSetFilter(filter: StageFilter) {
     setFilter(filter);
     setOpenModal(false);
-  }
-
-  function closeDeleteModal() {
-    false;
-    setDeleteMinorStageId(null);
-  }
-
-  async function handleDelete() {
-    const { error, status } = await deleteMinorStage(deleteMinorStageId!);
-    if (!error && status === 200) {
-      stagesCtx.fetchStagesData();
-    }
-    setOpenDeleteModal(false);
   }
 
   async function handleSwitchElements(data: MinorStage[]) {
@@ -90,21 +66,13 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
     if (error) {
       return setError(error);
     } else {
-      return stagesCtx.fetchStagesData();
+      triggerRefresh();
     }
   }
 
   return (
     <View style={styles.container}>
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
-      {openDeleteModal && (
-        <Modal
-          title='Are you sure?'
-          content={`The Minor Stage will be deleted permanently!`}
-          onConfirm={handleDelete}
-          onCancel={closeDeleteModal}
-        />
-      )}
       <View style={styles.buttonContainer}>
         <IconButton
           icon={openModal ? Icons.settingsFilled : Icons.settingsOutline}

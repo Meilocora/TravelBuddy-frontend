@@ -37,6 +37,15 @@ export function formatDate(date: Date): string {
   return `${day}.${month}.${year}`;
 }
 
+export function formatDateTime(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+  const year = date.getFullYear().toString();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
 export function parseDate(dateString: string): Date {
   const [day, month, year] = dateString.split('.').map(Number);
   return new Date(year, month - 1, day); // Months are zero-based in JavaScript Date

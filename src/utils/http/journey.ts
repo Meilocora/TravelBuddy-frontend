@@ -32,7 +32,10 @@ export const fetchStagesDatas = async (): Promise<FetchJourneysProps> => {
     return { journeys, status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not fetch data!' };
+    return {
+      status: 500,
+      error: 'Could not fetch data! Backend request failed.',
+    };
   }
 };
 
@@ -67,7 +70,10 @@ export const createJourney = async (
     return { journey: response.data.journey, status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not create journey!' };
+    return {
+      status: 500,
+      error: 'Could not create journey! Backend request failed.',
+    };
   }
 };
 
@@ -96,7 +102,10 @@ export const updateJourney = async (
     return { journey: response.data.journey, status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not update journey!' };
+    return {
+      status: 500,
+      error: 'Could not update journey! Backend request failed.',
+    };
   }
 };
 
@@ -116,6 +125,9 @@ export const deleteJourney = async (
     return { status: response.data.status };
   } catch (error) {
     // Error from frontend
-    return { status: 500, error: 'Could not delete journey!' };
+    return {
+      status: 500,
+      error: 'Could not delete journey! Backend request failed.',
+    };
   }
 };

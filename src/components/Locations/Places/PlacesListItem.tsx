@@ -19,7 +19,9 @@ import {
   toggleVisitedPlace,
 } from '../../../utils/http/place_to_visit';
 import { CustomCountryContext } from '../../../store/custom-country-context';
-import { StagesContext } from '../../../store/stages-context';
+import { isImageLink } from '../../../utils';
+import ImageModal from '../../UI/ImageModal';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
@@ -39,19 +41,18 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   majorStageId,
 }): ReactElement => {
   const [isOpened, setIsOpened] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const navigation = useNavigation<NavigationProp<StackParamList>>();
   const placesCtx = useContext(PlaceContext);
   const countryCtx = useContext(CustomCountryContext);
-  const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
 
   async function handleToggleFavorite() {
     const response = await toggleFavoritePlace(place.id);
     if (!response.error) {
       placesCtx.toggleFavorite(place.id);
       onToggleFavorite(place.id);
-      await stagesCtx.fetchStagesData();
-      await countryCtx.fetchUsersCustomCountries();
-      await placesCtx.fetchPlacesToVisit();
+      triggerRefresh();
     }
   }
 
@@ -61,9 +62,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     if (!response.error) {
       placesCtx.toggleVisited(place.id);
       onToggleVisited(place.id);
-      await stagesCtx.fetchStagesData();
-      await countryCtx.fetchUsersCustomCountries();
-      await placesCtx.fetchPlacesToVisit();
+      triggerRefresh();
     }
   }
 
@@ -99,77 +98,99 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   }
 
   return (
-    <Animated.View
-      entering={index ? FadeInDown.delay(index * 100).duration(500) : undefined}
-      exiting={index ? FadeOutDown : undefined}
-      style={styles.container}
-    >
-      <Pressable onPress={() => setIsOpened(!isOpened)}>
-        <View style={styles.row}>
-          <Text style={styles.name} ellipsizeMode='tail' numberOfLines={3}>
-            {place.name}
-          </Text>
-          <View style={styles.buttonsContainer}>
-            <IconButton
-              icon={place.favorite ? Icons.heartFilled : Icons.heartOutline}
-              onPress={handleToggleFavorite}
-              color={GlobalStyles.colors.favorite}
-              containerStyle={styles.button}
-            />
-            <IconButton
-              icon={
-                place.visited ? Icons.checkmarkFilled : Icons.checkmarkOutline
-              }
-              onPress={handleToggleVisited}
-              color={GlobalStyles.colors.visited}
-              containerStyle={styles.button}
-            />
-            <IconButton
-              icon={Icons.editFilled}
-              onPress={handleEdit}
-              color={GlobalStyles.colors.edit}
-              containerStyle={styles.button}
-            />
-            {onRemovePlace && (
+    <>
+      <ImageModal
+        link={place.link!}
+        onClose={() => setShowImage(false)}
+        visible={showImage}
+      />
+      <Animated.View
+        entering={
+          index ? FadeInDown.delay(index * 100).duration(500) : undefined
+        }
+        exiting={index ? FadeOutDown : undefined}
+        style={styles.container}
+      >
+        <Pressable onPress={() => setIsOpened(!isOpened)}>
+          <View style={styles.row}>
+            <Text style={styles.name} ellipsizeMode='tail' numberOfLines={3}>
+              {place.name}
+            </Text>
+            <View style={styles.buttonsContainer}>
               <IconButton
-                icon={Icons.remove}
-                onPress={handleRemove}
-                color={GlobalStyles.colors.error200}
+                icon={place.favorite ? Icons.heartFilled : Icons.heartOutline}
+                onPress={handleToggleFavorite}
+                color={GlobalStyles.colors.favorite}
                 containerStyle={styles.button}
               />
-            )}
-          </View>
-        </View>
-
-        {isOpened && (
-          <View style={styles.additionalContainer}>
-            <Text style={styles.description}>{place.description}</Text>
-            <View style={styles.row}>
-              {place.link && (
-                <View style={styles.halfRow}>
-                  <Text style={styles.detail}>Link: </Text>
-                  <Link link={place.link} color={GlobalStyles.colors.visited} />
-                </View>
-              )}
-              {place.latitude && place.longitude && (
-                <View style={styles.halfRow}>
-                  <Text style={styles.detail}>Map: </Text>
-                  <IconButton
-                    icon={Icons.location}
-                    onPress={handleShowLocation}
-                    color={GlobalStyles.colors.visited}
-                    containerStyle={{
-                      marginHorizontal: 0,
-                      paddingHorizontal: 0,
-                    }}
-                  />
-                </View>
+              <IconButton
+                icon={
+                  place.visited ? Icons.checkmarkFilled : Icons.checkmarkOutline
+                }
+                onPress={handleToggleVisited}
+                color={GlobalStyles.colors.visited}
+                containerStyle={styles.button}
+              />
+              <IconButton
+                icon={Icons.editFilled}
+                onPress={handleEdit}
+                color={GlobalStyles.colors.edit}
+                containerStyle={styles.button}
+              />
+              {onRemovePlace && (
+                <IconButton
+                  icon={Icons.remove}
+                  onPress={handleRemove}
+                  color={GlobalStyles.colors.error200}
+                  containerStyle={styles.button}
+                />
               )}
             </View>
           </View>
-        )}
-      </Pressable>
-    </Animated.View>
+
+          {isOpened && (
+            <View style={styles.additionalContainer}>
+              <Text style={styles.description}>{place.description}</Text>
+              <View style={styles.row}>
+                {place.link && isImageLink(place.link) ? (
+                  <View style={styles.halfRow}>
+                    <IconButton
+                      icon={Icons.image}
+                      onPress={() => setShowImage(true)}
+                      color={GlobalStyles.colors.graySoft}
+                    />
+                  </View>
+                ) : (
+                  place.link && (
+                    <View style={styles.halfRow}>
+                      <Text style={styles.detail}>Link: </Text>
+                      <Link
+                        link={place.link}
+                        color={GlobalStyles.colors.visited}
+                      />
+                    </View>
+                  )
+                )}
+                {place.latitude && place.longitude && (
+                  <View style={styles.halfRow}>
+                    <Text style={styles.detail}>Map: </Text>
+                    <IconButton
+                      icon={Icons.location}
+                      onPress={handleShowLocation}
+                      color={GlobalStyles.colors.visited}
+                      containerStyle={{
+                        marginHorizontal: 0,
+                        paddingHorizontal: 0,
+                      }}
+                    />
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+        </Pressable>
+      </Animated.View>
+    </>
   );
 };
 

@@ -27,6 +27,9 @@ import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
 import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 import PositionSelector from '../../UI/form/PositionSelector';
+import CustomLinkInput from '../../UI/form/CustomLinkInput';
+import ImageModal from '../../UI/ImageModal';
+import CustomCheckBox from '../../UI/form/CustomCheckBox';
 
 type InputValidationResponse = {
   minorStage?: MinorStage;
@@ -56,6 +59,8 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
   const majorStage = stagesCtx.findMajorStage(majorStageId);
+
+  const [showImage, setShowImage] = useState(false);
 
   let maxAvailableMoney = majorStage!.costs.budget;
 
@@ -289,6 +294,11 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   return (
     <>
+      <ImageModal
+        link={inputs.accommodation_link.value}
+        onClose={() => setShowImage(false)}
+        visible={showImage}
+      />
       <View style={styles.formContainer}>
         <View>
           <View style={styles.formRow}>
@@ -418,36 +428,24 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <Input
-              label='Link'
-              maxLength={100}
-              invalid={!inputs.accommodation_link.isValid}
-              errors={inputs.accommodation_link.errors}
-              textInputConfig={{
-                value: inputs.accommodation_link.value,
-                onChangeText: inputChangedHandler.bind(
-                  this,
-                  'accommodation_link'
-                ),
-              }}
+            <CustomLinkInput
+              input={inputs.accommodation_link}
+              onChangeText={inputChangedHandler.bind(
+                this,
+                'accommodation_link'
+              )}
+              setShowImage={() => setShowImage(true)}
             />
-
-            <View style={styles.checkBoxContainer}>
-              <Text style={styles.checkBoxLabel}>Booked?</Text>
-              <Checkbox
-                status={
-                  inputs.accommodation_booked.value ? 'checked' : 'unchecked'
-                }
-                onPress={() =>
-                  inputChangedHandler(
-                    'accommodation_booked',
-                    !inputs.accommodation_booked.value
-                  )
-                }
-                uncheckedColor={GlobalStyles.colors.grayMedium}
-                color={GlobalStyles.colors.purpleAccent}
-              />
-            </View>
+            <CustomCheckBox
+              value={inputs.accommodation_booked.value}
+              mode='booked'
+              onPress={() =>
+                inputChangedHandler(
+                  'accommodation_booked',
+                  !inputs.accommodation_booked.value
+                )
+              }
+            />
           </View>
         </View>
         <View style={styles.buttonsContainer}>
@@ -500,15 +498,6 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.grayMedium,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  checkBoxContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginHorizontal: 'auto',
-    marginBottom: '5%',
-  },
-  checkBoxLabel: {
-    color: GlobalStyles.colors.grayMedium,
   },
   titleWrapper: {
     flex: 4, // 75% of the row (3 parts)

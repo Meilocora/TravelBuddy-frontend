@@ -22,6 +22,7 @@ import { StagesContext } from '../store/stages-context';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { generateRandomString } from '../utils';
 import { GlobalStyles } from '../constants/styles';
+import { useAppData } from '../hooks/useAppData';
 
 interface ManagePlaceToVisitProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManagePlaceToVisit'>;
@@ -40,9 +41,9 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
 
-  const customCountryCtx = useContext(CustomCountryContext);
   const placesCtx = useContext(PlaceContext);
   const stagesCtx = useContext(StagesContext);
+  const { triggerRefresh } = useAppData();
 
   const majorStageId = route.params?.majorStageId;
   const placeId = route.params?.placeId;
@@ -83,10 +84,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
         return;
       } else if (place && status === 200) {
         placesCtx.updatePlace(place);
-        customCountryCtx.fetchUsersCustomCountries();
-        if (majorStageId) {
-          stagesCtx.fetchStagesData();
-        }
+        triggerRefresh();
         navigation.goBack();
       }
     } else {
@@ -95,7 +93,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
         return;
       } else if (place && status === 201) {
         placesCtx.addPlace(place);
-        customCountryCtx.fetchUsersCustomCountries();
+        triggerRefresh();
         navigation.goBack();
       }
     }
@@ -107,7 +105,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
       return;
     } else if (response.status === 200) {
       placesCtx.deletePlace(placeId);
-      customCountryCtx.fetchUsersCustomCountries();
+      triggerRefresh();
       navigation.goBack();
     }
   }

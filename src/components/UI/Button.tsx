@@ -18,6 +18,7 @@ interface ButtonProps {
   colorScheme: ColorScheme;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -27,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({
   mode = ButtonMode.default,
   colorScheme,
   textStyle,
+  disabled = false,
 }): ReactElement => {
   let schemeStyles = primaryStyles;
 
@@ -44,6 +46,7 @@ const Button: React.FC<ButtonProps> = ({
     <View style={[generalStyles.container, style && style]}>
       <Pressable
         onPress={onPress}
+        disabled={disabled}
         style={({ pressed }) => [
           pressed && [generalStyles.pressed, schemeStyles.pressed],
         ]}

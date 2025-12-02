@@ -55,7 +55,7 @@ export interface Transportation {
   arrival_latitude: number | undefined;
   arrival_longitude: number | undefined;
   transportation_costs: number;
-  link: string;
+  link?: string;
 }
 
 export interface TransportationValues {
@@ -69,7 +69,7 @@ export interface TransportationValues {
   arrival_latitude: number | undefined;
   arrival_longitude: number | undefined;
   transportation_costs: number;
-  link: string;
+  link?: string;
 }
 
 export interface TransportationFormValues {
@@ -84,7 +84,7 @@ export interface TransportationFormValues {
   arrival_longitude: Validable<number | undefined>;
   transportation_costs: Validable<number>;
   unconvertedAmount: Validable<string>;
-  link: Validable<string | undefined>;
+  link: Validable<string>;
 }
 
 export enum TransportationType {
@@ -139,5 +139,6 @@ export enum FormLimits {
   activityName = 50,
   activitiesDescription = 150,
   spendingName = 30,
+  imageDescription = 200,
   deleteSize = 62,
 }

@@ -26,6 +26,8 @@ import LocationPicker from '../UI/form/LocationPicker';
 import { StagesContext } from '../../store/stages-context';
 import AmountElement from '../UI/form/Money/AmountElement';
 import ExpoDateTimePicker from '../UI/form/ExpoDateTimePicker';
+import CustomLinkInput from '../UI/form/CustomLinkInput';
+import ImageModal from '../UI/ImageModal';
 
 type InputValidationResponse = {
   transportation?: Transportation;
@@ -77,6 +79,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   maxStartDate.setDate(maxStartDate.getDate() + 1);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   const [inputs, setInputs] = useState<TransportationFormValues>({
     type: {
@@ -340,148 +343,153 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
   }
 
   return (
-    <View style={[styles.formContainer, { backgroundColor: bg }]}>
-      {'country' in stage ? (
-        <Text style={styles.header}>
-          Destination: "{stage!.country.name || ''}"
-        </Text>
-      ) : (
-        <Text style={styles.header}>Origin: "{stage!.title}"</Text>
-      )}
-      <View>
-        <View style={styles.formRow}>
-          <TransportTypeSelector
-            onChangeTransportType={inputChangedHandler.bind(this, 'type')}
-            defaultType={inputs.type.value}
-            invalid={!inputs.type.isValid}
-            errors={inputs.type.errors}
-            colorscheme={ColorScheme.accent}
-          />
+    <>
+      <ImageModal
+        link={inputs.link.value}
+        onClose={() => setShowImage(false)}
+        visible={showImage}
+      />
+      <View style={[styles.formContainer, { backgroundColor: bg }]}>
+        {'country' in stage ? (
+          <Text style={styles.header}>
+            Destination: "{stage!.country.name || ''}"
+          </Text>
+        ) : (
+          <Text style={styles.header}>Origin: "{stage!.title}"</Text>
+        )}
+        <View>
+          <View style={styles.formRow}>
+            <TransportTypeSelector
+              onChangeTransportType={inputChangedHandler.bind(this, 'type')}
+              defaultType={inputs.type.value}
+              invalid={!inputs.type.isValid}
+              errors={inputs.type.errors}
+              colorscheme={ColorScheme.accent}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <AmountElement
+              unconvertedInput={inputs.unconvertedAmount}
+              inputChangedHandler={inputChangedHandler}
+              field='transportation_costs'
+            />
+          </View>
+          <View style={styles.formRow}>
+            <Input
+              label='Place of departure'
+              maxLength={FormLimits.place}
+              invalid={!inputs.place_of_departure.isValid}
+              errors={inputs.place_of_departure.errors}
+              mandatory
+              textInputConfig={{
+                value: inputs.place_of_departure.value,
+                onChangeText: inputChangedHandler.bind(
+                  this,
+                  'place_of_departure'
+                ),
+              }}
+            />
+            <LocationPicker
+              onPickLocation={handleDeparturePickLocation}
+              onPressMarker={handleDeparturePickLocation}
+              pickedLocation={
+                inputs.departure_latitude.value &&
+                inputs.departure_longitude.value
+                  ? {
+                      lat: inputs.departure_latitude.value,
+                      lng: inputs.departure_longitude.value,
+                      title: inputs.place_of_departure.value,
+                    }
+                  : undefined
+              }
+              colorScheme={
+                majorStageId ? ColorScheme.accent : ColorScheme.complementary
+              }
+              iconColor={!inputs.departure_latitude.isValid ? 'red' : undefined}
+              majorStageId={majorStageId}
+              countryId={majorStage?.country.id}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <Input
+              label='Place of arrival'
+              maxLength={FormLimits.place}
+              invalid={!inputs.place_of_arrival.isValid}
+              errors={inputs.place_of_arrival.errors}
+              mandatory
+              textInputConfig={{
+                value: inputs.place_of_arrival.value,
+                onChangeText: inputChangedHandler.bind(
+                  this,
+                  'place_of_arrival'
+                ),
+              }}
+            />
+            <LocationPicker
+              onPickLocation={handleArrivalPickLocation}
+              onPressMarker={handleArrivalPickLocation}
+              pickedLocation={
+                inputs.arrival_latitude.value && inputs.arrival_longitude.value
+                  ? {
+                      lat: inputs.arrival_latitude.value,
+                      lng: inputs.arrival_longitude.value,
+                      title: inputs.place_of_arrival.value,
+                    }
+                  : undefined
+              }
+              colorScheme={
+                majorStageId ? ColorScheme.accent : ColorScheme.complementary
+              }
+              iconColor={!inputs.arrival_latitude.isValid ? 'red' : undefined}
+              majorStageId={majorStageId}
+              countryId={majorStage?.country.id}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <ExpoDateTimePicker
+              handleChange={handleChangeDate}
+              inputIdentifier='start_time'
+              invalid={!inputs.start_time.isValid}
+              errors={inputs.start_time.errors}
+              value={inputs.start_time.value?.toString()}
+              label='Departure'
+              minimumDate={minStartDate}
+              maximumDate={maxStartDate}
+            />
+            <ExpoDateTimePicker
+              handleChange={handleChangeDate}
+              inputIdentifier='arrival_time'
+              invalid={!inputs.arrival_time.isValid}
+              errors={inputs.arrival_time.errors}
+              value={inputs.arrival_time.value?.toString()}
+              label='Arrival'
+              minimumDate={minStartDate}
+              maximumDate={maxStartDate}
+            />
+          </View>
+          <View style={styles.formRow}></View>
+          <View style={styles.formRow}>
+            <CustomLinkInput
+              input={inputs.link}
+              onChangeText={inputChangedHandler.bind(this, 'link')}
+              setShowImage={() => setShowImage(true)}
+            />
+          </View>
         </View>
-        <View style={styles.formRow}>
-          <AmountElement
-            unconvertedInput={inputs.unconvertedAmount}
-            inputChangedHandler={inputChangedHandler}
-            field='transportation_costs'
-          />
-        </View>
-        <View style={styles.formRow}>
-          <Input
-            label='Place of departure'
-            maxLength={FormLimits.place}
-            invalid={!inputs.place_of_departure.isValid}
-            errors={inputs.place_of_departure.errors}
-            mandatory
-            textInputConfig={{
-              value: inputs.place_of_departure.value,
-              onChangeText: inputChangedHandler.bind(
-                this,
-                'place_of_departure'
-              ),
-            }}
-          />
-          <LocationPicker
-            onPickLocation={handleDeparturePickLocation}
-            onPressMarker={handleDeparturePickLocation}
-            pickedLocation={
-              inputs.departure_latitude.value &&
-              inputs.departure_longitude.value
-                ? {
-                    lat: inputs.departure_latitude.value,
-                    lng: inputs.departure_longitude.value,
-                    title: inputs.place_of_departure.value,
-                  }
-                : undefined
-            }
-            colorScheme={
-              majorStageId ? ColorScheme.accent : ColorScheme.complementary
-            }
-            iconColor={!inputs.departure_latitude.isValid ? 'red' : undefined}
-            majorStageId={majorStageId}
-            countryId={majorStage?.country.id}
-          />
-        </View>
-        <View style={styles.formRow}>
-          <Input
-            label='Place of arrival'
-            maxLength={FormLimits.place}
-            invalid={!inputs.place_of_arrival.isValid}
-            errors={inputs.place_of_arrival.errors}
-            mandatory
-            textInputConfig={{
-              value: inputs.place_of_arrival.value,
-              onChangeText: inputChangedHandler.bind(this, 'place_of_arrival'),
-            }}
-          />
-          <LocationPicker
-            onPickLocation={handleArrivalPickLocation}
-            onPressMarker={handleArrivalPickLocation}
-            pickedLocation={
-              inputs.arrival_latitude.value && inputs.arrival_longitude.value
-                ? {
-                    lat: inputs.arrival_latitude.value,
-                    lng: inputs.arrival_longitude.value,
-                    title: inputs.place_of_arrival.value,
-                  }
-                : undefined
-            }
-            colorScheme={
-              majorStageId ? ColorScheme.accent : ColorScheme.complementary
-            }
-            iconColor={!inputs.arrival_latitude.isValid ? 'red' : undefined}
-            majorStageId={majorStageId}
-            countryId={majorStage?.country.id}
-          />
-        </View>
-        <View style={styles.formRow}>
-          <ExpoDateTimePicker
-            handleChange={handleChangeDate}
-            inputIdentifier='start_time'
-            invalid={!inputs.start_time.isValid}
-            errors={inputs.start_time.errors}
-            value={inputs.start_time.value?.toString()}
-            label='Departure'
-            minimumDate={minStartDate}
-            maximumDate={maxStartDate}
-          />
-          <ExpoDateTimePicker
-            handleChange={handleChangeDate}
-            inputIdentifier='arrival_time'
-            invalid={!inputs.arrival_time.isValid}
-            errors={inputs.arrival_time.errors}
-            value={inputs.arrival_time.value?.toString()}
-            label='Arrival'
-            minimumDate={minStartDate}
-            maximumDate={maxStartDate}
-          />
-        </View>
-        <View style={styles.formRow}></View>
-        <View style={styles.formRow}>
-          <Input
-            label='Link'
-            maxLength={100}
-            invalid={!inputs.link.isValid}
-            errors={inputs.link.errors}
-            textInputConfig={{
-              value: inputs.link.value,
-              onChangeText: inputChangedHandler.bind(this, 'link'),
-            }}
-          />
+        <View style={styles.buttonsContainer}>
+          <Button
+            onPress={onCancel}
+            colorScheme={ColorScheme.neutral}
+            mode={ButtonMode.flat}
+          >
+            Cancel
+          </Button>
+          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
+            {submitButtonLabel}
+          </Button>
         </View>
       </View>
-      <View style={styles.buttonsContainer}>
-        <Button
-          onPress={onCancel}
-          colorScheme={ColorScheme.neutral}
-          mode={ButtonMode.flat}
-        >
-          Cancel
-        </Button>
-        <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-          {submitButtonLabel}
-        </Button>
-      </View>
-    </View>
+    </>
   );
 };
 

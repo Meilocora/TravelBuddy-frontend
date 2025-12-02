@@ -1,14 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-
 import {
-  AuthFormValues,
-  ButtonMode,
-  ColorScheme,
-  Icons,
-  StackParamList,
-} from '../../models';
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+
+import { AuthFormValues, ButtonMode, ColorScheme, Icons } from '../../models';
 import FormShell from '../UI/form/FormShell';
 import Button from '../UI/Button';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -173,26 +171,44 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
   return (
     <Animated.View style={styles.container} layout={FadeInUp.duration(300)}>
-      <FormShell title={isLogin ? 'Login' : 'SignUp'}>
-        {formContent}
-        <View style={styles.buttonsContainer}>
-          <Button
-            onPress={onSwitchHandler}
-            colorScheme={ColorScheme.neutral}
-            mode={ButtonMode.flat}
-          >
-            {isLogin ? 'Switch to SignUp' : 'Switch to Login'}
-          </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {isLogin ? 'Login' : 'SignUp'}
-          </Button>
-        </View>
-      </FormShell>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior='height'
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps='handled'
+        >
+          <FormShell title={isLogin ? 'Login' : 'SignUp'}>
+            {formContent}
+            <View style={styles.buttonsContainer}>
+              <Button
+                onPress={onSwitchHandler}
+                colorScheme={ColorScheme.neutral}
+                mode={ButtonMode.flat}
+              >
+                {isLogin ? 'Switch to SignUp' : 'Switch to Login'}
+              </Button>
+              <Button
+                onPress={validateInputs}
+                colorScheme={ColorScheme.neutral}
+              >
+                {isLogin ? 'Login' : 'SignUp'}
+              </Button>
+            </View>
+          </FormShell>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   container: {
     marginTop: '25%',
   },

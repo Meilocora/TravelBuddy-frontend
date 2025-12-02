@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     minHeight: '20%',
-    maxHeight: '40%',
     width: '100%',
     bottom: 0,
     marginHorizontal: 'auto',

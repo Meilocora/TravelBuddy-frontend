@@ -17,6 +17,9 @@ import { createActivity, updateActivity } from '../../../utils/http';
 import LocationPicker from '../../UI/form/LocationPicker';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
+import CustomLinkInput from '../../UI/form/CustomLinkInput';
+import ImageModal from '../../UI/ImageModal';
+import CustomCheckBox from '../../UI/form/CustomCheckBox';
 
 type InputValidationResponse = {
   activity?: Activity;
@@ -57,6 +60,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   const [inputs, setInputs] = useState<ActivityFormValues>({
     name: { value: defaultValues?.name || '', isValid: true, errors: [] },
@@ -189,6 +193,11 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
   return (
     <>
+      <ImageModal
+        link={inputs.link.value}
+        onClose={() => setShowImage(false)}
+        visible={showImage}
+      />
       <View style={styles.formContainer}>
         <View>
           <View style={styles.formRow}>
@@ -256,27 +265,18 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <Input
-              label='Link'
-              maxLength={100}
-              invalid={!inputs.link.isValid}
-              errors={inputs.link.errors}
-              textInputConfig={{
-                value: inputs.link.value,
-                onChangeText: inputChangedHandler.bind(this, 'link'),
-              }}
+            <CustomLinkInput
+              input={inputs.link}
+              onChangeText={inputChangedHandler.bind(this, 'link')}
+              setShowImage={() => setShowImage(true)}
             />
-            <View style={styles.checkBoxContainer}>
-              <Text style={styles.checkBoxLabel}>Booked?</Text>
-              <Checkbox
-                status={inputs.booked.value ? 'checked' : 'unchecked'}
-                onPress={() =>
-                  inputChangedHandler('booked', !inputs.booked.value)
-                }
-                uncheckedColor={GlobalStyles.colors.grayMedium}
-                color={GlobalStyles.colors.purpleAccent}
-              />
-            </View>
+            <CustomCheckBox
+              value={inputs.booked.value}
+              mode='booked'
+              onPress={() =>
+                inputChangedHandler('booked', !inputs.booked.value)
+              }
+            />
           </View>
         </View>
         <View style={styles.buttonsContainer}>
@@ -317,15 +317,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     marginHorizontal: 12,
-  },
-  checkBoxContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginHorizontal: 'auto',
-    marginBottom: '5%',
-  },
-  checkBoxLabel: {
-    color: GlobalStyles.colors.grayMedium,
   },
   buttonsContainer: {
     flexDirection: 'row',

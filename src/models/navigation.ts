@@ -9,6 +9,7 @@ export type BottomTabsParamList = {
   ManageJourney: { journeyId?: number };
   Locations: undefined | { popupText?: string };
   UserProfile: undefined;
+  Gallery: { popupText?: string } | undefined;
 };
 
 export type MajorStageStackParamList = {
@@ -78,6 +79,7 @@ export type StackParamList = {
     colorScheme?: string;
     location?: Location;
   };
+  ManageImage: { imageId?: number };
 };
 
 export type AuthStackParamList = {

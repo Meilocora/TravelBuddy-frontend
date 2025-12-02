@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { View } from 'react-native';
+import { View, RefreshControl } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { RouteProp } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
@@ -10,19 +10,11 @@ import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { BottomTabsParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
-import { AuthContext } from '../../store/auth-context';
 import { StagesContext } from '../../store/stages-context';
-import { CustomCountryContext } from '../../store/custom-country-context';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
-import { PlaceContext } from '../../store/place-context';
-import {
-  getCurrentLocation,
-  useLocationPermissions,
-} from '../../utils/location';
-import { UserContext } from '../../store/user-context';
 import { GlobalStyles } from '../../constants/styles';
-import { LatLng } from 'react-native-maps';
 import Animated from 'react-native-reanimated';
+import { useAppData } from '../../hooks/useAppData';
 
 interface AllJourneysProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'AllJourneys'>;
@@ -33,18 +25,9 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
   navigation,
   route,
 }): ReactElement => {
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [refresh, setRefresh] = useState(0);
   const [popupText, setPopupText] = useState<string | null>();
-
-  const { verifyPermissions } = useLocationPermissions();
-
-  const userCtx = useContext(UserContext);
-  const authCtx = useContext(AuthContext);
+  const { isFetching, errors, triggerRefresh } = useAppData();
   const stagesCtx = useContext(StagesContext);
-  const countryCtx = useContext(CustomCountryContext);
-  const placesCtx = useContext(PlaceContext);
 
   useEffect(() => {
     function activatePopup() {
@@ -55,49 +38,12 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     activatePopup();
   }, [route.params]);
 
-  // Fetch all data here, because the users always starts on this screen
-  useEffect(() => {
-    async function getData() {
-      setIsFetching(true);
-      const hasPermission = await verifyPermissions();
-      let currentLocation: LatLng | undefined;
-      if (hasPermission) {
-        currentLocation = await getCurrentLocation();
-        userCtx.setCurrentLocation(currentLocation);
-      }
-      const userInfoBackendError = await authCtx.fetchUserInfo();
-      const userBackendError = await userCtx.fetchUserData(
-        currentLocation || undefined
-      );
-      const stagesBackendError = await stagesCtx.fetchStagesData();
-      const countriesBackendError =
-        await countryCtx.fetchUsersCustomCountries();
-      const placesBackendError = await placesCtx.fetchPlacesToVisit();
-
-      if (userInfoBackendError) {
-        setError(userInfoBackendError);
-      } else if (userBackendError) {
-        setError(userBackendError);
-      } else if (stagesBackendError) {
-        setError(stagesBackendError);
-      } else if (countriesBackendError) {
-        setError(countriesBackendError);
-      } else if (placesBackendError) {
-        setError(placesBackendError);
-      }
-      setIsFetching(false);
-    }
-
-    getData();
-  }, [refresh]);
-
   function handleClosePopup() {
     setPopupText(null);
   }
 
   function handlePressReload() {
-    setError(null);
-    setRefresh((prev) => prev + 1);
+    triggerRefresh();
   }
 
   let content;
@@ -111,16 +57,27 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
         />
       </Animated.View>
     );
-  } else if (stagesCtx.journeys.length === 0 && !error) {
+  } else if (stagesCtx.journeys.length === 0 && errors.length === 0) {
     content = <InfoText content='No Journeys found!' />;
   } else {
-    content = <JourneysList />;
+    content = (
+      <JourneysList
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={triggerRefresh}
+            colors={[GlobalStyles.colors.greenAccent]}
+            tintColor={GlobalStyles.colors.greenAccent}
+          />
+        }
+      />
+    );
   }
 
-  if (error) {
+  if (errors.length > 0) {
     return (
       <ErrorOverlay
-        message={error}
+        message={errors.join('\n')}
         onPress={handlePressReload}
         buttonText='Reload'
       />

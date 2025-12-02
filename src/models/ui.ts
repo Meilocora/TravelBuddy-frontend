@@ -18,6 +18,7 @@ export enum Icons {
   pin = 'pin',
   eyeOff = 'eye-off-outline',
   eyeOn = 'eye-outline',
+  eye = 'eye',
   logout = 'exit',
   population = 'accessibility-outline',
   currency = 'cash-outline',
@@ -52,6 +53,13 @@ export enum Icons {
   closeDetails = 'caret-up-outline',
   toggle = 'toggle',
   earth = 'earth',
+  image = 'image',
+  images = 'images',
+  folderOpen = 'folder-open',
+  download = 'cloud-download',
+  clipboard = 'clipboard-outline',
+  bookOutline = 'book-outline',
+  bookFilled = 'book',
 }
 
 export enum ButtonMode {

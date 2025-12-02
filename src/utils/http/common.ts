@@ -32,6 +32,9 @@ export const refreshAuthToken = async (
       status: response.data.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not refresh token!' };
+    return {
+      status: 500,
+      error: 'Could not refresh token! Backend request failed.',
+    };
   }
 };
