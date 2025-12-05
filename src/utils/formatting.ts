@@ -51,6 +51,11 @@ export function parseDate(dateString: string): Date {
   return new Date(year, month - 1, day); // Months are zero-based in JavaScript Date
 }
 
+export function parseEndDate(dateString: string): Date {
+  const [day, month, year] = dateString.split('.').map(Number);
+  return new Date(year, month - 1, day + 1); // Months are zero-based in JavaScript Date
+}
+
 export function formatDateString(date: string | undefined): string | undefined {
   if (!date) {
     return undefined;

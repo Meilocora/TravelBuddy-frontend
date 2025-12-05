@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -219,7 +219,6 @@ const ActivityElement: React.FC<ActivityElementProps> = ({
   handleDelete,
   customCountryId,
 }) => {
-  const screenHeight = Dimensions.get('window').height;
   const isOver = validateIsOver(minorStage.scheduled_end_time);
 
   return (

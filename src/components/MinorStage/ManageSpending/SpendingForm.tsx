@@ -132,10 +132,6 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
     return;
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   function handleChangeDate(
     inputIdentifier: string,
     selectedDate: Date | undefined
@@ -213,8 +209,12 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
           >
             Cancel
           </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {submitButtonLabel}
+          <Button
+            onPress={validateInputs}
+            colorScheme={ColorScheme.neutral}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>
         </View>
       </View>

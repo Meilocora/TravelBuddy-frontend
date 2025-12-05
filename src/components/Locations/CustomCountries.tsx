@@ -90,11 +90,7 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
         />
       </View>
       {search && (
-        <Search
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          setSearch={setSearch}
-        />
+        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       )}
       <CountriesList countries={countries} />
     </View>

@@ -181,10 +181,6 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
     setIsDeleting(false);
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   return (
     <>
       <ImageModal
@@ -294,8 +290,9 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
               <Button
                 onPress={validateInputs}
                 colorScheme={ColorScheme.neutral}
+                disabled={isSubmitting}
               >
-                {submitButtonLabel}
+                {isSubmitting ? 'Submitting...' : submitButtonLabel}
               </Button>
             </View>
           </View>

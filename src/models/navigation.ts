@@ -6,10 +6,9 @@ import { MinorStage } from './minor_stage';
 
 export type BottomTabsParamList = {
   AllJourneys: undefined | { popupText?: string };
-  ManageJourney: { journeyId?: number };
   Locations: undefined | { popupText?: string };
   UserProfile: undefined;
-  Gallery: { popupText?: string } | undefined;
+  Gallery: { popupText?: string; refresh?: boolean } | undefined;
 };
 
 export type MajorStageStackParamList = {
@@ -51,6 +50,7 @@ export type StackParamList = {
   AuthStackNavigator: NavigatorScreenParams<AuthStackParamList>;
   BottomTabsNavigator: NavigatorScreenParams<BottomTabsParamList>;
   UserProfile: undefined;
+  ManageJourney: { journeyId?: number };
   JourneyBottomTabsNavigator: NavigatorScreenParams<JourneyBottomTabsParamsList>;
   ManageCustomCountry: { countryId: number };
   ManagePlaceToVisit: {
@@ -91,11 +91,6 @@ export type PlanningRouteProp = RouteProp<
   'Planning'
 >;
 export type UserProfileRouteProp = RouteProp<StackParamList, 'UserProfile'>;
-
-export type ManageJourneyRouteProp = RouteProp<
-  BottomTabsParamList,
-  'ManageJourney'
->;
 
 export type ManageCustomCountryRouteProp = RouteProp<
   StackParamList,

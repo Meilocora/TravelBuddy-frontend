@@ -8,7 +8,12 @@ import {
 } from '../../models';
 import { StyleSheet, Text, View } from 'react-native';
 import { GlobalStyles } from '../../constants/styles';
-import { formatAmount, parseDate, validateIsOver } from '../../utils';
+import {
+  formatAmount,
+  parseDate,
+  parseEndDate,
+  validateIsOver,
+} from '../../utils';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import IconButton from '../UI/IconButton';
@@ -34,7 +39,7 @@ const AccommodationBox: React.FC<AccommodationBoxProps> = ({
         latitude: minorStage.accommodation.latitude,
         longitude: minorStage.accommodation.longitude,
       },
-      done: parseDate(minorStage.scheduled_end_time) < new Date(),
+      done: parseEndDate(minorStage.scheduled_end_time) < new Date(),
     };
 
     navigation.navigate('ShowMap', {

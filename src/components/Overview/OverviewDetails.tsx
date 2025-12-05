@@ -8,6 +8,7 @@ import {
   formatDateString,
   formatDurationToDays,
   parseDate,
+  parseEndDate,
 } from '../../utils';
 import IconButton from '../UI/IconButton';
 
@@ -57,13 +58,13 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
 
   if (journey.majorStages) {
     for (const majorStage of journey.majorStages) {
-      parseDate(majorStage.scheduled_end_time) < new Date()
+      parseEndDate(majorStage.scheduled_end_time) < new Date()
         ? (completedMajorStagesQty += 1)
         : undefined;
       minorStagesQty += majorStage.minorStages?.length || 0;
       if (majorStage.minorStages) {
         for (const minorStage of majorStage.minorStages) {
-          parseDate(minorStage.scheduled_end_time) < new Date()
+          parseEndDate(minorStage.scheduled_end_time) < new Date()
             ? (completedMinorStagesQty += 1)
             : undefined;
           if (minorStage.placesToVisit) {
@@ -75,7 +76,7 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
           if (minorStage.activities) {
             for (const activity of minorStage.activities) {
               activitiesQty += 1;
-              parseDate(minorStage.scheduled_end_time) < new Date()
+              parseEndDate(minorStage.scheduled_end_time) < new Date()
                 ? (completedActivitiesQty += 1)
                 : undefined;
             }

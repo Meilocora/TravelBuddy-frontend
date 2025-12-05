@@ -453,6 +453,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                 <Button
                   colorScheme={ColorScheme.primary}
                   onPress={validateInputs}
+                  disabled={isSubmitting}
                 >
                   {buttonLabel}
                 </Button>

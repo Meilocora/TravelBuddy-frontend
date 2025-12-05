@@ -327,10 +327,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
     return;
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   function handleChangeDate(inputIdentifier: string, selectedDate: string) {
     setInputs((prevValues) => ({
       ...prevValues,
@@ -484,8 +480,12 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
           >
             Cancel
           </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {submitButtonLabel}
+          <Button
+            onPress={validateInputs}
+            colorScheme={ColorScheme.neutral}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>
         </View>
       </View>

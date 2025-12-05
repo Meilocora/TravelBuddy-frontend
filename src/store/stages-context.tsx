@@ -9,7 +9,7 @@ import {
   Transportation,
 } from '../models';
 import { fetchStagesDatas } from '../utils/http';
-import { parseDate, parseDateAndTime } from '../utils';
+import { parseDate, parseDateAndTime, parseEndDate } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ActiveHeader {
@@ -76,6 +76,7 @@ interface StagesContextType {
     countryId: number,
     minorStageId: number
   ) => undefined | PlaceToVisit[];
+  findAllMinorStages: () => undefined | MinorStage[];
 }
 
 export const StagesContext = createContext<StagesContextType>({
@@ -105,6 +106,7 @@ export const StagesContext = createContext<StagesContextType>({
   findNextTransportation: () => undefined,
   findTransportationsStage: () => undefined,
   findAssignedPlaces: (countryId, minorStageId) => undefined,
+  findAllMinorStages: () => undefined,
 });
 
 export default function StagesContextProvider({
@@ -356,19 +358,19 @@ export default function StagesContextProvider({
     for (const journey of journeys) {
       if (
         parseDate(journey.scheduled_start_time) <= currentDate &&
-        currentDate <= parseDate(journey.scheduled_end_time)
+        currentDate <= parseEndDate(journey.scheduled_end_time)
       ) {
         setCurrentJourney(journey.id);
         for (const majorStage of journey.majorStages || []) {
           if (
             parseDate(majorStage.scheduled_start_time) <= currentDate &&
-            currentDate <= parseDate(majorStage.scheduled_end_time)
+            currentDate <= parseEndDate(majorStage.scheduled_end_time)
           ) {
             setCurrentMajorStage(majorStage.id);
             for (const minorStage of majorStage.minorStages || []) {
               if (
                 parseDate(minorStage.scheduled_start_time) <= currentDate &&
-                currentDate <= parseDate(minorStage.scheduled_end_time)
+                currentDate <= parseEndDate(minorStage.scheduled_end_time)
               ) {
                 setCurrentMinorStage(minorStage.id);
               }
@@ -550,6 +552,24 @@ export default function StagesContextProvider({
     return assignedPlaces;
   }
 
+  function findAllMinorStages() {
+    if (journeys.length === 0 || !journeys) {
+      return undefined;
+    }
+    const minorStages = [];
+    for (const journey of journeys) {
+      if (journey.majorStages?.length === 0 || !journey.majorStages) continue;
+      for (const majorStage of journey.majorStages) {
+        if (majorStage.minorStages?.length === 0 || !majorStage.minorStages)
+          continue;
+        for (const minorStage of majorStage.minorStages) {
+          minorStages.push(minorStage);
+        }
+      }
+    }
+    return minorStages;
+  }
+
   const value = {
     journeys,
     fetchStagesData,
@@ -572,6 +592,7 @@ export default function StagesContextProvider({
     findNextTransportation,
     findTransportationsStage,
     findAssignedPlaces,
+    findAllMinorStages,
   };
 
   return (

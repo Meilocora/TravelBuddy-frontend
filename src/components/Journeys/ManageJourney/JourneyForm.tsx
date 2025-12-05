@@ -179,10 +179,6 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
     return;
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   function handleChangeDate(
     inputIdentifier: string,
     selectedDate: Date | undefined
@@ -318,8 +314,9 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
               <Button
                 onPress={validateInputs.bind(this, undefined)}
                 colorScheme={ColorScheme.neutral}
+                disabled={isSubmitting}
               >
-                {submitButtonLabel}
+                {isSubmitting ? 'Submitting...' : submitButtonLabel}
               </Button>
             </View>
           </View>

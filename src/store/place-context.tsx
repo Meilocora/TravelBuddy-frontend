@@ -2,6 +2,8 @@ import { createContext, useState } from 'react';
 
 import { PlaceToVisit } from '../models';
 import { fetchPlaces } from '../utils/http';
+import { calculateDistance } from '../utils/location';
+import { LatLng } from 'react-native-maps';
 
 interface PlaceContextType {
   placesToVisit: PlaceToVisit[];
@@ -12,6 +14,7 @@ interface PlaceContextType {
   deletePlace: (placesToVisitId: number) => void;
   updatePlace: (placeToVisit: PlaceToVisit) => void;
   getPlacesByCountry: (countryId: number) => PlaceToVisit[];
+  findNearestPlace: (currentLocation: LatLng) => PlaceToVisit | undefined;
 }
 
 export const PlaceContext = createContext<PlaceContextType>({
@@ -23,6 +26,7 @@ export const PlaceContext = createContext<PlaceContextType>({
   deletePlace: () => {},
   updatePlace: () => {},
   getPlacesByCountry: () => [],
+  findNearestPlace: () => undefined,
 });
 
 export default function PlaceContextProvider({
@@ -83,6 +87,27 @@ export default function PlaceContextProvider({
     return foundPlaces;
   }
 
+  function findNearestPlace(currentLocation: LatLng) {
+    let nearestPlace: PlaceToVisit | undefined;
+    let nearestDistance = Infinity;
+
+    for (const place of placesToVisit) {
+      const localDistance = calculateDistance(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        place.latitude,
+        place.longitude
+      );
+
+      if (localDistance < 500 && localDistance < nearestDistance) {
+        nearestDistance = localDistance;
+        nearestPlace = place;
+      }
+    }
+
+    return nearestPlace;
+  }
+
   const value = {
     placesToVisit,
     fetchPlacesToVisit,
@@ -92,6 +117,7 @@ export default function PlaceContextProvider({
     deletePlace,
     updatePlace,
     getPlacesByCountry,
+    findNearestPlace,
   };
 
   return (

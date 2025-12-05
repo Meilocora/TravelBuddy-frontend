@@ -7,12 +7,14 @@ interface ImageContextType {
   images: Image[];
   fetchImages: () => Promise<void | string>;
   findImage: (imageId: number) => Image | undefined;
+  deleteImage: (imageId: number) => void;
 }
 
 export const ImageContext = createContext<ImageContextType>({
   images: [],
   fetchImages: async () => {},
   findImage: () => undefined,
+  deleteImage: () => undefined,
 });
 
 export default function ImageContextProvider({
@@ -36,11 +38,17 @@ export default function ImageContextProvider({
     return image;
   }
 
+  function deleteImage(imageId: number) {
+    setImages((currentImages) =>
+      currentImages.filter((image) => image.id !== imageId)
+    );
+  }
+
   const value = {
     images,
     fetchImages,
     findImage,
-    // toggleFavorite,
+    deleteImage,
   };
 
   return (

@@ -187,10 +187,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     return;
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   return (
     <>
       <ImageModal
@@ -287,8 +283,12 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
           >
             Cancel
           </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {submitButtonLabel}
+          <Button
+            onPress={validateInputs}
+            colorScheme={ColorScheme.neutral}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>
         </View>
       </View>

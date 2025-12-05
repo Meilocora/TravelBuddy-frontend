@@ -12,7 +12,7 @@ import {
   PlaceToVisit,
   TransportationType,
 } from '../models';
-import { parseDate, parseDateAndTime } from './formatting';
+import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
 import { useContext } from 'react';
 import { StagesContext } from '../store/stages-context';
 import { CustomCountryContext } from '../store/custom-country-context';
@@ -218,7 +218,7 @@ export function getMapLocationsFromJourney(
               latitude: minorStage.accommodation.latitude,
               longitude: minorStage.accommodation.longitude,
             },
-            done: parseDate(minorStage.scheduled_end_time) < currentDate,
+            done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
           });
         }
         if (minorStage.activities) {
@@ -235,7 +235,7 @@ export function getMapLocationsFromJourney(
                   latitude: activity.latitude,
                   longitude: activity.longitude,
                 },
-                done: parseDate(minorStage.scheduled_end_time) < currentDate,
+                done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
               });
             }
           }
@@ -357,7 +357,7 @@ export function getMapLocationsFromMajorStage(
             latitude: minorStage.accommodation.latitude,
             longitude: minorStage.accommodation.longitude,
           },
-          done: parseDate(minorStage.scheduled_end_time) < currentDate,
+          done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
         });
       }
       if (minorStage.activities) {
@@ -374,7 +374,7 @@ export function getMapLocationsFromMajorStage(
                 latitude: activity.latitude,
                 longitude: activity.longitude,
               },
-              done: parseDate(minorStage.scheduled_end_time) < currentDate,
+              done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
             });
           }
         }
@@ -459,7 +459,7 @@ export function getMapLocationsFromMinorStage(
         latitude: minorStage.accommodation.latitude,
         longitude: minorStage.accommodation.longitude,
       },
-      done: parseDate(minorStage.scheduled_end_time) < currentDate,
+      done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
     });
   }
   if (minorStage.activities) {
@@ -476,7 +476,7 @@ export function getMapLocationsFromMinorStage(
             latitude: activity.latitude,
             longitude: activity.longitude,
           },
-          done: parseDate(minorStage.scheduled_end_time) < currentDate,
+          done: parseEndDate(minorStage.scheduled_end_time) < currentDate,
         });
       }
     }
@@ -661,4 +661,25 @@ export function compareRouteLocations(
   }
 
   return true;
+}
+
+export function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371000; // Erdradius in Metern
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // Entfernung in Metern
+  return distance;
 }

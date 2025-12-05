@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -54,6 +55,21 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
   const stagesCtx = useContext(StagesContext);
+
+  const mapRef = useRef<MapView>(null);
+
+  const initialCoord =
+    route.params?.initialLat && route.params?.initialLng
+      ? {
+          latitude: route.params.initialLat,
+          longitude: route.params.initialLng,
+        }
+      : null;
+
+  const [selectedCoord, setSelectedCoord] = useState<LatLng | null>(
+    route.params.hasLocation ? initialCoord : null
+  );
+
   const initialLocation = route.params && {
     lat: route.params.initialLat,
     lng: route.params.initialLng,
@@ -112,17 +128,22 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     calculateAverageRegion();
   }, [placesToVisit, isInitialLoad]);
 
-  function selectLocationHandler(event: MapPressEvent) {
-    const lat = event.nativeEvent.coordinate.latitude;
-    const lng = event.nativeEvent.coordinate.longitude;
-    setRegion({
+  function selectLocationHandler(e: MapPressEvent) {
+    const lat = e.nativeEvent.coordinate.latitude;
+    const lng = e.nativeEvent.coordinate.longitude;
+
+    const nextRegion: Region = {
       latitude: lat,
       longitude: lng,
       latitudeDelta: 0.1,
       longitudeDelta: 0.04,
-    });
+    };
+
+    setSelectedCoord({ latitude: lat, longitude: lng }); // Marker-Source
+    setRegion(nextRegion);
+    mapRef.current?.animateToRegion(nextRegion, 250); // Move Camera
     setHasLocation(true);
-    setIsInitialLoad(false); // Prevent future auto-calculations
+    setIsInitialLoad(false);
     setShowModal(true);
   }
 
@@ -143,12 +164,24 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   async function handleSearchResult(place: any) {
     if (place) {
       const latLng: LatLng = await getPlaceDetails(place);
-      setRegion({
+      // setRegion({
+      //   latitude: latLng.latitude,
+      //   longitude: latLng.longitude,
+      //   latitudeDelta: 0.1,
+      //   longitudeDelta: 0.04,
+      // });
+      const nextRegion: Region = {
         latitude: latLng.latitude,
         longitude: latLng.longitude,
         latitudeDelta: 0.1,
         longitudeDelta: 0.04,
-      });
+      };
+      setSelectedCoord({
+        latitude: latLng.latitude,
+        longitude: latLng.longitude,
+      }); // Marker-Source
+      setRegion(nextRegion);
+      mapRef.current?.animateToRegion(nextRegion, 250);
       setTitle(
         place.structuredFormat.mainText.text.substring(0, FormLimits.place)
       );
@@ -229,25 +262,21 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         />
       )}
       <MapView
-        initialRegion={region!}
-        region={region}
-        // TODO: Nimmt hier eigene Koordinate?!
+        ref={mapRef}
+        initialRegion={region}
         onPress={selectLocationHandler}
         onPoiClick={handlePoiClick}
         style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
         mapType={mapType}
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
-        {initialLocation && hasLocation && !minorStageId && (
-          <Marker
-            title={title}
-            coordinate={{
-              latitude: route.params.initialLat,
-              longitude: route.params.initialLng,
-            }}
-          />
+        {!minorStageId && (selectedCoord || initialCoord) && (
+          <Marker title={title} coordinate={(selectedCoord || initialCoord)!} />
         )}
+
         {placesToVisit &&
           placesToVisit.map((place) => {
             // Check if this place is part of the minorStage

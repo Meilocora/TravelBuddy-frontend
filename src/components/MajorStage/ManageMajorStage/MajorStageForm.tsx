@@ -198,10 +198,6 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     return;
   }
 
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
-  }
-
   function handleChangeDate(
     inputIdentifier: string,
     selectedDate: Date | undefined
@@ -359,8 +355,12 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           >
             Cancel
           </Button>
-          <Button onPress={validateInputs} colorScheme={ColorScheme.neutral}>
-            {submitButtonLabel}
+          <Button
+            onPress={validateInputs}
+            colorScheme={ColorScheme.neutral}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>
         </View>
       </View>

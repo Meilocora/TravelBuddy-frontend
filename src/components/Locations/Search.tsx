@@ -11,13 +11,11 @@ import { Icons } from '../../models';
 interface SearchProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
-  setSearch: (value: boolean) => void;
 }
 
 const Search: React.FC<SearchProps> = ({
   searchTerm,
   setSearchTerm,
-  setSearch,
 }): ReactElement => {
   const searchTermLabel = 'SearchTerm';
 
@@ -26,34 +24,32 @@ const Search: React.FC<SearchProps> = ({
   }
 
   return (
-    <OutsidePressHandler onOutsidePress={() => setSearch(false)}>
-      <Animated.View
-        entering={FadeInUp}
-        exiting={FadeOutUp}
-        style={styles.outerContainer}
-      >
-        <View style={styles.innerContainer}>
-          <Input
-            errors={[]}
-            maxLength={100}
-            invalid={false}
-            label={searchTermLabel}
-            textInputConfig={{
-              value: searchTerm,
-              onChangeText: inputChangedHandler,
-            }}
-            customInputStyles={styles.input}
-          />
-        </View>
-        <IconButton
-          icon={Icons.delete}
-          color={GlobalStyles.colors.graySoft}
-          onPress={() => setSearchTerm('')}
-          size={32}
-          style={styles.icon}
+    <Animated.View
+      entering={FadeInUp}
+      exiting={FadeOutUp}
+      style={styles.outerContainer}
+    >
+      <View style={styles.innerContainer}>
+        <Input
+          errors={[]}
+          maxLength={100}
+          invalid={false}
+          label={searchTermLabel}
+          textInputConfig={{
+            value: searchTerm,
+            onChangeText: inputChangedHandler,
+          }}
+          customInputStyles={styles.input}
         />
-      </Animated.View>
-    </OutsidePressHandler>
+      </View>
+      <IconButton
+        icon={Icons.delete}
+        color={GlobalStyles.colors.graySoft}
+        onPress={() => setSearchTerm('')}
+        size={32}
+        style={styles.icon}
+      />
+    </Animated.View>
   );
 };
 

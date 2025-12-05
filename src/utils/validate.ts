@@ -1,6 +1,6 @@
 import { parse } from 'dotenv';
 import { Journey, MajorStage, MinorStage, StagesPositionDict } from '../models';
-import { parseDate, parseDateAndTime } from './formatting';
+import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
 
 export function validateIsOver(date: string): boolean {
   const d = parseDate(date);
@@ -195,7 +195,7 @@ function validateCoversSuperiorStage(
   }
 
   const superiorStart = parseDate(superiorStage.scheduled_start_time).getDate();
-  const superiorEnd = parseDate(superiorStage.scheduled_end_time).getDate();
+  const superiorEnd = parseEndDate(superiorStage.scheduled_end_time).getDate();
 
   const coversStart =
     parseDate(inferiorStages[0].scheduled_start_time).getDate() ===
@@ -231,7 +231,7 @@ function validateStagesDates(stages: MajorStage[] | MinorStage[]) {
   const stageType = 'country' in stages[0] ? 'Major Stage' : 'Minor Stage';
 
   for (let i = 0; i < stages.length - 1; i++) {
-    const currentEnd = parseDate(stages[i].scheduled_end_time).getDate();
+    const currentEnd = parseEndDate(stages[i].scheduled_end_time).getDate();
     const nextStart = parseDate(stages[i + 1].scheduled_start_time).getDate();
     if (currentEnd !== nextStart - 1) {
       checks.push({

@@ -27,11 +27,10 @@ import {
   Icons,
   JourneyBottomTabsParamsList,
   StackParamList,
-  ManageJourneyRouteProp,
   AuthStackParamList,
   MajorStageStackParamList,
 } from './src/models';
-import ManageJourney from './src/screens/BottomTabsNavigator/ManageJourney';
+import ManageJourney from './src/screens/ManageJourney';
 import Locations from './src/screens/BottomTabsNavigator/Locations';
 import Planning from './src/screens/JourneyBottomTabsNavigator/Planning';
 import Overview from './src/screens/JourneyBottomTabsNavigator/Overview';
@@ -59,21 +58,25 @@ import ImageContextProvider from './src/store/image-context';
 import ManageImage from './src/screens/ManageImage';
 
 // PRIO 1 \\
-// TODO: Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
-// Extra Screen für Bildergalerie mit Filtermöglichkeiten (Favorite, Datum -> all | 1 year | custom span, country, minorStage, place, sort by date)
-// Downloadfunktion
-// Bilder in MinorStage ansehen können
-// Bilder in CustomCountry ansehen können
-// Bilder beim PlaceToVisit ansehen können
-// Extra Filter für Map
-// TODO: Cut "AddJourney" from BottomTabs and make separate floating Button analog to Gallery
-// TODO: LocationPickMap => onPress MapView?!
+// Cut "AddJourney" from BottomTabs and make separate floating Button analog to Gallery
+// Prüfen, wo ein datum verglichen wird bzw. überall parseEndDate verwenden, wo es Sinn macht
+// LocationPickMap => onPress MapView?!
 
+// TODO: Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
+// Filter für gallery (Favorite, Datum -> all | 1 year | custom span, country, minorStage, place, sort by date)
+// Extra Filter für Map, ShowMap (hier auch maybe Location, maybe ImageLocation => mit separatem MapsImageMarker)
+// Bilder in MinorStage ansehen können => findMinorStagesImages
+// Bilder in CustomCountry ansehen können => findCountriesImages
+// Bilder beim PlaceToVisit ansehen können => findPlacesImages
+// Downloadfunktion
+
+// PRIO 2 \\
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
 // TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
+// TODO: Chatbot should get stages data as input and suggest improvements of the route
 
-// PRIO 2 \\
+// PRIO 3 \\
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 // TODO: automate generation of DiaShow for Images of a Journey
@@ -162,24 +165,6 @@ const BottomTabsNavigator = () => {
               <Ionicons name={Icons.listCircle} size={size} color={color} />
             ),
           }}
-        />
-        <BottomTabs.Screen
-          name='ManageJourney'
-          component={ManageJourney}
-          options={({ route }: { route: ManageJourneyRouteProp }) => ({
-            title: !!route.params?.journeyId ? 'Edit Journey' : 'Add Journey',
-            tabBarLabel: !!route.params?.journeyId ? 'Edit' : 'Add',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name={!!route.params?.journeyId ? Icons.edit : Icons.add}
-                size={size}
-                color={color}
-              />
-            ),
-            unmountOnBlur: true,
-            presentation: 'modal',
-            animation: 'fade',
-          })}
         />
         <BottomTabs.Screen
           name='Gallery'
@@ -346,7 +331,7 @@ const AuthenticatedStack = () => {
             <ImageContextProvider>
               <Stack.Navigator
                 screenOptions={() => ({
-                  headerTintColor: 'white',
+                  headerTintColor: GlobalStyles.colors.grayDark,
                   headerStyle: {
                     backgroundColor: GlobalStyles.colors.greenBg,
                   },
@@ -376,6 +361,7 @@ const AuthenticatedStack = () => {
                     ),
                   }}
                 />
+                <Stack.Screen name='ManageJourney' component={ManageJourney} />
                 <Stack.Screen
                   name='ManageImage'
                   component={ManageImage}

@@ -2,12 +2,12 @@ import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View, RefreshControl } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 
 import JourneysList from '../../components/Journeys/JourneysList';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
-import { BottomTabsParamList } from '../../models';
+import { BottomTabsParamList, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
 import { StagesContext } from '../../store/stages-context';
@@ -15,6 +15,7 @@ import CurrentElementList from '../../components/CurrentElements/CurrentElementL
 import { GlobalStyles } from '../../constants/styles';
 import Animated from 'react-native-reanimated';
 import { useAppData } from '../../hooks/useAppData';
+import FloatingButton from '../../components/UI/FloatingButton';
 
 interface AllJourneysProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'AllJourneys'>;
@@ -28,6 +29,9 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
   const [popupText, setPopupText] = useState<string | null>();
   const { isFetching, errors, triggerRefresh } = useAppData();
   const stagesCtx = useContext(StagesContext);
+
+  const manageJourneyNavigation =
+    useNavigation<NativeStackNavigationProp<StackParamList>>();
 
   useEffect(() => {
     function activatePopup() {
@@ -46,12 +50,16 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     triggerRefresh();
   }
 
+  function handleAddJourney() {
+    manageJourneyNavigation.navigate('ManageJourney', { journeyId: undefined });
+  }
+
   let content;
   if (isFetching) {
     content = (
       <Animated.View style={styles.indicator}>
         <ActivityIndicator
-          size='large'
+          size={80}
           color={GlobalStyles.colors.greenAccent}
           style={styles.indicator}
         />
@@ -89,6 +97,7 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
       <CurrentElementList />
       {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
       {content}
+      <FloatingButton onPress={handleAddJourney} />
     </View>
   );
 };

@@ -1,5 +1,6 @@
 import { ReactElement, useContext, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   BottomTabsParamList,
@@ -9,7 +10,6 @@ import {
 } from '../models';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
-import { formatDateTimeString } from '../utils';
 import { deleteImage } from '../utils/http';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../components/UI/Modal';
@@ -23,7 +23,6 @@ import { useAppData } from '../hooks/useAppData';
 import { ImageContext } from '../store/image-context';
 import { Image, ImageValues } from '../models/image';
 import ImageForm from '../components/Images/ManageImage/ImageForm';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { UserContext } from '../store/user-context';
 
 interface ManageImageProps {
@@ -49,7 +48,7 @@ const ManageImage: React.FC<ManageImageProps> = ({
 
   const imageCtx = useContext(ImageContext);
   const userCtx = useContext(UserContext);
-  const { triggerRefresh } = useAppData();
+
   const editedImageId = route.params?.imageId;
   let isEditing = !!editedImageId;
 
@@ -61,50 +60,11 @@ const ManageImage: React.FC<ManageImageProps> = ({
     favorite: selectedImage?.favorite || false,
     latitude: selectedImage?.latitude || undefined,
     longitude: selectedImage?.longitude || undefined,
-    timestamp: selectedImage?.timestamp
-      ? formatDateTimeString(selectedImage.timestamp)!
-      : undefined,
+    timestamp: selectedImage?.timestamp || undefined,
     minorStageId: selectedImage?.minorStageId || undefined,
     placeToVisitId: selectedImage?.placeToVisitId || undefined,
     description: selectedImage?.description || '',
   });
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     // JourneyValues set, when screen is focused
-  //     setDefaultValues({
-  //       name: selectedJourney?.name || '',
-  //       description: selectedJourney?.description || '',
-  //       scheduled_start_time: selectedJourney?.scheduled_start_time
-  //         ? formatDateString(selectedJourney.scheduled_start_time)!
-  //         : null,
-  //       scheduled_end_time: selectedJourney?.scheduled_end_time
-  //         ? formatDateString(selectedJourney.scheduled_end_time)!
-  //         : null,
-  //       budget: selectedJourney?.costs.budget || 0,
-  //       spent_money: selectedJourney?.costs.spent_money || 0,
-  //       countries: selectedJourney?.countries
-  //         ? formatCountrynamesToString(selectedJourney!.countries)
-  //         : '',
-  //     });
-
-  //     return () => {
-  //       // Clean up function, when screen is unfocused
-  //       // reset JourneyValues
-  //       setDefaultValues({
-  //         name: '',
-  //         description: '',
-  //         scheduled_start_time: null,
-  //         scheduled_end_time: null,
-  //         budget: 0,
-  //         spent_money: 0,
-  //         countries: '',
-  //       });
-  //       // reset journeyId in navigation params for BottomTab
-  //       navigation.setParams({ journeyId: undefined });
-  //     };
-  //   }, [selectedJourney])
-  // );
 
   async function deleteImageHandler() {
     try {
@@ -113,9 +73,11 @@ const ManageImage: React.FC<ManageImageProps> = ({
         userCtx.userId!
       );
       if (!error && status === 200) {
-        triggerRefresh();
         const popupText = 'Image successfully deleted!';
-        galleryNavigation.navigate('Gallery', { popupText: popupText });
+        galleryNavigation.navigate('Gallery', {
+          popupText: popupText,
+          refresh: true,
+        });
       } else {
         setError(error!);
         return;
@@ -136,7 +98,9 @@ const ManageImage: React.FC<ManageImageProps> = ({
   }
 
   function cancelHandler() {
-    galleryNavigation.navigate('Gallery');
+    navigation.navigate('BottomTabsNavigator', {
+      screen: 'Gallery',
+    });
   }
 
   async function confirmHandler({ status, error }: ConfirmHandlerProps) {
@@ -144,19 +108,23 @@ const ManageImage: React.FC<ManageImageProps> = ({
       if (error) {
         setError(error);
         return;
-      } else if (status === 200) {
-        triggerRefresh();
+      } else {
         const popupText = 'Image successfully updated!';
-        galleryNavigation.navigate('Gallery', { popupText: popupText });
+        navigation.navigate('BottomTabsNavigator', {
+          screen: 'Gallery',
+          params: { popupText: popupText, refresh: true },
+        });
       }
     } else {
       if (error) {
         setError(error);
         return;
-      } else if (status === 201) {
-        triggerRefresh();
+      } else {
         const popupText = 'Image successfully added!';
-        galleryNavigation.navigate('Gallery', { popupText: popupText });
+        navigation.navigate('BottomTabsNavigator', {
+          screen: 'Gallery',
+          params: { popupText: popupText, refresh: true },
+        });
       }
     }
   }

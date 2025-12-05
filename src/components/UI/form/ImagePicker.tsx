@@ -6,11 +6,12 @@ import IconButton from '../IconButton';
 import { Icons } from '../../../models';
 import { isImageLink } from '../../../utils';
 import { UserContext } from '../../../store/user-context';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface CustomImagePickerProps {
   defaultValue: string;
   favorite: boolean;
-  setFavorite: () => {};
+  setFavorite: () => void;
   addImage: (url: string, lat?: number, lng?: number) => void;
   editing: boolean;
 }
@@ -30,7 +31,7 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
   const userCtx = useContext(UserContext);
 
   const { width } = useWindowDimensions();
-  const imageSize = width * 0.8;
+  const imageSize = width * 0.95;
 
   async function handlePickImage() {
     // Request permissions
@@ -131,7 +132,7 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
             <Image
               source={require('../../../../assets/image_picker.png')}
               resizeMode='cover'
-              style={{ flex: 1, width: '100%', height: '100%', opacity: 0.6 }}
+              style={{ flex: 1, width: '100%', height: '100%', opacity: 0.5 }}
             />
           </View>
         )}
@@ -141,11 +142,17 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
           <IconButton
             icon={Icons.folderOpen}
             onPress={handlePickImage}
+            color={
+              url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
+            }
             size={32}
           />
           <IconButton
             icon={Icons.cameraOutline}
             onPress={handleTakePhoto}
+            color={
+              url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
+            }
             size={32}
           />
         </View>
@@ -155,11 +162,10 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, marginTop: 40, marginBottom: 20 },
   imageContainer: {
     marginHorizontal: 'auto',
-    marginTop: 20,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 25,
     overflow: 'hidden',
   },
@@ -170,6 +176,9 @@ const styles = StyleSheet.create({
     right: 6,
   },
   buttonsRow: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
   },

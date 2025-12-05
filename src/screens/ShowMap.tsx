@@ -99,13 +99,13 @@ const ShowMap: React.FC<ShowMapProps> = ({
             icon={!isFav ? Icons.heartFilled : Icons.heartOutline}
             onPress={() => setIsFav((prevValue) => !prevValue)}
             size={26}
-            color='red'
+            color={GlobalStyles.colors.favorite}
           />
           <IconButton
             icon={isVisited ? Icons.eye : Icons.eyeOn}
             onPress={() => setIsVisited((prevValue) => !prevValue)}
             size={26}
-            color='blue'
+            color={GlobalStyles.colors.visited}
           />
         </>
       ),

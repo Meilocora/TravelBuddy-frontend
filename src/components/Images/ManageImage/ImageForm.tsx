@@ -1,10 +1,5 @@
 import React, { ReactElement, useContext, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import {
   ButtonMode,
@@ -22,6 +17,9 @@ import LocationPicker from '../../UI/form/LocationPicker';
 import ExpoDateTimePicker from '../../UI/form/ExpoDateTimePicker';
 import CustomImagePicker from '../../UI/form/ImagePicker';
 import { UserContext } from '../../../store/user-context';
+import MinorStageSelector from './MinorStageSelector';
+import PlaceToVisitSelector from './PlaceToVisitSelector';
+import { StagesContext } from '../../../store/stages-context';
 
 type InputValidationResponse = {
   image?: Image;
@@ -49,6 +47,12 @@ const ImageForm: React.FC<ImageFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userCtx = useContext(UserContext);
+  const stagesCtx = useContext(StagesContext);
+
+  const currentMinorStage = stagesCtx.findCurrentMinorStage();
+  const defaultMinorStageId =
+    defaultValues?.minorStageId ||
+    (currentMinorStage ? currentMinorStage.id : undefined);
 
   const timestamp = defaultValues?.timestamp
     ? defaultValues.timestamp
@@ -77,7 +81,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
       errors: [],
     },
     minorStageId: {
-      value: defaultValues?.minorStageId || undefined,
+      value: defaultMinorStageId,
       isValid: true,
       errors: [],
     },
@@ -95,7 +99,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean
+    enteredValue: string | boolean | number | undefined
   ): void {
     setInputs((currInputs) => {
       return {
@@ -123,10 +127,6 @@ const ImageForm: React.FC<ImageFormProps> = ({
     }
     setIsSubmitting(false);
     return;
-  }
-
-  if (isSubmitting) {
-    const submitButtonLabel = 'Submitting...';
   }
 
   function handleChangeDate(inputIdentifier: string, selectedDate: string) {
@@ -183,85 +183,96 @@ const ImageForm: React.FC<ImageFormProps> = ({
     });
   }
 
-  // TODO: Also add Selectors for MinorStage and PlaceToVisit
-
   return (
     <>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior='height'
-        keyboardVerticalOffset={0}
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps='handled'
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps='handled'
-        >
-          <View style={styles.formContainer}>
-            <View>
-              <View style={styles.formRow}>
-                <CustomImagePicker
-                  defaultValue={inputs.url.value}
-                  addImage={handlePickImage}
-                  favorite={inputs.favorite.value}
-                  setFavorite={() => inputChangedHandler.bind(this, 'favorite')}
-                  editing={!!editImageId}
-                />
-              </View>
-              <View style={styles.formRow}>
-                <ExpoDateTimePicker
-                  handleChange={handleChangeDate}
-                  inputIdentifier='timestamp'
-                  invalid={!inputs.timestamp.isValid}
-                  errors={inputs.timestamp.errors}
-                  value={inputs.timestamp.value?.toString()}
-                  label='Timestamp'
-                />
-                <LocationPicker
-                  onPickLocation={handlePickLocation}
-                  onPressMarker={handlePickLocation}
-                  pickedLocation={
-                    inputs.latitude.value && inputs.longitude.value
-                      ? {
-                          lat: inputs.latitude.value,
-                          lng: inputs.longitude.value,
-                          title: 'Photo Location',
-                        }
-                      : undefined
-                  }
-                />
-              </View>
-              <View style={styles.formRow}>
-                <Input
-                  label='Description'
-                  maxLength={FormLimits.imageDescription}
-                  invalid={!inputs.description.isValid}
-                  errors={inputs.description.errors}
-                  textInputConfig={{
-                    multiline: true,
-                    value: inputs.description.value,
-                    onChangeText: inputChangedHandler.bind(this, 'description'),
-                  }}
-                />
-              </View>
+        <CustomImagePicker
+          defaultValue={inputs.url.value}
+          addImage={handlePickImage}
+          favorite={inputs.favorite.value}
+          setFavorite={() =>
+            inputChangedHandler('favorite', !inputs.favorite.value)
+          }
+          editing={!!editImageId}
+        />
+        <View style={styles.formContainer}>
+          <View>
+            <View style={styles.formRow}>
+              <MinorStageSelector
+                defaultValue={inputs.minorStageId?.value}
+                errors={[]}
+                invalid={true}
+                onChangeMinorStage={(minorStageId) =>
+                  inputChangedHandler('minorStageId', minorStageId)
+                }
+              />
+              <PlaceToVisitSelector
+                defaultValue={inputs.placeToVisitId?.value}
+                errors={[]}
+                invalid={true}
+                onChangePlace={(placeId) =>
+                  inputChangedHandler('placeToVisitId', placeId)
+                }
+              />
             </View>
-            <View style={styles.buttonsContainer}>
-              <Button
-                onPress={onCancel}
-                colorScheme={ColorScheme.neutral}
-                mode={ButtonMode.flat}
-              >
-                Cancel
-              </Button>
-              <Button
-                onPress={validateInputs}
-                colorScheme={ColorScheme.neutral}
-              >
-                {submitButtonLabel}
-              </Button>
+            <View style={styles.formRow}>
+              <ExpoDateTimePicker
+                handleChange={handleChangeDate}
+                inputIdentifier='timestamp'
+                invalid={!inputs.timestamp.isValid}
+                errors={inputs.timestamp.errors}
+                value={inputs.timestamp.value?.toString()}
+                label='Timestamp'
+              />
+              <LocationPicker
+                onPickLocation={handlePickLocation}
+                onPressMarker={handlePickLocation}
+                pickedLocation={
+                  inputs.latitude.value && inputs.longitude.value
+                    ? {
+                        lat: inputs.latitude.value,
+                        lng: inputs.longitude.value,
+                        title: 'Photo Location',
+                      }
+                    : undefined
+                }
+              />
+            </View>
+            <View style={styles.formRow}>
+              <Input
+                label='Description'
+                maxLength={FormLimits.imageDescription}
+                invalid={!inputs.description.isValid}
+                errors={inputs.description.errors}
+                textInputConfig={{
+                  multiline: true,
+                  value: inputs.description.value,
+                  onChangeText: inputChangedHandler.bind(this, 'description'),
+                }}
+              />
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <View style={styles.buttonsContainer}>
+            <Button
+              onPress={onCancel}
+              colorScheme={ColorScheme.neutral}
+              mode={ButtonMode.flat}
+            >
+              Cancel
+            </Button>
+            <Button
+              onPress={validateInputs}
+              colorScheme={ColorScheme.neutral}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Submitting...' : submitButtonLabel}
+            </Button>
+          </View>
+        </View>
+      </ScrollView>
     </>
   );
 };
@@ -269,13 +280,11 @@ const ImageForm: React.FC<ImageFormProps> = ({
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBlock: 20,
   },
   formContainer: {
     marginHorizontal: 16,
-    marginVertical: 60,
     paddingHorizontal: 8,
-    paddingVertical: 16,
     borderWidth: 2,
     borderRadius: 8,
     borderColor: GlobalStyles.colors.grayMedium,

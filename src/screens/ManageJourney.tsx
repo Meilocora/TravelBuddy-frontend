@@ -1,34 +1,34 @@
 import { ReactElement, useContext, useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 
 import {
-  ManageJourneyRouteProp,
-  BottomTabsParamList,
   JourneyValues,
   Journey,
   Icons,
   FormLimits,
-} from '../../models';
-import JourneyForm from '../../components/Journeys/ManageJourney/JourneyForm';
-import IconButton from '../../components/UI/IconButton';
-import { GlobalStyles } from '../../constants/styles';
+  StackParamList,
+} from '../models';
+import JourneyForm from '../components/Journeys/ManageJourney/JourneyForm';
+import IconButton from '../components/UI/IconButton';
+import { GlobalStyles } from '../constants/styles';
 import {
   formatCountrynamesToString,
   formatDateString,
   generateRandomString,
-} from '../../utils';
-import { deleteJourney } from '../../utils/http';
+} from '../utils';
+import { deleteJourney } from '../utils/http';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import Modal from '../../components/UI/Modal';
-import ErrorOverlay from '../../components/UI/ErrorOverlay';
-import { StagesContext } from '../../store/stages-context';
-import { useFocusEffect } from '@react-navigation/native';
-import { useAppData } from '../../hooks/useAppData';
+import Modal from '../components/UI/Modal';
+import ErrorOverlay from '../components/UI/ErrorOverlay';
+import { StagesContext } from '../store/stages-context';
+
+import { useAppData } from '../hooks/useAppData';
 
 interface ManageJourneyProps {
-  route: ManageJourneyRouteProp;
-  navigation: BottomTabNavigationProp<BottomTabsParamList, 'ManageJourney'>;
+  navigation: BottomTabNavigationProp<StackParamList, 'ManageJourney'>;
+  route: RouteProp<StackParamList, 'ManageJourney'>;
 }
 
 interface ConfirmHandlerProps {
@@ -99,8 +99,6 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
           spent_money: 0,
           countries: '',
         });
-        // reset journeyId in navigation params for BottomTab
-        navigation.setParams({ journeyId: undefined });
       };
     }, [selectedJourney])
   );
@@ -111,7 +109,10 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       if (!error && status === 200) {
         triggerRefresh();
         const popupText = 'Journey successfully deleted!';
-        navigation.navigate('AllJourneys', { popupText: popupText });
+        navigation.navigate('BottomTabsNavigator', {
+          screen: 'AllJourneys',
+          params: { popupText },
+        });
       } else {
         setError(error!);
         return;
@@ -132,7 +133,9 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
   }
 
   function cancelHandler() {
-    navigation.navigate('AllJourneys');
+    navigation.navigate('BottomTabsNavigator', {
+      screen: 'AllJourneys',
+    });
   }
 
   async function confirmHandler({
@@ -147,7 +150,10 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       } else if (journey && status === 200) {
         triggerRefresh();
         const popupText = 'Journey successfully updated!';
-        navigation.navigate('AllJourneys', { popupText: popupText });
+        navigation.navigate('BottomTabsNavigator', {
+          screen: 'AllJourneys',
+          params: { popupText },
+        });
       }
     } else {
       if (error) {
@@ -156,7 +162,10 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       } else if (journey && status === 201) {
         triggerRefresh();
         const popupText = 'Journey successfully created!';
-        navigation.navigate('AllJourneys', { popupText: popupText });
+        navigation.navigate('BottomTabsNavigator', {
+          screen: 'AllJourneys',
+          params: { popupText },
+        });
       }
     }
   }

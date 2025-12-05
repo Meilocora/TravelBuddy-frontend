@@ -23,6 +23,11 @@ import { useAppData } from '../../hooks/useAppData';
 import { ImageContext } from '../../store/image-context';
 import IconButton from '../../components/UI/IconButton';
 import ImagesList from '../../components/Images/ImagesList';
+import FloatingButton from '../../components/UI/FloatingButton';
+import { UserContext } from '../../store/user-context';
+import { deleteImage } from '../../utils/http';
+import { Image } from '../../models/image';
+import Modal from '../../components/UI/Modal';
 
 interface GalleryProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'Gallery'>;
@@ -34,14 +39,19 @@ const Gallery: React.FC<GalleryProps> = ({
   route,
 }): ReactElement => {
   const [popupText, setPopupText] = useState<string | null>();
-  const { isFetching, errors, triggerRefresh } = useAppData();
+  const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
+  const [deletingImage, setDeletingImage] = useState<Image | undefined>(
+    undefined
+  );
 
   const imagesCtx = useContext(ImageContext);
+  const userCtx = useContext(UserContext);
 
   const imageNavigation =
     useNavigation<NativeStackNavigationProp<StackParamList>>();
 
-  // Fetch all data here, because the users always starts on this screen
   function handleClosePopup() {
     setPopupText(null);
   }
@@ -52,31 +62,66 @@ const Gallery: React.FC<GalleryProps> = ({
     });
   }
 
-  function handlePressReload() {
-    triggerRefresh();
-  }
-
-  // TODO: TopRight should stay Userprofile => make Add Button at the bottom
   // TODO: TopLeft => Globus Button to see a Map with all Images
 
+  async function deleteImageHandler() {
+    setDeletePending(true);
+    try {
+      const { error, status } = await deleteImage(
+        deletingImage!,
+        userCtx.userId!
+      );
+      if (!error && status === 200) {
+        imagesCtx.deleteImage(deletingImage!.id);
+        imagesCtx.fetchImages();
+      } else {
+        setError(error!);
+        return;
+      }
+    } catch (error) {
+      setError('Could not delete image!');
+    }
+    setIsDeleting(false);
+    setDeletePending(false);
+  }
+
+  function deleteHandler(image: Image) {
+    setDeletingImage(image);
+    setIsDeleting(true);
+  }
+
+  function closeModalHandler() {
+    setIsDeleting(false);
+  }
+
+  useEffect(() => {
+    function activatePopup() {
+      if (route.params?.popupText) {
+        setPopupText(route.params?.popupText);
+      }
+      if (route.params?.refresh) {
+        imagesCtx.fetchImages();
+      }
+    }
+    activatePopup();
+  }, [route.params]);
+
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <IconButton icon={Icons.add} onPress={handleAddImage} size={32} />
-      ),
-    });
+    navigation.setOptions({});
   }, [navigation]);
 
   let content;
+
   if (imagesCtx.images.length === 0) {
     content = <InfoText content='No Images found!' />;
   } else {
     content = (
       <ImagesList
+        onDelete={deleteHandler}
         refreshControl={
           <RefreshControl
             refreshing={false}
-            onRefresh={triggerRefresh}
+            onRefresh={() => imagesCtx.fetchImages()}
             colors={[GlobalStyles.colors.greenAccent]}
             tintColor={GlobalStyles.colors.greenAccent}
           />
@@ -87,9 +132,28 @@ const Gallery: React.FC<GalleryProps> = ({
 
   return (
     <View style={styles.root}>
+      {isDeleting && (
+        <Modal
+          title='Are you sure?'
+          content={`The Image will be deleted from this app permanently!`}
+          onConfirm={deleteImageHandler}
+          onCancel={closeModalHandler}
+          confirmText={deletePending ? 'Deleting...' : 'Delete'}
+        />
+      )}
       <CurrentElementList />
-      {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
       {content}
+      <FloatingButton onPress={handleAddImage} />
+      {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
+      {/* {isFetching && (
+        <Animated.View style={styles.indicatorContainer}>
+          <ActivityIndicator
+            size={80}
+            color={GlobalStyles.colors.greenAccent}
+            style={styles.indicator}
+          />
+        </Animated.View>
+      )} */}
     </View>
   );
 };
@@ -98,9 +162,14 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
-  indicator: {
-    marginVertical: 'auto',
+  indicatorContainer: {
+    backgroundColor: GlobalStyles.colors.graySoftSemi,
+    opacity: 0.8,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
+  indicator: { marginVertical: 'auto' },
 });
 
 export default Gallery;

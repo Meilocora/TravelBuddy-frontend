@@ -25,6 +25,7 @@ import IconButton from '../UI/IconButton';
 import ElementComment from '../UI/list/ElementComment';
 import { StagesContext } from '../../store/stages-context';
 import CountryElement from '../UI/CountryElement';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 interface JourneyListElementProps {
   journey: Journey;
@@ -91,11 +92,13 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
     });
   }
 
-  const navigationBottomTabs =
-    useNavigation<NavigationProp<BottomTabsParamList>>();
+  const manageJourneyNavigation =
+    useNavigation<BottomTabNavigationProp<StackParamList>>();
 
   function handleEdit() {
-    navigationBottomTabs.navigate('ManageJourney', { journeyId: journey.id });
+    manageJourneyNavigation.navigate('ManageJourney', {
+      journeyId: journey.id,
+    });
   }
 
   return (

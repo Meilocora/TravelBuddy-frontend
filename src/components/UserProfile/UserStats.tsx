@@ -4,7 +4,12 @@ import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 
 import { GlobalStyles } from '../../constants/styles';
 import { ButtonMode, ColorScheme, Icons, Journey } from '../../models';
-import { formatDate, formatDurationToDays, parseDate } from '../../utils';
+import {
+  formatDate,
+  formatDurationToDays,
+  parseDate,
+  parseEndDate,
+} from '../../utils';
 import IconButton from '../UI/IconButton';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import Button from '../UI/Button';
@@ -82,7 +87,7 @@ const UserStats: React.FC<UserStatsProps> = ({
     plannedTravelDays += durationInDays;
     plannedJourneys += 1;
 
-    parseDate(journey.scheduled_end_time) < new Date()
+    parseEndDate(journey.scheduled_end_time) < new Date()
       ? (completedJourneys += 1)
       : undefined;
 
@@ -93,7 +98,7 @@ const UserStats: React.FC<UserStatsProps> = ({
     plannedMajorStages += journey.majorStages.length;
 
     for (const majorStage of journey.majorStages) {
-      if (parseDate(majorStage.scheduled_end_time) < new Date()) {
+      if (parseEndDate(majorStage.scheduled_end_time) < new Date()) {
         completedMajorStages += 1;
         visitedCountriesList.push(majorStage.country.name);
       }
@@ -103,14 +108,14 @@ const UserStats: React.FC<UserStatsProps> = ({
 
       plannedMinorStages += majorStage.minorStages.length;
       for (const minorStage of majorStage.minorStages) {
-        parseDate(minorStage.scheduled_end_time) < new Date()
+        parseEndDate(minorStage.scheduled_end_time) < new Date()
           ? (completedMinorStages += 1)
           : undefined;
 
         if (minorStage.activities) {
           for (const activity of minorStage.activities) {
             plannedActivities += 1;
-            parseDate(minorStage.scheduled_end_time) < new Date()
+            parseEndDate(minorStage.scheduled_end_time) < new Date()
               ? (completedActivities += 1)
               : undefined;
           }

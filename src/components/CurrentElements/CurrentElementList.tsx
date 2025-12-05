@@ -10,6 +10,7 @@ import {
   formatCountdownDays,
   formatDuration,
   parseDate,
+  parseEndDate,
 } from '../../utils';
 import CurrentElement from './CurrentElement';
 import {
@@ -82,7 +83,7 @@ const CurrentElementList: React.FC<
         longitude: currentMinorStage?.accommodation.longitude!,
       },
       done: currentMinorStage
-        ? parseDate(currentMinorStage.scheduled_end_time) < new Date()
+        ? parseEndDate(currentMinorStage.scheduled_end_time) < new Date()
         : false,
     };
 

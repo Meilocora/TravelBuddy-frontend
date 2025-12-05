@@ -114,11 +114,7 @@ const CurrenciesModal: React.FC<CurrenciesModalProps> = ({
       </GestureDetector>
       {search && (
         <View style={styles.searchContainer}>
-          <Search
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            setSearch={setSearch}
-          />
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </View>
       )}
       <ScrollView style={styles.listContainer}>
