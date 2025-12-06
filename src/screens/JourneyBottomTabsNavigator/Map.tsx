@@ -326,6 +326,12 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     }
   }
 
+  // TODO: Smoothe transitions with mapRef
+  // TODO: ClusterMap for images
+  // TODO: Add all Images
+  // TODO: onLongPress => Start custom Route (maybe also implement this in the other map Screens)
+  // TODO: bei MapLocationElement => Icon für Routenplanung bzw. zur Route hinzufügen
+
   return (
     <View style={styles.root}>
       {showSettings && (

@@ -16,6 +16,8 @@ interface CustomImagePickerProps {
   editing: boolean;
 }
 
+// TODO: Stürzt manchmal ab beim Foto machen
+
 const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
   defaultValue,
   favorite,

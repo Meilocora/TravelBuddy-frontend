@@ -235,7 +235,10 @@ export function formatRouteDuration(duration: number): string {
   const minutes = Math.floor(duration % 60)
     .toString()
     .padStart(2, '0');
-  if (duration < 60) {
+
+  if (duration < 1) {
+    return '0m';
+  } else if (duration < 60) {
     return `${minutes}m`;
   }
   return `${hours}:${minutes}h`;

@@ -14,7 +14,9 @@ import {
   ColorScheme,
   CustomCountry,
   Icons,
+  MapLocation,
   PlaceToVisit,
+  StackParamList,
 } from '../../../models';
 import { GlobalStyles } from '../../../constants/styles';
 import IconButton from '../../UI/IconButton';
@@ -22,6 +24,9 @@ import Search from '../../Locations/Search';
 import ListItem from '../../UI/search/ListItem';
 import { PlaceContext } from '../../../store/place-context';
 import CountrySelector from './CountrySelector';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { UserContext } from '../../../store/user-context';
+import { CustomCountryContext } from '../../../store/custom-country-context';
 
 interface PlaceToVisitSelectorListProps {
   visible: boolean;
@@ -36,14 +41,18 @@ const PlaceToVisitSelectorList: React.FC<PlaceToVisitSelectorListProps> = ({
   onChangePlace,
   defaultValue,
 }): ReactElement => {
+  const countryCtx = useContext(CustomCountryContext);
+  const placesCtx = useContext(PlaceContext);
+  const userCtx = useContext(UserContext);
+
+  const navigation = useNavigation<NavigationProp<StackParamList>>();
+
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
   const [search, setSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [countryFilter, setCountryFilter] = useState<
     undefined | CustomCountry
   >();
-
-  const placesCtx = useContext(PlaceContext);
 
   let places = placesCtx.placesToVisit;
 
@@ -90,7 +99,27 @@ const PlaceToVisitSelectorList: React.FC<PlaceToVisitSelectorListProps> = ({
     onCancel();
   }
 
-  // TODO: Choose Place on Map
+  function handleSelectPlace(location: MapLocation) {
+    const place = placesCtx.findPlaceByMapLocation(location);
+    if (!place) {
+      return;
+    }
+    onChangePlace(place.id);
+  }
+
+  function handleShowOnMap() {
+    const countryIds = countryCtx.getCustomCountriesIds();
+    navigation.navigate('LocationPickMap', {
+      hasLocation: false,
+      initialLat: userCtx.currentLocation?.latitude || 0,
+      initialLng: userCtx.currentLocation?.longitude || 0,
+      initialTitle: undefined,
+      onPickLocation: handleSelectPlace,
+      onPressMarker: handleSelectPlace,
+      customCountryIds: countryIds,
+      noMapTouch: true,
+    });
+  }
 
   return (
     <Modal
@@ -105,6 +134,13 @@ const PlaceToVisitSelectorList: React.FC<PlaceToVisitSelectorListProps> = ({
           <View style={styles.guestureContainer}>
             <View style={styles.headerContainer}>
               <Text style={styles.header}>Places To Visit</Text>
+              <IconButton
+                icon={Icons.map}
+                onPress={handleShowOnMap}
+                size={32}
+                containerStyle={styles.mapButton}
+                color={'white'}
+              />
             </View>
             <View style={styles.iconButtonsContainer}>
               <IconButton
@@ -205,6 +241,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  mapButton: {
+    backgroundColor: GlobalStyles.colors.grayMedium,
   },
   iconButtonsContainer: {
     flexDirection: 'row',

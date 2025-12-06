@@ -7,19 +7,18 @@ import React, {
 } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RefreshControl, View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+} from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 
-import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { BottomTabsParamList, Icons, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
-import { StagesContext } from '../../store/stages-context';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { GlobalStyles } from '../../constants/styles';
-import Animated from 'react-native-reanimated';
-import { useAppData } from '../../hooks/useAppData';
 import { ImageContext } from '../../store/image-context';
 import IconButton from '../../components/UI/IconButton';
 import ImagesList from '../../components/Images/ImagesList';
@@ -51,6 +50,7 @@ const Gallery: React.FC<GalleryProps> = ({
 
   const imageNavigation =
     useNavigation<NativeStackNavigationProp<StackParamList>>();
+  const showMapNavigation = useNavigation<NavigationProp<StackParamList>>();
 
   function handleClosePopup() {
     setPopupText(null);
@@ -61,8 +61,6 @@ const Gallery: React.FC<GalleryProps> = ({
       imageId: undefined,
     });
   }
-
-  // TODO: TopLeft => Globus Button to see a Map with all Images
 
   async function deleteImageHandler() {
     setDeletePending(true);
@@ -107,8 +105,16 @@ const Gallery: React.FC<GalleryProps> = ({
   }, [route.params]);
 
   useLayoutEffect(() => {
-    navigation.setOptions({});
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton icon={Icons.earth} onPress={handlePressEarth} size={32} />
+      ),
+    });
   }, [navigation]);
+
+  function handlePressEarth() {
+    showMapNavigation.navigate('ImagesShowMap', {});
+  }
 
   let content;
 
@@ -129,6 +135,8 @@ const Gallery: React.FC<GalleryProps> = ({
       />
     );
   }
+
+  // TODO: longPress => mehrere images markieren + löschen
 
   return (
     <View style={styles.root}>

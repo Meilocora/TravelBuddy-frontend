@@ -21,7 +21,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   let label = 'Favorite';
   if (mode === 'visited') {
     label = 'Visited';
-  } else {
+  } else if (mode === 'booked') {
     label = 'Booked';
   }
   if (value === true) {

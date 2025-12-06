@@ -56,19 +56,17 @@ import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 import Gallery from './src/screens/BottomTabsNavigator/Gallery';
 import ImageContextProvider from './src/store/image-context';
 import ManageImage from './src/screens/ManageImage';
+import ImagesShowMap from './src/screens/ImagesShowMap';
 
 // PRIO 1 \\
-// Cut "AddJourney" from BottomTabs and make separate floating Button analog to Gallery
-// Prüfen, wo ein datum verglichen wird bzw. überall parseEndDate verwenden, wo es Sinn macht
-// LocationPickMap => onPress MapView?!
-
 // TODO: Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
 // Filter für gallery (Favorite, Datum -> all | 1 year | custom span, country, minorStage, place, sort by date)
 // Extra Filter für Map, ShowMap (hier auch maybe Location, maybe ImageLocation => mit separatem MapsImageMarker)
-// Bilder in MinorStage ansehen können => findMinorStagesImages
-// Bilder in CustomCountry ansehen können => findCountriesImages
-// Bilder beim PlaceToVisit ansehen können => findPlacesImages
-// Downloadfunktion
+
+// TODO: Bilder in MinorStage ansehen können => findMinorStagesImages
+// TODO: Bilder in CustomCountry ansehen können => findCountriesImages
+// TODO: Bilder beim PlaceToVisit ansehen können => findPlacesImages
+// Also allow videos
 
 // PRIO 2 \\
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
@@ -385,6 +383,7 @@ const AuthenticatedStack = () => {
                   component={LocationPickMap}
                 />
                 <Stack.Screen name='ShowMap' component={ShowMap} />
+                <Stack.Screen name='ImagesShowMap' component={ImagesShowMap} />
               </Stack.Navigator>
             </ImageContextProvider>
           </PlaceContextProvider>

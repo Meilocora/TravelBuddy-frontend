@@ -35,6 +35,15 @@ export interface Location {
   favourite?: boolean;
 }
 
+export interface ImageLocation {
+  id: number;
+  latitude: number;
+  longitude: number;
+  url: string;
+  description?: string;
+  favourite?: boolean;
+}
+
 export type MapScopeType = 'Journey' | 'MajorStage' | 'MinorStage';
 
 export type MapType = 'standard' | 'satellite' | 'hybrid' | 'terrain';

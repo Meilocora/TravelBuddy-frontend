@@ -87,7 +87,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       onResetLocation: handleResetLocation,
       hasLocation: hasInitialLocation,
       colorScheme: colorScheme,
-      customCountryId: countryId,
+      customCountryIds: countryId ? [countryId] : undefined,
       majorStageId: majorStageId,
     });
     setIsLoading(false);

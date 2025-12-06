@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import * as ExpoLocation from 'expo-location';
 import { generateColorsSet } from './generator';
 import {
+  ImageLocation,
   Journey,
   Location,
   LocationType,
@@ -16,6 +17,7 @@ import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
 import { useContext } from 'react';
 import { StagesContext } from '../store/stages-context';
 import { CustomCountryContext } from '../store/custom-country-context';
+import { Image } from '../models/image';
 
 const GOOGLE_API_KEY =
   Constants.expoConfig?.extra?.googleApiKey ||
@@ -107,6 +109,42 @@ export async function getRegionForLocations(
 
   const latitudes = locations.map((loc) => loc.data.latitude);
   const longitudes = locations.map((loc) => loc.data.longitude);
+
+  const minLat = Math.min(...latitudes);
+  const maxLat = Math.max(...latitudes);
+  const minLng = Math.min(...longitudes);
+  const maxLng = Math.max(...longitudes);
+
+  const latitude = (minLat + maxLat) / 2;
+  const longitude = (minLng + maxLng) / 2;
+  const latitudeDelta = (maxLat - minLat) * 1.2; // Add padding (20%)
+  const longitudeDelta = (maxLng - minLng) * 1.2; // Add padding (20%)
+
+  return {
+    latitude,
+    longitude,
+    latitudeDelta,
+    longitudeDelta,
+  };
+}
+
+export async function getRegionForImageLocations(
+  locations: ImageLocation[]
+): Promise<Region> {
+  if (locations.length === 0) {
+    // Default region if no locations are available
+    const { verifyPermissions } = useLocationPermissions();
+    const location = await getCurrentLocation();
+    return {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.04,
+    };
+  }
+
+  const latitudes = locations.map((loc) => loc.latitude);
+  const longitudes = locations.map((loc) => loc.longitude);
 
   const minLat = Math.min(...latitudes);
   const maxLat = Math.max(...latitudes);
@@ -637,6 +675,20 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
     done: placeToVisit.visited,
     description: placeToVisit.description || '',
     favourite: placeToVisit.favorite,
+  };
+}
+
+export function formatImageToLocation(image: Image): ImageLocation | undefined {
+  if (!image.latitude || !image.longitude) {
+    return undefined;
+  }
+  return {
+    id: image.id,
+    latitude: image.latitude!,
+    longitude: image.longitude!,
+    url: image.url,
+    description: image.description || '',
+    favourite: image.favorite,
   };
 }
 

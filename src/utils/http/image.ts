@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-// import * as FileSystem from 'expo-file-system';
-// import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 
 import { deleteUserImage, uploadUserImage } from '../image';
 import { Image, ImageFormValues } from '../../models/image';
@@ -153,38 +153,36 @@ export const deleteImage = async (
   }
 };
 
-// TODO: Make new build for this
+export type DownloadUserImageParams = {
+  image: Image;
+  filename?: string;
+};
 
-// export type DownloadUserImageParams = {
-//   imageUrl: string;
-//   filename?: string;
-// };
+export async function downloadUserImage({
+  image,
+  filename,
+}: DownloadUserImageParams): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Request permissions
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      return { success: false, error: 'Permission denied' };
+    }
 
-// export async function downloadUserImage({
-//   imageUrl,
-//   filename,
-// }: DownloadUserImageParams): Promise<{ success: boolean; error?: string }> {
-//   try {
-//     // 1. Request permissions
-//     const { status } = await MediaLibrary.requestPermissionsAsync();
-//     if (status !== 'granted') {
-//       return { success: false, error: 'Permission denied' };
-//     }
+    // 2. Generate filename if not provided
+    const finalFilename = filename || `${image.timestamp}_travelbuddy.jpg`;
+    const fileUri = `${FileSystem.documentDirectory}${finalFilename}`;
 
-//     // 2. Generate filename if not provided
-//     const finalFilename = filename || `image_${Date.now()}.jpg`;
-//     const fileUri = `${FileSystem.documentDirectory}${finalFilename}`;
+    // 3. Download the image
+    const downloadResult = await FileSystem.downloadAsync(image.url, fileUri);
 
-//     // 3. Download the image
-//     const downloadResult = await FileSystem.downloadAsync(imageUrl, fileUri);
+    // 4. Save to media library (gallery)
+    const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
+    await MediaLibrary.createAlbumAsync('TravelBuddy', asset, false);
 
-//     // 4. Save to media library (gallery)
-//     const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
-//     await MediaLibrary.createAlbumAsync('TravelBuddy', asset, false);
-
-//     return { success: true };
-//   } catch (error) {
-//     console.error('Error downloading image:', error);
-//     return { success: false, error: String(error) };
-//   }
-// }
+    return { success: true };
+  } catch (error) {
+    console.error('Error downloading image:', error);
+    return { success: false, error: String(error) };
+  }
+}

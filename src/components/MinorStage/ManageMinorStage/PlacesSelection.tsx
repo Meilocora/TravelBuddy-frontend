@@ -138,7 +138,7 @@ const PlacesSelection = ({
         },
         hasLocation: true,
         colorScheme: ColorScheme.complementary,
-        customCountryId: country!.id,
+        customCountryIds: [country!.id],
         minorStageId: minorStageId,
       });
     }

@@ -10,14 +10,15 @@ import {
   Text,
 } from 'react-native';
 import ImageZoom from 'react-native-image-pan-zoom';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { GlobalStyles } from '../../constants/styles';
 import IconButton from './IconButton';
-import { Icons, Location, LocationType, StackParamList } from '../../models';
+import { Icons, ImageLocation, StackParamList } from '../../models';
 import { Image as ImageType } from '../../models/image';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import { downloadUserImage } from '../../utils/http';
+import { downloadUserImage } from '../../utils/http';
+import { LatLng } from 'react-native-maps';
 
 interface ImageModalProps {
   image?: ImageType;
@@ -25,6 +26,7 @@ interface ImageModalProps {
   link: string;
   onClose: () => void;
   onDelete?: () => void;
+  onCalcRoute?: (coords: LatLng) => void;
 }
 
 const ImageModal: React.FC<ImageModalProps> = ({
@@ -33,6 +35,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   link,
   onClose,
   onDelete,
+  onCalcRoute,
 }): ReactElement => {
   const isFocused = useIsFocused();
 
@@ -60,37 +63,36 @@ const ImageModal: React.FC<ImageModalProps> = ({
     onClose();
   }
 
+  function handleCalcRoute() {
+    onClose();
+    onCalcRoute!({ latitude: image!.latitude!, longitude: image!.longitude! });
+  }
+
   function handleShowLocation() {
-    // TODO: Use separate screen for images =>
-    const location: Location = {
-      belonging: 'Undefined',
-      locationType: LocationType.activity,
-      data: {
-        name: '',
-        latitude: image!.latitude!,
-        longitude: image!.longitude!,
-      },
-      done: false,
+    if (!image || !image.latitude || !image.longitude) {
+      return;
+    }
+    const location: ImageLocation = {
+      id: image.id,
+      latitude: image?.latitude,
+      longitude: image?.longitude,
+      url: image?.url,
+      description: image?.description,
+      favourite: image?.favorite,
     };
 
-    navigation.navigate('ShowMap', {
-      location: location,
-      colorScheme: 'complementary',
-      customCountryIds: [2],
-    });
+    navigation.navigate('ImagesShowMap', { imageLocation: location });
   }
 
   async function handleDownload() {
-    // const response = await downloadUserImage({ imageUrl: image!.url });
-    // if (response.success) {
-    //   Alert.alert('Success', 'Image saved to gallery!');
-    //   onClose();
-    // } else if (response.error) {
-    //   Alert.alert('Error', response.error || 'Failed to download image');
-    // }
+    const response = await downloadUserImage({ image: image! });
+    if (response.success) {
+      Alert.alert('Success', 'Image saved to gallery!');
+      onClose();
+    } else if (response.error) {
+      Alert.alert('Error', response.error || 'Failed to download image');
+    }
   }
-
-  // TODO: When image => add download, showMap, stage
 
   return (
     <>
@@ -122,7 +124,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
               imageWidth={width * 0.9}
               imageHeight={height * 0.85}
               minScale={1}
-              maxScale={4} // bis 4x Zoom
+              maxScale={4}
             >
               <Image
                 source={{ uri: link }}
@@ -148,12 +150,22 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   color={GlobalStyles.colors.graySoft}
                   size={30}
                 />
-                <IconButton
-                  icon={Icons.location}
-                  onPress={handleShowLocation}
-                  color={GlobalStyles.colors.visited}
-                  size={30}
-                />
+                {image.latitude && (
+                  <IconButton
+                    icon={Icons.location}
+                    onPress={handleShowLocation}
+                    color={GlobalStyles.colors.visited}
+                    size={30}
+                  />
+                )}
+                {onCalcRoute && (
+                  <IconButton
+                    icon={Icons.routePlanner}
+                    onPress={handleCalcRoute}
+                    color={GlobalStyles.colors.graySoft}
+                    size={30}
+                  />
+                )}
                 <IconButton
                   icon={Icons.edit}
                   onPress={handlePressEdit}
@@ -210,7 +222,6 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.graySoft,
     marginBottom: 6,
     maxWidth: '80%',
-    // fontSize: 24,
   },
   buttonsContainer: {
     flexDirection: 'row',

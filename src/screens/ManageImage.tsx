@@ -54,12 +54,15 @@ const ManageImage: React.FC<ManageImageProps> = ({
 
   const selectedImage = imageCtx.findImage(editedImageId!);
 
+  const initialLat = route.params.lat || selectedImage?.latitude || undefined;
+  const initialLng = route.params.lng || selectedImage?.longitude || undefined;
+
   // Empty, when no default values provided
   const [defaultValues, setDefaultValues] = useState<ImageValues>({
     url: selectedImage?.url || '',
     favorite: selectedImage?.favorite || false,
-    latitude: selectedImage?.latitude || undefined,
-    longitude: selectedImage?.longitude || undefined,
+    latitude: initialLat,
+    longitude: initialLng,
     timestamp: selectedImage?.timestamp || undefined,
     minorStageId: selectedImage?.minorStageId || undefined,
     placeToVisitId: selectedImage?.placeToVisitId || undefined,

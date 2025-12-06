@@ -49,6 +49,8 @@ interface LocationPickMapProps {
   route: RouteProp<StackParamList, 'LocationPickMap'>;
 }
 
+const DELTA = 0.005;
+
 const LocationPickMap: React.FC<LocationPickMapProps> = ({
   navigation,
   route,
@@ -70,6 +72,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     route.params.hasLocation ? initialCoord : null
   );
 
+  const noMapTouch = route.params.noMapTouch || false;
   const initialLocation = route.params && {
     lat: route.params.initialLat,
     lng: route.params.initialLng,
@@ -80,7 +83,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 
   const initialColorScheme = route.params.colorScheme || ColorScheme.primary;
 
-  const customCountryId = route.params.customCountryId || undefined;
+  const customCountryIds = route.params.customCountryIds || undefined;
   const minorStageId = route.params.minorStageId;
   const majorStageId = route.params.majorStageId;
 
@@ -89,8 +92,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   const [region, setRegion] = useState<Region>({
     latitude: initialLocation.lat,
     longitude: initialLocation.lng,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.04,
+    latitudeDelta: DELTA,
+    longitudeDelta: DELTA,
   });
   const [title, setTitle] = useState<string | undefined>(
     route.params.initialTitle
@@ -101,11 +104,21 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     'standard'
   );
 
-  let placesToVisit: undefined | PlaceToVisit[];
+  let placesToVisit: undefined | PlaceToVisit[] = undefined;
   let journeysLocations: undefined | Location[];
-  if (customCountryId) {
-    placesToVisit = customCountryCtx.findCountriesPlaces(customCountryId);
+
+  if (customCountryIds) {
+    for (const id of customCountryIds) {
+      const additionalPlaces = customCountryCtx.findCountriesPlaces(id);
+      if (!additionalPlaces) continue;
+      if (typeof placesToVisit === 'undefined') {
+        placesToVisit = additionalPlaces;
+      } else {
+        placesToVisit = placesToVisit.concat(additionalPlaces);
+      }
+    }
   }
+
   if (majorStageId) {
     const journey = stagesCtx.findMajorStagesJourney(majorStageId)!;
     journeysLocations = getMapLocationsFromJourney(journey, true);
@@ -135,8 +148,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     const nextRegion: Region = {
       latitude: lat,
       longitude: lng,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.04,
+      latitudeDelta: DELTA,
+      longitudeDelta: DELTA,
     };
 
     setSelectedCoord({ latitude: lat, longitude: lng }); // Marker-Source
@@ -164,17 +177,11 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   async function handleSearchResult(place: any) {
     if (place) {
       const latLng: LatLng = await getPlaceDetails(place);
-      // setRegion({
-      //   latitude: latLng.latitude,
-      //   longitude: latLng.longitude,
-      //   latitudeDelta: 0.1,
-      //   longitudeDelta: 0.04,
-      // });
       const nextRegion: Region = {
         latitude: latLng.latitude,
         longitude: latLng.longitude,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.04,
+        latitudeDelta: DELTA,
+        longitudeDelta: DELTA,
       };
       setSelectedCoord({
         latitude: latLng.latitude,
@@ -236,6 +243,9 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     });
   }, []);
 
+  // TODO: Add longPress for routePlanning
+  // TODO: Add Settings
+
   return (
     <View style={styles.container}>
       {showModal && (
@@ -264,7 +274,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       <MapView
         ref={mapRef}
         initialRegion={region}
-        onPress={selectLocationHandler}
+        onPress={noMapTouch ? undefined : selectLocationHandler}
         onPoiClick={handlePoiClick}
         style={styles.map}
         showsUserLocation
@@ -276,7 +286,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         {!minorStageId && (selectedCoord || initialCoord) && (
           <Marker title={title} coordinate={(selectedCoord || initialCoord)!} />
         )}
-
         {placesToVisit &&
           placesToVisit.map((place) => {
             // Check if this place is part of the minorStage

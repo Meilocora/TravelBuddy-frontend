@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react';
 
-import { PlaceToVisit } from '../models';
+import { MapLocation, PlaceToVisit } from '../models';
 import { fetchPlaces } from '../utils/http';
 import { calculateDistance } from '../utils/location';
 import { LatLng } from 'react-native-maps';
@@ -15,6 +15,7 @@ interface PlaceContextType {
   updatePlace: (placeToVisit: PlaceToVisit) => void;
   getPlacesByCountry: (countryId: number) => PlaceToVisit[];
   findNearestPlace: (currentLocation: LatLng) => PlaceToVisit | undefined;
+  findPlaceByMapLocation: (location: MapLocation) => PlaceToVisit | undefined;
 }
 
 export const PlaceContext = createContext<PlaceContextType>({
@@ -27,6 +28,7 @@ export const PlaceContext = createContext<PlaceContextType>({
   updatePlace: () => {},
   getPlacesByCountry: () => [],
   findNearestPlace: () => undefined,
+  findPlaceByMapLocation: () => undefined,
 });
 
 export default function PlaceContextProvider({
@@ -108,6 +110,14 @@ export default function PlaceContextProvider({
     return nearestPlace;
   }
 
+  function findPlaceByMapLocation(location: MapLocation) {
+    for (const place of placesToVisit) {
+      if (place.latitude === location.lat && place.longitude === location.lng) {
+        return place;
+      }
+    }
+  }
+
   const value = {
     placesToVisit,
     fetchPlacesToVisit,
@@ -118,6 +128,7 @@ export default function PlaceContextProvider({
     updatePlace,
     getPlacesByCountry,
     findNearestPlace,
+    findPlaceByMapLocation,
   };
 
   return (

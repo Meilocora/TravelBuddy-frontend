@@ -1,5 +1,5 @@
 import { NavigatorScreenParams, RouteProp } from '@react-navigation/native';
-import { Location, MapLocation } from './map';
+import { ImageLocation, Location, MapLocation } from './map';
 import { ColorScheme } from './ui';
 import { MajorStage } from './major_stage';
 import { MinorStage } from './minor_stage';
@@ -68,18 +68,22 @@ export type StackParamList = {
     onResetLocation?: () => void;
     hasLocation: boolean;
     colorScheme?: ColorScheme;
-    customCountryId?: number;
+    customCountryIds?: number[];
     onPressMarker?: (location: MapLocation) => void;
     onAddLocation?: (location: Location) => void;
     minorStageId?: number;
     majorStageId?: number;
+    noMapTouch?: boolean;
   };
   ShowMap: {
     customCountryIds: number[];
     colorScheme?: string;
     location?: Location;
   };
-  ManageImage: { imageId?: number };
+  ImagesShowMap: {
+    imageLocation?: ImageLocation;
+  };
+  ManageImage: { imageId?: number; lat?: number; lng?: number };
 };
 
 export type AuthStackParamList = {

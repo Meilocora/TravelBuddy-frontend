@@ -18,14 +18,14 @@ import Button from '../UI/Button';
 
 interface MapSettingsProps {
   onClose: () => void;
-  toggleShowPastLocations: () => void;
-  showPastLocations: boolean;
-  toggleShowAllPlaces: () => void;
-  showAllPlaces: boolean;
   mode: MapViewDirectionsMode;
   setMode: (mode: MapViewDirectionsMode) => void;
   setMapType: (newType: MapType) => void;
   mapType: MapType;
+  toggleShowPastLocations?: () => void;
+  showPastLocations?: boolean;
+  toggleShowAllPlaces?: () => void;
+  showAllPlaces?: boolean;
 }
 
 const MapSettings: React.FC<MapSettingsProps> = ({
@@ -133,15 +133,19 @@ const MapSettings: React.FC<MapSettingsProps> = ({
             />
           </View>
         </View>
-        <SettingItem
-          onPress={toggleShowPastLocations}
-          state={showPastLocations}
-        >
-          Show past Locations
-        </SettingItem>
-        <SettingItem onPress={toggleShowAllPlaces} state={showAllPlaces}>
-          Show all Places of country
-        </SettingItem>
+        {typeof showPastLocations === 'boolean' && (
+          <SettingItem
+            onPress={toggleShowPastLocations!}
+            state={showPastLocations}
+          >
+            Show past Locations
+          </SettingItem>
+        )}
+        {typeof showAllPlaces === 'boolean' && (
+          <SettingItem onPress={toggleShowAllPlaces!} state={showAllPlaces}>
+            Show all Places of country
+          </SettingItem>
+        )}
         <View>
           <Text style={styles.subTitle}>Map Type</Text>
           <View style={styles.buttonRow}>
@@ -225,7 +229,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 3,
     width: '100%',
-    height: '35%',
     backgroundColor: GlobalStyles.colors.grayMedium,
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -284,6 +287,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subTitle: {
+    marginTop: 10,
     color: GlobalStyles.colors.graySoft,
     fontSize: 18,
     textDecorationLine: 'underline',
