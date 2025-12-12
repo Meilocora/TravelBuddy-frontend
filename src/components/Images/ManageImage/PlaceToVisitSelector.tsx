@@ -8,12 +8,15 @@ import { PlaceContext } from '../../../store/place-context';
 import PlaceToVisitSelectorList from './PlaceToVisitSelectorList';
 import IconButton from '../../UI/IconButton';
 import { UserContext } from '../../../store/user-context';
+import { LatLng } from 'react-native-maps';
 
 interface PlaceToVisitSelectorProps {
   onChangePlace: (placeId: number | undefined) => void;
   invalid: boolean;
   defaultValue: number | undefined;
   errors: string[];
+  imageCoords?: LatLng;
+  autoSuggestion?: boolean;
 }
 
 const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
@@ -21,9 +24,11 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   invalid,
   defaultValue,
   errors,
+  imageCoords,
+  autoSuggestion = true,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState(false);
-  const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(true);
+  const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(autoSuggestion);
 
   const placesCtx = useContext(PlaceContext);
   const userCtx = useContext(UserContext);
@@ -32,9 +37,20 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   let places = placesCtx.placesToVisit;
   if (defaultValue) {
     place = places.find((p) => p.id === defaultValue);
-  } else if (userCtx.currentLocation && autoSuggestEnabled) {
-    place = placesCtx.findNearestPlace(userCtx.currentLocation);
+  } else if (autoSuggestEnabled) {
+    if (
+      imageCoords &&
+      imageCoords['latitude'] !== 0 &&
+      imageCoords['longitude'] !== 0
+    ) {
+      const defaultCoords: LatLng = imageCoords;
+      place = placesCtx.findNearestPlace(defaultCoords);
+    } else if (userCtx.currentLocation) {
+      const defaultCoords: LatLng = userCtx.currentLocation;
+      place = placesCtx.findNearestPlace(defaultCoords);
+    }
     defaultValue = place?.id;
+    onChangePlace(place?.id);
   }
 
   function handleOpenModal() {
@@ -42,7 +58,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   }
 
   function handleClearPlace() {
-    setAutoSuggestEnabled(false); // ab jetzt kein Auto-Suggest mehr
+    setAutoSuggestEnabled(false);
     onChangePlace(undefined);
   }
 
@@ -54,7 +70,6 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
         onCancel={() => setOpenSelection(false)}
         onChangePlace={onChangePlace}
       />
-
       <View style={styles.container}>
         <View>
           <Pressable onPress={handleOpenModal}>

@@ -7,7 +7,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { LatLng } from 'react-native-maps';
 
 import IconButton from '../../UI/IconButton';
-import { ColorScheme, Icons, Location } from '../../../models';
+import { ColorScheme, Icons, Location, MapType } from '../../../models';
 import { GlobalStyles } from '../../../constants/styles';
 import RoutePlannerList from './RoutePlannerList';
 import Button from '../../UI/Button';
@@ -24,6 +24,7 @@ interface RoutePlannerProps {
   toggleButtonVisibility: () => void;
   showContent: { button: boolean; list: boolean };
   setRoutePoints: (coordinates: LatLng[] | undefined) => void;
+  mapType: MapType;
 }
 
 const RoutePlanner: React.FC<RoutePlannerProps> = ({
@@ -33,6 +34,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
   toggleButtonVisibility,
   showContent,
   setRoutePoints,
+  mapType,
 }): ReactElement => {
   const [routeLocations, setRouteLocations] = useState<string[]>([]);
   const [plannedButtonVisible, setPlannedButtonVisible] = useState(true);
@@ -116,7 +118,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
           <IconButton
             icon={Icons.routePlanner}
             onPress={toggleButtonVisibility}
-            color={GlobalStyles.colors.grayDark}
+            color={
+              mapType === 'standard'
+                ? GlobalStyles.colors.grayDark
+                : GlobalStyles.colors.graySoft
+            }
             size={36}
             style={{ marginLeft: 6 }}
           />

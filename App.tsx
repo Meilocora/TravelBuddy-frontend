@@ -59,20 +59,20 @@ import ManageImage from './src/screens/ManageImage';
 import ImagesShowMap from './src/screens/ImagesShowMap';
 
 // PRIO 1 \\
-// TODO: Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
-// Filter für gallery (Favorite, Datum -> all | 1 year | custom span, country, minorStage, place, sort by date)
-// Extra Filter für Map, ShowMap (hier auch maybe Location, maybe ImageLocation => mit separatem MapsImageMarker)
+// Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
+// Map überarbeiten
+// Filter für gallery (Favorite, country, minorStage, place, sort by date)
 
 // TODO: Bilder in MinorStage ansehen können => findMinorStagesImages
 // TODO: Bilder in CustomCountry ansehen können => findCountriesImages
 // TODO: Bilder beim PlaceToVisit ansehen können => findPlacesImages
-// Also allow videos
 
 // PRIO 2 \\
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
 // TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route
+// TODO: Also allow videos
 
 // PRIO 3 \\
 // TODO: Animationen einfügen

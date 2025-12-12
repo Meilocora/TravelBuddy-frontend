@@ -12,11 +12,9 @@ interface CustomImagePickerProps {
   defaultValue: string;
   favorite: boolean;
   setFavorite: () => void;
-  addImage: (url: string, lat?: number, lng?: number) => void;
+  addImage: (url: string, lat?: number, lng?: number, timestamp?: Date) => void;
   editing: boolean;
 }
-
-// TODO: Stürzt manchmal ab beim Foto machen
 
 const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
   defaultValue,
@@ -46,9 +44,9 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
 
     // Pick Image
     const result = await ImagePicker.launchImageLibraryAsync({
-      // mediaTypes: ImagePicker.MediaTypeOptions.Images,
       mediaTypes: ['images'],
       quality: 0.9,
+      exif: true,
     });
 
     if (result.canceled) {
@@ -56,9 +54,29 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
     }
 
     const url = result.assets[0].uri;
+    const exif = result.assets[0].exif;
+
+    let lat: number | undefined;
+    let lng: number | undefined;
+    let timestamp: Date | undefined;
+
+    if (exif?.GPSLatitude != null && exif?.GPSLongitude != null) {
+      lat = exif.GPSLatitude;
+      lng = exif.GPSLongitude;
+    }
+
+    // Extract timestamp from EXIF data
+    if (exif?.DateTimeOriginal) {
+      // Format: "YYYY:MM:DD HH:MM:SS"
+      const dateStr = exif.DateTimeOriginal.replace(
+        /^(\d{4}):(\d{2}):(\d{2})/,
+        '$1-$2-$3'
+      );
+      timestamp = new Date(dateStr);
+    }
 
     setUrl(url);
-    addImage(url);
+    addImage(url, lat, lng, timestamp);
   }
 
   async function handleTakePhoto() {
@@ -72,7 +90,6 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
 
     // Launch Camera
     const result = await ImagePicker.launchCameraAsync({
-      // mediaTypes: ImagePicker.MediaTypeOptions.Images,
       mediaTypes: ['images'],
       quality: 0.8,
       exif: true,

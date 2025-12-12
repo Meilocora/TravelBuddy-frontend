@@ -12,17 +12,23 @@ import IconButton from '../../UI/IconButton';
 import { StagesContext } from '../../../store/stages-context';
 import { formatAmount, formatDateTimeString } from '../../../utils';
 import TextLink from '../../UI/TextLink';
+import { LatLng } from 'react-native-maps';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface TransportationContentProps {
   minorStageId?: number;
   majorStageId?: number;
   transportation: Transportation;
+  locType: 'transportation_arrival' | 'transportation_departure';
+  addRoutePoint?: (coord: LatLng) => void;
 }
 
 const TransportationContent: React.FC<TransportationContentProps> = ({
   minorStageId,
   majorStageId,
   transportation,
+  locType,
+  addRoutePoint,
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
@@ -47,6 +53,17 @@ const TransportationContent: React.FC<TransportationContentProps> = ({
     }
   }
 
+  const coord: LatLng =
+    locType === 'transportation_arrival'
+      ? {
+          latitude: transportation.arrival_latitude!,
+          longitude: transportation.arrival_longitude!,
+        }
+      : {
+          latitude: transportation.departure_latitude!,
+          longitude: transportation.departure_longitude!,
+        };
+
   return (
     <>
       <View style={styles.textRow}>
@@ -60,10 +77,19 @@ const TransportationContent: React.FC<TransportationContentProps> = ({
               Transportation ({transportation.type})
             </TextLink>
           )}
+          {typeof addRoutePoint !== 'undefined' && (
+            <IconButton
+              icon={Icons.routePlanner}
+              onPress={() => addRoutePoint(coord)}
+              color={GlobalStyles.colors.grayDark}
+              containerStyle={styles.button}
+              size={24}
+            />
+          )}
           <IconButton
             icon={Icons.goTo}
             onPress={handleGoToStage}
-            color={'black'}
+            color={GlobalStyles.colors.grayDark}
             containerStyle={styles.button}
             size={24}
           />
@@ -90,7 +116,7 @@ const TransportationContent: React.FC<TransportationContentProps> = ({
           <IconButton
             icon={Icons.currency}
             onPress={() => {}}
-            color='black'
+            color={GlobalStyles.colors.grayDark}
             containerStyle={styles.icon}
           />
           <Text style={styles.text} ellipsizeMode='tail' numberOfLines={1}>
@@ -109,12 +135,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginVertical: 5,
+    flexWrap: 'wrap',
   },
   rowElement: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
     width: '50%',
+    flexWrap: 'wrap',
   },
   header: {
     fontSize: 20,
@@ -150,10 +178,10 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   button: {
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     marginVertical: 0,
     paddingHorizontal: 4,
-    paddingVertical: 0,
+    paddingVertical: 4,
   },
 });
 

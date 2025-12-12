@@ -19,10 +19,12 @@ import { GlobalStyles } from '../../../constants/styles';
 import PlaceContent from './PlaceContent';
 import { Location, LocationType } from '../../../models';
 import { CustomCountryContext } from '../../../store/custom-country-context';
+import { LatLng } from 'react-native-maps';
 
 interface MapLocationElementProps {
   location: Location;
   onClose: () => void;
+  addRoutePoint?: (coord: LatLng) => void;
 }
 
 const DISMISS_THRESHOLD = 40;
@@ -30,6 +32,7 @@ const DISMISS_THRESHOLD = 40;
 const MapLocationElement: React.FC<MapLocationElementProps> = ({
   location,
   onClose,
+  addRoutePoint,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
   const customCountryCtx = useContext(CustomCountryContext);
@@ -42,7 +45,9 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
       const place = country!.placesToVisit!.find(
         (place) => place.id === location.placeId
       );
-      content = <PlaceContent place={place!} />;
+      content = (
+        <PlaceContent place={place!} addRoutePoint={handleAddRoutePoint} />
+      );
     } else {
       const contextResponse = stagesCtx.findPlaceToVisit(
         location.minorStageName!,
@@ -52,6 +57,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
         <PlaceContent
           minorStageId={contextResponse?.minorStageId!}
           place={contextResponse?.place!}
+          addRoutePoint={handleAddRoutePoint}
         />
       );
     }
@@ -61,6 +67,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
       <AccommodationContent
         minorStageId={minorStage!.id}
         accommodation={minorStage?.accommodation!}
+        addRoutePoint={handleAddRoutePoint}
       />
     );
   } else if (location.locationType === LocationType.activity) {
@@ -72,6 +79,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
       <ActivityContent
         activity={contextResponse?.activity!}
         minorStageId={contextResponse?.minorStageId!}
+        addRoutePoint={handleAddRoutePoint}
       />
     );
   } else if (
@@ -87,6 +95,8 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
         minorStageId={contextResponse?.minorStageId}
         majorStageId={contextResponse?.majorStageId}
         transportation={contextResponse?.transportation!}
+        locType={location.locationType}
+        addRoutePoint={handleAddRoutePoint}
       />
     );
   }
@@ -136,6 +146,11 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
+
+  function handleAddRoutePoint(coord: LatLng) {
+    onClose();
+    addRoutePoint!(coord);
+  }
 
   return (
     <View style={styles.container}>

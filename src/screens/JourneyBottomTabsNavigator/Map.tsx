@@ -1,11 +1,12 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
+import React, {
   ReactElement,
   useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
@@ -15,14 +16,22 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import MapView, { LatLng, Region } from 'react-native-maps';
+import MapView, {
+  LatLng,
+  LongPressEvent,
+  Marker,
+  PROVIDER_GOOGLE,
+  Region,
+} from 'react-native-maps';
 import MapViewDirections, {
   MapViewDirectionsMode,
 } from 'react-native-maps-directions';
+import ClusteredMapView from 'react-native-map-clustering';
 
 import {
   ColorScheme,
   Icons,
+  ImageLocation,
   JourneyBottomTabsParamsList,
   Location,
   MapType,
@@ -34,6 +43,7 @@ import MapScopeSelector, {
 } from '../../components/Maps/MapScopeSelector';
 import {
   addColor,
+  formatImageToLocation,
   getMapLocationsFromJourney,
   getMapLocationsFromMajorStage,
   getMapLocationsFromMinorStage,
@@ -50,15 +60,32 @@ import { formatRouteDuration, generateRandomString } from '../../utils';
 import IconButton from '../../components/UI/IconButton';
 import MapSettings from '../../components/Maps/MapSettings';
 import { CustomCountryContext } from '../../store/custom-country-context';
-import { lightMapStyle } from '../../constants/styles';
+import { GlobalStyles, lightMapStyle } from '../../constants/styles';
 import { usePersistedState } from '../../hooks/usePersistedState';
+import { ImageContext } from '../../store/image-context';
+import RouteInfo from '../../components/Maps/RouteInfo';
+import ImageModal from '../../components/UI/ImageModal';
+import { Image as ImageType } from '../../models/image';
+import OpenRouteInGoogleMapsButton from '../../components/Maps/OpenRouteInGoogleMapsButton';
+import ImageMarker from '../../components/Maps/ImageMarker';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
   route: RouteProp<JourneyBottomTabsParamsList, 'Map'>;
 }
 
+const DELTA = 0.005;
+
+const EDGE_PADDING = { top: 60, right: 60, bottom: 60, left: 60 };
+
 const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
+  const imageCtx = useContext(ImageContext);
+  const userCtx = useContext(UserContext);
+  const stagesCtx = useContext(StagesContext);
+  const customCountryCtx = useContext(CustomCountryContext);
+
+  const mapRef = useRef<MapView>(null);
+
   const [showSettings, setShowSettings] = useState(false);
   const [showPastLocations, setShowPastLocations] = usePersistedState(
     'map_show_past_locations',
@@ -68,14 +95,14 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     'map_show_all_places',
     false
   );
+  const [showImages, setShowImages] = useState(false);
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
+
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
     'standard'
   );
-  const [directionDestination, setDirectionDestination] =
-    useState<LatLng | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [routeInfo, setRouteInfo] = useState<{
     distance: number;
@@ -87,6 +114,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   >();
 
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
+  const [showImageModal, setShowImageModal] = useState<ImageType | undefined>();
 
   const [showContent, setShowContent] = useState([
     { button: true, list: false },
@@ -96,9 +124,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const GOOGLE_API_KEY =
     Constants.expoConfig?.extra?.googleApiKey ||
     process.env.REACT_APP_GOOGLE_API_KEY;
-  const userCtx = useContext(UserContext);
-  const stagesCtx = useContext(StagesContext);
-  const customCountryCtx = useContext(CustomCountryContext);
+
   const journeyId = stagesCtx.selectedJourneyId!;
   const journey = stagesCtx.findJourney(journeyId);
 
@@ -107,7 +133,39 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const minorStage = route.params?.minorStage;
   const majorStage = route.params?.majorStage;
 
-  // 1) mapScope nur ABLEITEN (keinen lokalen State benutzen)
+  // get all images that are connected to the shown stage
+  let minorStageIds: number[] = [];
+  if (minorStage) {
+    minorStageIds.push(minorStage.id);
+  } else if (majorStage) {
+    if (majorStage.minorStages) {
+      for (const minorStage of majorStage.minorStages) {
+        minorStageIds.push(minorStage.id);
+      }
+    }
+  } else {
+    if (journey?.majorStages) {
+      for (const majorStage of journey.majorStages) {
+        if (majorStage.minorStages) {
+          for (const minorStage of majorStage.minorStages) {
+            minorStageIds.push(minorStage.id);
+          }
+        }
+      }
+    }
+  }
+
+  let imageLocations: ImageLocation[] = [];
+  if (showImages) {
+    for (const img of imageCtx.images) {
+      if (img.minorStageId && img.minorStageId in minorStageIds) {
+        const imgLoc = formatImageToLocation(img);
+        imgLoc && imageLocations.push(imgLoc);
+      }
+    }
+  }
+
+  // 1) Derive mapScope from RouteParams
   const mapScope = useMemo(() => {
     if (route.params?.minorStage) {
       const ms = route.params.minorStage;
@@ -129,11 +187,10 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     journey?.name,
   ]);
 
-  // 2) Scope-Wechsel NUR über die Navigation-Params
+  // 2) Change mapScope via RouteParams
   const handleChangeMapScope = useCallback(
     (next: StageData) => {
       // UI-/Routing-Zustände zurücksetzen
-      setDirectionDestination(null);
       setPressedLocation(undefined);
       setRoutePoints(undefined);
       setRouteInfo(null);
@@ -151,7 +208,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     [navigation, stagesCtx]
   );
 
-  // 3) ABLEITBARE Daten: base → country → shown
+  // 3) get Locations, thath belong to the Major- or MinorStage depending on RouteParam
   const baseLocations = useMemo(() => {
     if (route.params?.minorStage) {
       const ms = route.params.minorStage;
@@ -173,6 +230,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     stagesCtx, // Achtung: sollte stabil sein (Context-Instanz)
   ]);
 
+  // 4) get IDs of all involved countries
   const countryIds = useMemo(() => {
     if (route.params?.minorStage) {
       const parent = stagesCtx.findMinorStagesMajorStage(
@@ -189,6 +247,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     stagesCtx,
   ]);
 
+  // 5) get all Locations, that are linked to the countries
   const countryLocations = useMemo(() => {
     return getRemainingCountriesPlacesLocations(
       countryIds,
@@ -203,13 +262,14 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     showAllPlaces,
   ]);
 
+  // 6) give baseLocations a color and concat with countries locations
   const shownLocations = useMemo(() => {
     return addColor(baseLocations || [], mapScope.stageType).concat(
       countryLocations
     );
   }, [baseLocations, countryLocations, mapScope.stageType]);
 
-  // 4) Optional: Region neu berechnen, wenn sich die BASIS-Spots ändern
+  // 7) Calculate initial region
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -228,7 +288,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     return () => {
       cancelled = true;
     };
-  }, [baseLocations, shownLocations]);
+  }, [baseLocations]);
 
   function handleGoBack() {
     if (minorStage) {
@@ -271,16 +331,6 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   }, [navigation, majorStage, showSettings]);
 
   function handlePressListElement(location: Location) {
-    setRegion({
-      latitude: location.data.latitude,
-      longitude: location.data.longitude,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.04,
-    });
-    setDirectionDestination({
-      latitude: location.data.latitude,
-      longitude: location.data.longitude,
-    });
     setPressedLocation(location);
   }
 
@@ -320,20 +370,140 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           { button: false, list: false },
           { button: false, list: true },
         ]);
-        setDirectionDestination(null);
         setRouteInfo(null);
       }
     }
   }
 
-  // TODO: Smoothe transitions with mapRef
-  // TODO: ClusterMap for images
-  // TODO: Add all Images
-  // TODO: onLongPress => Start custom Route (maybe also implement this in the other map Screens)
-  // TODO: bei MapLocationElement => Icon für Routenplanung bzw. zur Route hinzufügen
+  const fitToItems = useCallback((pts: LatLng[]) => {
+    if (!mapRef.current || pts.length === 0) return;
+
+    if (pts.length === 1) {
+      const c = pts[0];
+      const tight: Region = {
+        latitude: c.latitude,
+        longitude: c.longitude,
+        latitudeDelta: DELTA,
+        longitudeDelta: DELTA,
+      };
+      mapRef.current.animateToRegion(tight, 250);
+    } else {
+      // Bounding-Box über alle Punkte
+      (mapRef.current as any).fitToCoordinates(pts, {
+        edgePadding: EDGE_PADDING,
+        animated: true,
+      });
+    }
+  }, []);
+
+  const coords: LatLng[] = useMemo(
+    () =>
+      baseLocations
+        ? baseLocations
+            .filter(
+              (l) =>
+                l.locationType !== 'transportation_departure' &&
+                l.locationType !== 'transportation_arrival'
+            )
+            .map((l) => ({
+              latitude: l.data.latitude,
+              longitude: l.data.longitude,
+            }))
+        : shownLocations
+            .filter(
+              (l) =>
+                l.locationType !== 'transportation_departure' &&
+                l.locationType !== 'transportation_arrival'
+            )
+            .map((l) => ({
+              latitude: l.data.latitude,
+              longitude: l.data.longitude,
+            })),
+    [baseLocations, shownLocations]
+  );
+
+  useEffect(() => {
+    // nichts zu tun, wenn weder coords noch routePoints da sind
+    if (coords.length === 0 && !routePoints) return;
+
+    let allCoords = [];
+
+    if (routePoints && routePoints.length >= 2) {
+      // Case 1: min. 2 routePoints -> only focus on them
+      allCoords = [...routePoints];
+    } else {
+      // Case 2: less than 2 routePoints -> adjust screen to all locations
+      allCoords = [...coords];
+    }
+
+    if (pressedLocation) {
+      allCoords = [pressedLocation.data];
+    }
+
+    if (allCoords.length === 0) return;
+
+    fitToItems(allCoords);
+  }, [coords, routePoints, pressedLocation, fitToItems]);
+
+  const renderCluster = useCallback((cluster: any) => {
+    const { id, geometry, onPress, properties } = cluster;
+    const count = properties.point_count;
+    const c = {
+      latitude: geometry.coordinates[1],
+      longitude: geometry.coordinates[0],
+    };
+
+    return (
+      <Marker
+        key={`cluster-${id}`}
+        coordinate={c}
+        onPress={onPress}
+        style={{ zIndex: 50 }}
+      >
+        <View style={styles.cluster}>
+          <Text style={styles.clusterText}>{count}</Text>
+        </View>
+      </Marker>
+    );
+  }, []);
+
+  function handlePressImageMarker(location: ImageLocation) {
+    const localImage = imageCtx.findImage(location.id);
+    setShowImageModal(localImage);
+  }
+
+  function handleLongPress(e: LongPressEvent) {
+    if (routePoints?.length === 25) return;
+    const lat = e.nativeEvent.coordinate.latitude;
+    const lng = e.nativeEvent.coordinate.longitude;
+    const newPoint = { latitude: lat, longitude: lng };
+
+    setRoutePoints((prevPoints) =>
+      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+    );
+  }
+
+  function handleAddRoutePoint(coord: LatLng) {
+    if (routePoints?.length === 25) return;
+    setRoutePoints((prevPoints) =>
+      prevPoints ? [...prevPoints, coord] : [coord]
+    );
+  }
+
+  function handleDeleteRoute() {
+    setRoutePoints(undefined);
+    setRouteInfo(null);
+  }
 
   return (
     <View style={styles.root}>
+      <ImageModal
+        image={showImageModal}
+        link={showImageModal?.url || ''}
+        onClose={() => setShowImageModal(undefined)}
+        visible={typeof showImageModal !== 'undefined'}
+        onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
+      />
       {showSettings && (
         <MapSettings
           onClose={() => setShowSettings(false)}
@@ -349,6 +519,8 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           setMode={handleChangeDirectionsMode}
           setMapType={setMapType}
           mapType={mapType}
+          toggleShowImages={() => setShowImages((prevValue) => !prevValue)}
+          showImages={showImages}
         />
       )}
       {popupText && (
@@ -362,6 +534,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         onChangeMapScope={handleChangeMapScope}
         journey={journey!}
         value={mapScope}
+        mapType={mapType}
       />
       <MapLocationList
         locations={shownLocations || []}
@@ -370,6 +543,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         onPress={handlePressListElement}
         toggleButtonVisibility={() => handleHideButtons('locationList')}
         showContent={showContent[0]}
+        mapType={mapType}
       />
       <RoutePlanner
         locations={shownLocations || []}
@@ -378,90 +552,119 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         toggleButtonVisibility={() => handleHideButtons('routePlanner')}
         showContent={showContent[1]}
         setRoutePoints={setRoutePoints}
-      />
-      <MapView
-        style={styles.map}
-        initialRegion={
-          region ?? {
-            latitude: 20,
-            longitude: 0,
-            latitudeDelta: 80,
-            longitudeDelta: 80, // Fallback
-          }
-        }
-        {...(region ? { region } : {})}
-        onPress={() => {}}
         mapType={mapType}
-        userInterfaceStyle='light'
-        customMapStyle={lightMapStyle}
-      >
-        {directionDestination && (
-          <MapViewDirections
-            apikey={GOOGLE_API_KEY}
-            origin={userCtx.currentLocation}
-            destination={directionDestination}
-            strokeWidth={4}
-            strokeColor='blue'
-            precision='high'
-            mode={directionsMode}
-            onError={() => setPopupText('No route found...')}
-            onReady={(result) => {
-              setRouteInfo({
-                distance: result.distance, // in kilometers
-                duration: result.duration, // in minutes
-              });
-            }}
-          />
-        )}
-        {routePoints && routePoints.length > 1 && (
-          <MapViewDirections
-            apikey={GOOGLE_API_KEY}
-            origin={routePoints[0]}
-            destination={routePoints[routePoints.length - 1]}
-            waypoints={
-              routePoints.length > 2 ? routePoints.slice(1, -1) : undefined
+      />
+      {region && (
+        <ClusteredMapView
+          ref={mapRef}
+          initialRegion={
+            region || {
+              latitude: userCtx.currentLocation?.latitude || 0,
+              longitude: userCtx.currentLocation?.longitude || 0,
+              latitudeDelta: DELTA,
+              longitudeDelta: DELTA,
             }
-            strokeWidth={4}
-            strokeColor='blue'
-            precision='high'
-            mode={directionsMode}
-            onError={() => setPopupText('No route found...')}
-            onReady={(result) => {
-              setRouteInfo({
-                distance: result.distance, // in kilometers
-                duration: result.duration, // in minutes
-              });
-            }}
-          />
-        )}
-        {shownLocations.map((location) => {
-          const isActive = pressedLocation && location === pressedLocation;
-          return (
-            <MapsMarker
-              key={generateRandomString()}
-              location={location}
-              active={isActive}
-              onPressMarker={setPressedLocation.bind(location)}
+          }
+          onLongPress={handleLongPress}
+          provider={PROVIDER_GOOGLE}
+          style={{ flex: 1 }}
+          mapType={mapType}
+          userInterfaceStyle='light'
+          customMapStyle={lightMapStyle}
+          // Clustering-Feintuning: je nach Dichte kannst du radius/extents anpassen
+          radius={70}
+          extent={512}
+          maxZoom={20}
+          spiralEnabled
+          renderCluster={renderCluster}
+          clusteringEnabled={!routePoints || routePoints.length === 0}
+        >
+          {routePoints && routePoints.length > 1 && (
+            <MapViewDirections
+              apikey={GOOGLE_API_KEY}
+              origin={routePoints[0]}
+              destination={routePoints[routePoints.length - 1]}
+              waypoints={
+                routePoints.length > 2 ? routePoints.slice(1, -1) : undefined
+              }
+              strokeWidth={4}
+              strokeColor='blue'
+              precision='high'
+              mode={directionsMode}
+              onError={() => setPopupText('No route found...')}
+              onReady={(result) => {
+                setRouteInfo({
+                  distance: result.distance, // in kilometers
+                  duration: result.duration, // in minutes
+                });
+              }}
             />
-          );
-        })}
-      </MapView>
+          )}
+          {routePoints &&
+            routePoints.map((pt, index) => (
+              <Marker
+                key={`route-point-${index}`}
+                coordinate={pt}
+                draggable
+                pinColor='blue'
+                onDragEnd={(e) => {
+                  const { latitude, longitude } = e.nativeEvent.coordinate;
+                  setRoutePoints((prev) => {
+                    if (!prev) return prev;
+                    const updated = [...prev];
+                    updated[index] = { latitude, longitude };
+                    return updated;
+                  });
+                }}
+              />
+            ))}
+          {shownLocations.map((location) => {
+            const isActive = pressedLocation && location === pressedLocation;
+            return (
+              <MapsMarker
+                key={generateRandomString()}
+                location={location}
+                active={isActive}
+                onPressMarker={setPressedLocation.bind(location)}
+              />
+            );
+          })}
+          {imageLocations &&
+            imageLocations.map((loc) => {
+              return (
+                <ImageMarker
+                  imageLocation={loc}
+                  key={loc.url}
+                  onPressMarker={handlePressImageMarker}
+                  coordinate={{
+                    latitude: loc.latitude,
+                    longitude: loc.longitude,
+                  }}
+                />
+              );
+            })}
+        </ClusteredMapView>
+      )}
+      {routeInfo && (
+        <RouteInfo
+          onClose={() => setRouteInfo(null)}
+          onDeleteRoute={handleDeleteRoute}
+          routeInfo={routeInfo}
+          topDistance={55}
+        />
+      )}
+      {routePoints && routePoints?.length > 1 && (
+        <OpenRouteInGoogleMapsButton
+          routePoints={routePoints}
+          startPoint={routePoints[0]}
+        />
+      )}
       {pressedLocation && (
         <MapLocationElement
           location={pressedLocation}
           onClose={handleCloseMapLocationElement}
+          addRoutePoint={handleAddRoutePoint}
         />
-      )}
-      {routeInfo && (
-        <Pressable
-          onPress={() => setRouteInfo(null)}
-          style={styles.routeInfoContainer}
-        >
-          <Text style={styles.routeInfoText}>
-            Distance: {routeInfo.distance.toFixed(1)} km | Time:{' '}
-            {formatRouteDuration(routeInfo.duration)}
-          </Text>
-        </Pressable>
       )}
     </View>
   );
@@ -471,26 +674,26 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
-  map: {
-    height: '100%',
-  },
   buttonContainer: {
     position: 'absolute',
     top: '90%',
     left: '80%',
   },
-  routeInfoContainer: {
-    position: 'absolute',
-    top: 55,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-    borderRadius: 8,
-    zIndex: 1,
+  cluster: {
+    backgroundColor: GlobalStyles.colors.grayDark,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: GlobalStyles.colors.graySoft,
+    minWidth: 44,
+    height: 44,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  routeInfoText: {
-    color: 'white',
-    fontWeight: 'bold',
+  clusterText: {
+    color: GlobalStyles.colors.graySoft,
+    fontWeight: '700',
+    fontSize: 24,
   },
 });
 

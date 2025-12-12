@@ -4,12 +4,7 @@ import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 
 import { GlobalStyles } from '../../constants/styles';
 import { ButtonMode, ColorScheme, Icons, Journey } from '../../models';
-import {
-  formatDate,
-  formatDurationToDays,
-  parseDate,
-  parseEndDate,
-} from '../../utils';
+import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
 import IconButton from '../UI/IconButton';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import Button from '../UI/Button';
@@ -19,6 +14,8 @@ interface UserStatsProps {
   toggleVisivility: () => void;
   isVisible: boolean;
 }
+
+// TODO: Add images
 
 const UserStats: React.FC<UserStatsProps> = ({
   journeys,

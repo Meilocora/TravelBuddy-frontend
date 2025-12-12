@@ -1,11 +1,25 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, Text } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  StyleProp,
+  TextStyle,
+} from 'react-native';
 import OutsidePressHandler from 'react-native-outside-press';
 
 import ListItem from '../UI/search/ListItem';
 import { generateRandomString } from '../../utils';
 import Button from '../UI/Button';
-import { ButtonMode, ColorScheme, Journey, MajorStage } from '../../models';
+import {
+  ButtonMode,
+  ColorScheme,
+  Journey,
+  MajorStage,
+  MapType,
+} from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 import { StagesContext } from '../../store/stages-context';
 
@@ -19,12 +33,14 @@ interface MapScopeSelectorProps {
   onChangeMapScope: (mapScope: StageData) => void;
   journey: Journey;
   value: StageData;
+  mapType: MapType;
 }
 
 const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
   onChangeMapScope,
   journey,
   value,
+  mapType,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState({
     majorStages: false,
@@ -36,6 +52,17 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
 
   let majorStagesData: StageData[] = [];
   let minorStagesData: StageData[] = [];
+
+  let subtitle: StyleProp<TextStyle> = {
+    fontSize: 14,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: GlobalStyles.colors.grayDark,
+  };
+  if (mapType !== 'standard') {
+    subtitle.color = GlobalStyles.colors.graySoft;
+  }
 
   useEffect(() => {
     function updateMapScopeList() {
@@ -144,7 +171,7 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
         <View style={styles.innerContainer}>
           <View style={styles.row}>
             <View style={styles.element}>
-              <Text style={styles.subtitle}>Journey</Text>
+              <Text style={subtitle}>Journey</Text>
               <Pressable onPress={() => {}} style={styles.headerContainer}>
                 <Text style={styles.header} numberOfLines={1}>
                   {selectedJourneyName!}
@@ -152,7 +179,7 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
               </Pressable>
             </View>
             <View style={styles.element}>
-              <Text style={styles.subtitle}>Major Stage</Text>
+              <Text style={subtitle}>Major Stage</Text>
               <Pressable
                 onPress={() => handleOpenModal('majorStages')}
                 style={[
@@ -196,7 +223,7 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
             {(value.stageType === 'MinorStage' ||
               value.stageType === 'MajorStage') && (
               <View style={styles.element}>
-                <Text style={styles.subtitle}>Minor Stage</Text>
+                <Text style={subtitle}>Minor Stage</Text>
                 <Pressable
                   onPress={() => handleOpenModal('minorStages')}
                   style={[
@@ -268,12 +295,6 @@ const styles = StyleSheet.create({
     flexBasis: '32%',
     alignSelf: 'flex-start',
     marginHorizontal: 2,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   headerContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',

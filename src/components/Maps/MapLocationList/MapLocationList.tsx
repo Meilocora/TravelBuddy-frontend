@@ -13,7 +13,13 @@ import { MapViewDirectionsMode } from 'react-native-maps-directions';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import IconButton from '../../UI/IconButton';
-import { FilterKey, Icons, Location, LocationType } from '../../../models';
+import {
+  FilterKey,
+  Icons,
+  Location,
+  LocationType,
+  MapType,
+} from '../../../models';
 import { GlobalStyles } from '../../../constants/styles';
 import { generateRandomString } from '../../../utils';
 import ActivityIcon from '../../../../assets/activity.svg';
@@ -31,6 +37,7 @@ interface MapLocationListProps {
   toggleButtonVisibility: () => void;
   showContent: { button: boolean; list: boolean };
   onPress: (location: Location) => void;
+  mapType: MapType;
 }
 
 const MapLocationList: React.FC<MapLocationListProps> = ({
@@ -40,6 +47,7 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
   toggleButtonVisibility,
   showContent,
   onPress,
+  mapType,
 }): ReactElement => {
   const [selectedLocation, setSelectedLocation] = useState<
     string | undefined
@@ -113,7 +121,11 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
           <IconButton
             icon={Icons.listCircleOutline}
             onPress={toggleButtonVisibility}
-            color={GlobalStyles.colors.grayDark}
+            color={
+              mapType === 'standard'
+                ? GlobalStyles.colors.grayDark
+                : GlobalStyles.colors.graySoft
+            }
             size={40}
           />
         </Animated.View>

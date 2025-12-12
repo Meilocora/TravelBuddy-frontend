@@ -9,7 +9,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import OutsidePressHandler from 'react-native-outside-press';
 
 import { generateRandomString } from '../../../utils';
 import InfoText from '../../UI/InfoText';
@@ -17,12 +16,7 @@ import { GlobalStyles } from '../../../constants/styles';
 import ListItem from '../../UI/search/ListItem';
 import { FetchCustomCountryResponseProps } from '../../../utils/http/custom_country';
 import Button from '../../UI/Button';
-import {
-  BottomTabsParamList,
-  ButtonMode,
-  ColorScheme,
-  Icons,
-} from '../../../models';
+import { BottomTabsParamList, ColorScheme, Icons } from '../../../models';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import IconButton from '../../UI/IconButton';
 import Search from '../../Locations/Search';
@@ -37,6 +31,8 @@ interface CountriesSelectionProps {
   onAddHandler: (addedItem: string) => void;
   onCloseModal: () => void;
   chosenCountries: string[];
+  top?: number;
+  singleSelect?: boolean;
 }
 
 const CountriesSelection = ({
@@ -44,6 +40,8 @@ const CountriesSelection = ({
   onAddHandler,
   onCloseModal,
   chosenCountries,
+  top,
+  singleSelect = false,
 }: CountriesSelectionProps): ReactElement => {
   const navigation = useNavigation<NavigationProp<BottomTabsParamList>>();
   const [fetchedData, setFetchedData] = useState<string[]>([]);
@@ -83,6 +81,7 @@ const CountriesSelection = ({
 
   function handlePressListElement(item: string) {
     onAddHandler(item);
+    singleSelect && onCloseModal();
   }
 
   function handlePressAdd() {
@@ -185,6 +184,7 @@ const CountriesSelection = ({
         styles.outerContainer,
         { height: windowHeight * 0.9, width: windowWidth },
         animatedStyle,
+        top ? { top: top } : undefined,
       ]}
     >
       <>
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     position: 'absolute',
     top: -320,
-    zIndex: 1,
+    zIndex: 30,
     paddingVertical: 5,
     paddingHorizontal: 10,
     backgroundColor: GlobalStyles.colors.greenSoft,

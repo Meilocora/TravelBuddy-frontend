@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import {
@@ -10,7 +10,7 @@ import {
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
-import { formatDateTime } from '../../../utils';
+import { formatDateTime, parseDateAndTime } from '../../../utils';
 import { Image, ImageFormValues, ImageValues } from '../../../models/image';
 import { addImage, updateImage } from '../../../utils/http/image';
 import LocationPicker from '../../UI/form/LocationPicker';
@@ -20,6 +20,7 @@ import { UserContext } from '../../../store/user-context';
 import MinorStageSelector from './MinorStageSelector';
 import PlaceToVisitSelector from './PlaceToVisitSelector';
 import { StagesContext } from '../../../store/stages-context';
+import { LatLng } from 'react-native-maps';
 
 type InputValidationResponse = {
   image?: Image;
@@ -45,14 +46,14 @@ const ImageForm: React.FC<ImageFormProps> = ({
   editImageId,
 }): ReactElement => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageCoords, setImageCoords] = useState<LatLng | undefined>(
+    defaultValues?.latitude && defaultValues?.longitude
+      ? { latitude: defaultValues.latitude, longitude: defaultValues.longitude }
+      : undefined
+  );
 
   const userCtx = useContext(UserContext);
   const stagesCtx = useContext(StagesContext);
-
-  const currentMinorStage = stagesCtx.findCurrentMinorStage();
-  const defaultMinorStageId =
-    defaultValues?.minorStageId ||
-    (currentMinorStage ? currentMinorStage.id : undefined);
 
   const timestamp = defaultValues?.timestamp
     ? defaultValues.timestamp
@@ -81,7 +82,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
       errors: [],
     },
     minorStageId: {
-      value: defaultMinorStageId,
+      value: defaultValues?.minorStageId || undefined,
       isValid: true,
       errors: [],
     },
@@ -96,6 +97,21 @@ const ImageForm: React.FC<ImageFormProps> = ({
       errors: [],
     },
   });
+
+  useEffect(() => {
+    if (!inputs.timestamp.value) return;
+    const currentMinorStage = stagesCtx.findMinorStageByDate(
+      parseDateAndTime(inputs.timestamp.value)
+    );
+    setInputs((prevValues) => ({
+      ...prevValues,
+      minorStageId: {
+        value: currentMinorStage?.id || undefined,
+        isValid: true,
+        errors: [],
+      },
+    }));
+  }, [inputs.timestamp.value]);
 
   function inputChangedHandler(
     inputIdentifier: string,
@@ -158,7 +174,12 @@ const ImageForm: React.FC<ImageFormProps> = ({
     });
   }
 
-  function handlePickImage(url: string, lat?: number, lng?: number) {
+  function handlePickImage(
+    url: string,
+    lat?: number,
+    lng?: number,
+    timestamp?: Date
+  ) {
     setInputs((currInputs) => {
       return {
         ...currInputs,
@@ -167,20 +188,32 @@ const ImageForm: React.FC<ImageFormProps> = ({
           isValid: true,
           errors: [],
         },
-        ...(lat && {
-          latitude: {
-            value: lat,
-            isValid: true,
-            errors: [],
-          },
-          longitude: {
-            value: lng,
+        ...(lat !== undefined &&
+          lng !== undefined && {
+            latitude: {
+              value: lat,
+              isValid: true,
+              errors: [],
+            },
+            longitude: {
+              value: lng,
+              isValid: true,
+              errors: [],
+            },
+          }),
+        ...(timestamp && {
+          timestamp: {
+            value: formatDateTime(timestamp),
             isValid: true,
             errors: [],
           },
         }),
       };
     });
+
+    if (lat !== undefined && lng !== undefined) {
+      setImageCoords({ latitude: lat, longitude: lng });
+    }
   }
 
   return (
@@ -216,6 +249,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
                 onChangePlace={(placeId) =>
                   inputChangedHandler('placeToVisitId', placeId)
                 }
+                imageCoords={imageCoords}
               />
             </View>
             <View style={styles.formRow}>

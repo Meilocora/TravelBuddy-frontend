@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import MapView, {
   LatLng,
@@ -22,6 +22,9 @@ import MapView, {
 } from 'react-native-maps';
 import ClusteredMapView from 'react-native-map-clustering';
 import Constants from 'expo-constants';
+import MapViewDirections, {
+  MapViewDirectionsMode,
+} from 'react-native-maps-directions';
 
 import { Icons, ImageLocation, MapType, StackParamList } from '../models';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
@@ -30,7 +33,6 @@ import {
   formatImageToLocation,
   getRegionForImageLocations,
 } from '../utils/location';
-import { formatRouteDuration } from '../utils';
 import IconButton from '../components/UI/IconButton';
 import { usePersistedState } from '../hooks/usePersistedState';
 import { ImageContext } from '../store/image-context';
@@ -38,11 +40,10 @@ import { UserContext } from '../store/user-context';
 import ImageMarker from '../components/Maps/ImageMarker';
 import { Image } from '../models/image';
 import ImageModal from '../components/UI/ImageModal';
-import MapViewDirections, {
-  MapViewDirectionsMode,
-} from 'react-native-maps-directions';
 import Popup from '../components/UI/Popup';
 import MapSettings from '../components/Maps/MapSettings';
+import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
+import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 
 interface ImagesShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ImagesShowMap'>;
@@ -78,10 +79,7 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
   const [popupText, setPopupText] = useState<string | undefined>();
-  const [routeInfo, setRouteInfo] = useState<{
-    distance: number;
-    duration: number;
-  } | null>(null);
+  const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
 
   const [hasInitialZoom, setHasInitialZoom] = useState(false);
 
@@ -206,21 +204,36 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
 
   // ---------- Wenn sich die angezeigten Locations ändern, zoomen wir passend ----------
   useEffect(() => {
+    // nichts zu tun, wenn weder coords noch routePoints da sind
     if (coords.length === 0 && !routePoints) return;
-    let allCoords = coords;
-    if (routePoints) {
-      allCoords = allCoords.concat(routePoints);
-    }
-    if (imageLocation) {
-      allCoords = allCoords.concat([
-        {
+
+    let allCoords = [];
+
+    if (routePoints && routePoints.length >= 2) {
+      // Case 1: min. 2 routePoints -> only focus on them + users current location
+      allCoords = [...routePoints];
+      if (userCtx.currentLocation) {
+        allCoords.unshift({
+          latitude: userCtx.currentLocation.latitude,
+          longitude: userCtx.currentLocation.longitude,
+        });
+      }
+    } else {
+      // Case 2: less than 2 routePoints -> adjust screen to all locations
+      allCoords = [...coords];
+
+      if (imageLocation) {
+        allCoords.push({
           latitude: imageLocation.latitude,
           longitude: imageLocation.longitude,
-        },
-      ]);
+        });
+      }
     }
+
+    if (allCoords.length === 0) return;
+
     fitToItems(allCoords, !hasInitialZoom);
-  }, [coords, fitToItems, hasInitialZoom]);
+  }, [coords, routePoints, imageLocation, fitToItems, hasInitialZoom]);
 
   const renderCluster = useCallback((cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -231,7 +244,12 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     };
 
     return (
-      <Marker key={`cluster-${id}`} coordinate={c} onPress={onPress}>
+      <Marker
+        key={`cluster-${id}`}
+        coordinate={c}
+        onPress={onPress}
+        style={{ zIndex: 50 }}
+      >
         <View style={styles.cluster}>
           <Text style={styles.clusterText}>{count}</Text>
         </View>
@@ -321,6 +339,24 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
             }}
           />
         )}
+        {routePoints &&
+          routePoints.map((pt, index) => (
+            <Marker
+              key={`route-point-${index}`}
+              coordinate={pt}
+              draggable
+              pinColor='blue'
+              onDragEnd={(e) => {
+                const { latitude, longitude } = e.nativeEvent.coordinate;
+                setRoutePoints((prev) => {
+                  if (!prev) return prev;
+                  const updated = [...prev];
+                  updated[index] = { latitude, longitude };
+                  return updated;
+                });
+              }}
+            />
+          ))}
         {imageLocation && (
           <ImageMarker
             imageLocation={imageLocation}
@@ -349,23 +385,17 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
           })}
       </ClusteredMapView>
       {routeInfo && (
-        <View style={styles.routeInfoContainer}>
-          <Pressable
-            onPress={() => setRouteInfo(null)}
-            style={styles.routeInfoTextContainer}
-          >
-            <Text style={styles.routeInfoText}>
-              Distance: {routeInfo.distance.toFixed(1)} km | Time:{' '}
-              {formatRouteDuration(routeInfo.duration)}
-            </Text>
-          </Pressable>
-          <IconButton
-            icon={Icons.delete}
-            onPress={handleDeleteRoute}
-            color={GlobalStyles.colors.graySoft}
-            containerStyle={styles.deleteIcon}
-          />
-        </View>
+        <RouteInfo
+          onClose={() => setRouteInfo(null)}
+          onDeleteRoute={handleDeleteRoute}
+          routeInfo={routeInfo}
+        />
+      )}
+      {routePoints && (
+        <OpenRouteInGoogleMapsButton
+          routePoints={routePoints}
+          startPoint={userCtx.currentLocation}
+        />
       )}
     </View>
   );
@@ -394,26 +424,6 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.graySoft,
     fontWeight: '700',
     fontSize: 24,
-  },
-  routeInfoContainer: {
-    position: 'absolute',
-    top: 55,
-    alignSelf: 'center',
-  },
-  routeInfoTextContainer: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-    borderRadius: 8,
-    zIndex: 1,
-  },
-  routeInfoText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  deleteIcon: {
-    marginHorizontal: 'auto',
-    backgroundColor: GlobalStyles.colors.grayDark,
-    borderRadius: 50,
   },
 });
 

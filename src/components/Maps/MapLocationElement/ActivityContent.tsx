@@ -8,15 +8,19 @@ import IconButton from '../../UI/IconButton';
 import { StagesContext } from '../../../store/stages-context';
 import { formatAmount } from '../../../utils';
 import TextLink from '../../UI/TextLink';
+import { LatLng } from 'react-native-maps';
+import { GlobalStyles } from '../../../constants/styles';
 
 interface ActivityContentProps {
   minorStageId: number;
   activity: Activity;
+  addRoutePoint?: (coord: LatLng) => void;
 }
 
 const ActivityContent: React.FC<ActivityContentProps> = ({
   minorStageId,
   activity,
+  addRoutePoint,
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
@@ -49,10 +53,24 @@ const ActivityContent: React.FC<ActivityContentProps> = ({
               {activity.name}
             </TextLink>
           )}
+          {typeof addRoutePoint !== 'undefined' && (
+            <IconButton
+              icon={Icons.routePlanner}
+              onPress={() =>
+                addRoutePoint({
+                  latitude: activity.latitude!,
+                  longitude: activity.longitude!,
+                })
+              }
+              color={GlobalStyles.colors.grayDark}
+              containerStyle={styles.button}
+              size={24}
+            />
+          )}
           <IconButton
             icon={Icons.goTo}
             onPress={handleGoToActivity}
-            color={'black'}
+            color={GlobalStyles.colors.grayDark}
             containerStyle={styles.button}
             size={24}
           />
@@ -105,12 +123,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginVertical: 5,
+    flexWrap: 'wrap',
   },
   rowElement: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
     width: '50%',
+    flexWrap: 'wrap',
   },
   header: {
     fontSize: 20,
@@ -143,10 +163,10 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   button: {
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     marginVertical: 0,
     paddingHorizontal: 4,
-    paddingVertical: 0,
+    paddingVertical: 4,
   },
 });
 

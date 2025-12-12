@@ -13,12 +13,16 @@ import Constants from 'expo-constants';
 import { RouteProp } from '@react-navigation/native';
 import MapView, {
   LatLng,
+  LongPressEvent,
   MapPressEvent,
   Marker,
   PoiClickEvent,
   Region,
 } from 'react-native-maps';
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
+import MapViewDirections, {
+  MapViewDirectionsMode,
+} from 'react-native-maps-directions';
 
 import {
   ColorScheme,
@@ -27,6 +31,7 @@ import {
   Location,
   FormLimits,
   MapType,
+  Icons,
 } from '../models';
 import Modal from '../components/UI/Modal';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
@@ -43,6 +48,12 @@ import { generateRandomString } from '../utils';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { StagesContext } from '../store/stages-context';
 import { usePersistedState } from '../hooks/usePersistedState';
+import MapSettings from '../components/Maps/MapSettings';
+import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
+import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
+import { UserContext } from '../store/user-context';
+import IconButton from '../components/UI/IconButton';
+import Popup from '../components/UI/Popup';
 
 interface LocationPickMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'LocationPickMap'>;
@@ -57,6 +68,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
   const stagesCtx = useContext(StagesContext);
+  const userCtx = useContext(UserContext);
 
   const mapRef = useRef<MapView>(null);
 
@@ -68,6 +80,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         }
       : null;
 
+  const [showSettings, setShowSettings] = useState(false);
   const [selectedCoord, setSelectedCoord] = useState<LatLng | null>(
     route.params.hasLocation ? initialCoord : null
   );
@@ -99,6 +112,11 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     route.params.initialTitle
   );
   const [showModal, setShowModal] = useState(false);
+  const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
+  const [directionsMode, setDirectionsMode] =
+    usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
+  const [popupText, setPopupText] = useState<string | undefined>();
+  const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
     'standard'
@@ -238,16 +256,48 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <HeaderTitle title={'Pick a Location'} />,
+      headerRight: () => (
+        <IconButton
+          size={24}
+          icon={showSettings ? Icons.settingsFilled : Icons.settingsOutline}
+          onPress={() => setShowSettings((prevValue) => !prevValue)}
+        />
+      ),
       headerStyle: { backgroundColor: mainColor },
       headerTintColor: GlobalStyles.colors.grayDark,
     });
   }, []);
 
-  // TODO: Add longPress for routePlanning
-  // TODO: Add Settings
+  function handleLongPress(e: LongPressEvent) {
+    if (routePoints?.length === 25) return;
+    const lat = e.nativeEvent.coordinate.latitude;
+    const lng = e.nativeEvent.coordinate.longitude;
+    const newPoint = { latitude: lat, longitude: lng };
+
+    setRoutePoints((prevPoints) =>
+      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+    );
+  }
+
+  function handleDeleteRoute() {
+    setRoutePoints(undefined);
+    setRouteInfo(null);
+  }
 
   return (
     <View style={styles.container}>
+      {showSettings && (
+        <MapSettings
+          onClose={() => setShowSettings(false)}
+          mode={directionsMode}
+          setMode={(m: MapViewDirectionsMode) => setDirectionsMode(m)}
+          setMapType={setMapType}
+          mapType={mapType}
+        />
+      )}
+      {popupText && (
+        <Popup content={popupText} onClose={() => setPopupText(undefined)} />
+      )}
       {showModal && (
         <Modal
           content='Do you want to add this place?'
@@ -275,6 +325,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         ref={mapRef}
         initialRegion={region}
         onPress={noMapTouch ? undefined : selectLocationHandler}
+        onLongPress={handleLongPress}
         onPoiClick={handlePoiClick}
         style={styles.map}
         showsUserLocation
@@ -283,6 +334,45 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
+        {routePoints && routePoints.length > 0 && (
+          <MapViewDirections
+            apikey={GOOGLE_API_KEY}
+            origin={userCtx.currentLocation}
+            destination={routePoints[routePoints.length - 1]}
+            waypoints={
+              routePoints.length > 1 ? routePoints.slice(0, -1) : undefined
+            }
+            strokeWidth={4}
+            strokeColor='blue'
+            precision='high'
+            mode={directionsMode}
+            onError={() => setPopupText('No route found...')}
+            onReady={(result) => {
+              setRouteInfo({
+                distance: result.distance, // in kilometers
+                duration: result.duration, // in minutes
+              });
+            }}
+          />
+        )}
+        {routePoints &&
+          routePoints.map((pt, index) => (
+            <Marker
+              key={`route-point-${index}`}
+              coordinate={pt}
+              draggable
+              pinColor='blue'
+              onDragEnd={(e) => {
+                const { latitude, longitude } = e.nativeEvent.coordinate;
+                setRoutePoints((prev) => {
+                  if (!prev) return prev;
+                  const updated = [...prev];
+                  updated[index] = { latitude, longitude };
+                  return updated;
+                });
+              }}
+            />
+          ))}
         {!minorStageId && (selectedCoord || initialCoord) && (
           <Marker title={title} coordinate={(selectedCoord || initialCoord)!} />
         )}
@@ -318,7 +408,21 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             />
           ))}
       </MapView>
-      {route.params.onResetLocation && (
+      {routeInfo && (
+        <RouteInfo
+          onClose={() => setRouteInfo(null)}
+          onDeleteRoute={handleDeleteRoute}
+          routeInfo={routeInfo}
+          topDistance={70}
+        />
+      )}
+      {routePoints && (
+        <OpenRouteInGoogleMapsButton
+          routePoints={routePoints}
+          startPoint={userCtx.currentLocation}
+        />
+      )}
+      {route.params.onResetLocation && !routePoints && (
         <View style={styles.buttonContainer}>
           <Button colorScheme={initialColorScheme} onPress={handleResetPlace}>
             Reset Location
@@ -336,14 +440,14 @@ const styles = StyleSheet.create({
   searchContainer: {
     position: 'absolute',
     top: 10,
-    width: '75%',
+    width: '70%',
     alignSelf: 'center',
     zIndex: 1,
   },
   searchInput: {
     height: 40,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: GlobalStyles.colors.graySoft,
     paddingHorizontal: 10,
   },
   map: {

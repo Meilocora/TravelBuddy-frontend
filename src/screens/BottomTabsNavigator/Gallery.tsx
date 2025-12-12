@@ -136,8 +136,6 @@ const Gallery: React.FC<GalleryProps> = ({
     );
   }
 
-  // TODO: longPress => mehrere images markieren + löschen
-
   return (
     <View style={styles.root}>
       {isDeleting && (
@@ -153,15 +151,6 @@ const Gallery: React.FC<GalleryProps> = ({
       {content}
       <FloatingButton onPress={handleAddImage} />
       {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
-      {/* {isFetching && (
-        <Animated.View style={styles.indicatorContainer}>
-          <ActivityIndicator
-            size={80}
-            color={GlobalStyles.colors.greenAccent}
-            style={styles.indicator}
-          />
-        </Animated.View>
-      )} */}
     </View>
   );
 };

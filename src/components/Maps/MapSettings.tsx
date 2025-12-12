@@ -18,26 +18,30 @@ import Button from '../UI/Button';
 
 interface MapSettingsProps {
   onClose: () => void;
-  mode: MapViewDirectionsMode;
   setMode: (mode: MapViewDirectionsMode) => void;
+  mode: MapViewDirectionsMode;
   setMapType: (newType: MapType) => void;
   mapType: MapType;
   toggleShowPastLocations?: () => void;
   showPastLocations?: boolean;
   toggleShowAllPlaces?: () => void;
   showAllPlaces?: boolean;
+  toggleShowImages?: () => void;
+  showImages?: boolean;
 }
 
 const MapSettings: React.FC<MapSettingsProps> = ({
   onClose,
+  setMode,
+  mode,
+  setMapType,
+  mapType,
   toggleShowPastLocations,
   showPastLocations,
   toggleShowAllPlaces,
   showAllPlaces,
-  mode,
-  setMode,
-  setMapType,
-  mapType,
+  toggleShowImages,
+  showImages,
 }): ReactElement => {
   // Drag-to-dismiss logic
   const translateY = useSharedValue(0);
@@ -144,6 +148,11 @@ const MapSettings: React.FC<MapSettingsProps> = ({
         {typeof showAllPlaces === 'boolean' && (
           <SettingItem onPress={toggleShowAllPlaces!} state={showAllPlaces}>
             Show all Places of country
+          </SettingItem>
+        )}
+        {typeof showImages === 'boolean' && (
+          <SettingItem onPress={toggleShowImages!} state={showImages}>
+            Show Images
           </SettingItem>
         )}
         <View>

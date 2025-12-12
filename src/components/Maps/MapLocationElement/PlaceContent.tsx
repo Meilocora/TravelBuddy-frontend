@@ -15,15 +15,18 @@ import TextLink from '../../UI/TextLink';
 import { GlobalStyles } from '../../../constants/styles';
 import ImageModal from '../../UI/ImageModal';
 import { isImageLink } from '../../../utils';
+import { LatLng } from 'react-native-maps';
 
 interface PlaceContentProps {
   place: PlaceToVisit;
   minorStageId?: number;
+  addRoutePoint?: (coord: LatLng) => void;
 }
 
 const PlaceContent: React.FC<PlaceContentProps> = ({
   place,
   minorStageId,
+  addRoutePoint,
 }): ReactElement => {
   const [showImage, setShowImage] = useState(false);
   const navigation =
@@ -83,7 +86,21 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
             <IconButton
               icon={Icons.goTo}
               onPress={handleGoToStage}
-              color={'black'}
+              color={GlobalStyles.colors.grayDark}
+              containerStyle={styles.button}
+              size={24}
+            />
+          )}
+          {typeof addRoutePoint !== 'undefined' && (
+            <IconButton
+              icon={Icons.routePlanner}
+              onPress={() =>
+                addRoutePoint({
+                  latitude: place.latitude,
+                  longitude: place.longitude,
+                })
+              }
+              color={GlobalStyles.colors.grayDark}
               containerStyle={styles.button}
               size={24}
             />
@@ -91,7 +108,7 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
           <IconButton
             icon={Icons.edit}
             onPress={handleEditPlace}
-            color={'black'}
+            color={GlobalStyles.colors.grayDark}
             containerStyle={styles.button}
             size={24}
           />
@@ -144,12 +161,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginVertical: 5,
+    flexWrap: 'wrap',
   },
   rowElement: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
     width: '50%',
+    flexWrap: 'wrap',
   },
   header: {
     fontSize: 20,
@@ -157,6 +176,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     maxWidth: '80%',
+    flexWrap: 'wrap',
   },
   linkHeader: {
     fontSize: 20,
@@ -194,10 +214,10 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   button: {
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     marginVertical: 0,
     paddingHorizontal: 4,
-    paddingVertical: 0,
+    paddingVertical: 4,
   },
 });
 

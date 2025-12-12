@@ -6,8 +6,8 @@ import { Image as ExpoImage } from 'expo-image';
 import { ImageLocation } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 
-const HEIGHT = 64;
-const WIDTH = 64;
+const HEIGHT = 52;
+const WIDTH = 52;
 
 interface ImageMarkerProps {
   imageLocation: ImageLocation;
@@ -37,7 +37,6 @@ const ImageMarker: React.FC<ImageMarkerProps> = ({
   }
 
   useEffect(() => {
-    // kurze Verzögerung reicht meistens; noch besser: auf onLoad/onError des Bildes hören (unten)
     const t = setTimeout(() => setTracksViewChanges(false), 1000);
     return () => clearTimeout(t);
   }, [url]);
@@ -58,13 +57,10 @@ const ImageMarker: React.FC<ImageMarkerProps> = ({
           source={{ uri: url }}
           style={styles.photo}
           contentFit='cover'
-          // sanftes Einblenden
           transition={150}
-          // Bild geladen → ViewChanges aus (Android Performance)
           onError={handleImageError}
           cachePolicy='memory-disk'
         />
-        {/* optionaler, dünner Border-Ring für bessere Lesbarkeit */}
         <View
           style={[
             styles.ring,
@@ -85,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: GlobalStyles.colors.graySoft, // Platzhalter-Hintergrund
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 20,
   },
   photo: {
     width: '100%',

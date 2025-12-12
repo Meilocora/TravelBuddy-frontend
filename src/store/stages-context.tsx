@@ -77,6 +77,7 @@ interface StagesContextType {
     minorStageId: number
   ) => undefined | PlaceToVisit[];
   findAllMinorStages: () => undefined | MinorStage[];
+  findMinorStageByDate: (timestamp: Date) => MinorStage | undefined;
 }
 
 export const StagesContext = createContext<StagesContextType>({
@@ -107,6 +108,7 @@ export const StagesContext = createContext<StagesContextType>({
   findTransportationsStage: () => undefined,
   findAssignedPlaces: (countryId, minorStageId) => undefined,
   findAllMinorStages: () => undefined,
+  findMinorStageByDate: () => undefined,
 });
 
 export default function StagesContextProvider({
@@ -570,6 +572,19 @@ export default function StagesContextProvider({
     return minorStages;
   }
 
+  function findMinorStageByDate(timestamp: Date) {
+    const minorStages = findAllMinorStages();
+    if (!minorStages) return undefined;
+    for (const stage of minorStages) {
+      if (
+        parseDate(stage.scheduled_start_time) <= timestamp &&
+        timestamp <= parseEndDate(stage.scheduled_end_time)
+      ) {
+        return stage;
+      }
+    }
+  }
+
   const value = {
     journeys,
     fetchStagesData,
@@ -593,6 +608,7 @@ export default function StagesContextProvider({
     findTransportationsStage,
     findAssignedPlaces,
     findAllMinorStages,
+    findMinorStageByDate,
   };
 
   return (
