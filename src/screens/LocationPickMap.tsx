@@ -53,14 +53,12 @@ import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import { UserContext } from '../store/user-context';
 import IconButton from '../components/UI/IconButton';
-import Popup from '../components/UI/Popup';
+import { DELTA } from '../constants/maps';
 
 interface LocationPickMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'LocationPickMap'>;
   route: RouteProp<StackParamList, 'LocationPickMap'>;
 }
-
-const DELTA = 0.005;
 
 const LocationPickMap: React.FC<LocationPickMapProps> = ({
   navigation,
@@ -115,7 +113,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
-  const [popupText, setPopupText] = useState<string | undefined>();
   const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
@@ -295,9 +292,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
           mapType={mapType}
         />
       )}
-      {popupText && (
-        <Popup content={popupText} onClose={() => setPopupText(undefined)} />
-      )}
       {showModal && (
         <Modal
           content='Do you want to add this place?'
@@ -334,10 +328,10 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
       >
-        {routePoints && routePoints.length > 0 && (
+        {routePoints && routePoints.length > 1 && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={userCtx.currentLocation}
+            origin={routePoints[0]}
             destination={routePoints[routePoints.length - 1]}
             waypoints={
               routePoints.length > 1 ? routePoints.slice(0, -1) : undefined
@@ -346,11 +340,12 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             strokeColor='blue'
             precision='high'
             mode={directionsMode}
-            onError={() => setPopupText('No route found...')}
+            onError={() => setRouteInfo({ display: true })}
             onReady={(result) => {
               setRouteInfo({
                 distance: result.distance, // in kilometers
                 duration: result.duration, // in minutes
+                display: true,
               });
             }}
           />
@@ -408,7 +403,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             />
           ))}
       </MapView>
-      {routeInfo && (
+      {routeInfo?.display && (
         <RouteInfo
           onClose={() => setRouteInfo(null)}
           onDeleteRoute={handleDeleteRoute}
@@ -416,10 +411,10 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
           topDistance={70}
         />
       )}
-      {routePoints && (
+      {routePoints && routePoints?.length > 1 && (
         <OpenRouteInGoogleMapsButton
           routePoints={routePoints}
-          startPoint={userCtx.currentLocation}
+          startPoint={routePoints[0]}
         />
       )}
       {route.params.onResetLocation && !routePoints && (

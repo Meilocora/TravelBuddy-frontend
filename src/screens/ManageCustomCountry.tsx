@@ -63,7 +63,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
           onPress={handleChangeEdit}
           color={
             isEditing
-              ? GlobalStyles.colors.amberAccent
+              ? GlobalStyles.colors.greenAccent
               : GlobalStyles.colors.grayDark
           }
         />

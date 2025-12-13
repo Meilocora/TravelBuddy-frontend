@@ -27,6 +27,8 @@ interface ImageModalProps {
   onClose: () => void;
   onDelete?: () => void;
   onCalcRoute?: (coords: LatLng) => void;
+
+  // TODO: Enable Swiping, when many images are given
 }
 
 const ImageModal: React.FC<ImageModalProps> = ({

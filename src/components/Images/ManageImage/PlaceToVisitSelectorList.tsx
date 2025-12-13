@@ -109,6 +109,7 @@ const PlaceToVisitSelectorList: React.FC<PlaceToVisitSelectorListProps> = ({
 
   function handleShowOnMap() {
     const countryIds = countryCtx.getCustomCountriesIds();
+
     navigation.navigate('LocationPickMap', {
       hasLocation: false,
       initialLat: userCtx.currentLocation?.latitude || 0,

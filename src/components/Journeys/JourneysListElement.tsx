@@ -1,5 +1,5 @@
 import { View, Pressable, StyleSheet } from 'react-native';
-import { ReactElement, useContext } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 import {
@@ -26,6 +26,8 @@ import ElementComment from '../UI/list/ElementComment';
 import { StagesContext } from '../../store/stages-context';
 import CountryElement from '../UI/CountryElement';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { ImageContext } from '../../store/image-context';
+import LocalImagesList from '../Images/LocalImagesList';
 
 interface JourneyListElementProps {
   journey: Journey;
@@ -35,6 +37,9 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   journey,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
+  const imageCtx = useContext(ImageContext);
+
+  const [showImages, setShowImages] = useState(false);
 
   const moneyAvailable = formatAmount(journey.costs.budget);
   const moneyPlanned = formatAmount(journey.costs.spent_money);
@@ -48,9 +53,12 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   let currentCountry: string;
   let countryList: CustomCountry[] = [];
   let minorStagesQty = 0;
+  let minorStageIds: number[] = [];
   if (journey.majorStages) {
     for (const majorStage of journey.majorStages) {
       minorStagesQty += majorStage.minorStages?.length || 0;
+      majorStage.minorStages &&
+        minorStageIds.push(...majorStage.minorStages.map((s) => s.id));
       if (!countryList.some((c) => c.id === majorStage.country.id)) {
         countryList.push(majorStage.country);
       }
@@ -67,6 +75,7 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   }
 
   const isOver = validateIsOver(journey.scheduled_end_time);
+  const hasImages = imageCtx.hasImages('MinorStages', undefined, minorStageIds);
 
   const elementDetailInfo: ElementDetailInfo[] = [
     { icon: Icons.duration, value: `${durationInDays} days` },
@@ -102,48 +111,64 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   }
 
   return (
-    <View
-      style={[
-        styles.outerContainer,
-        isOver && styles.inactiveOuterContainer,
-        journey.currentJourney && styles.currentOuterContainer,
-      ]}
-    >
-      <View style={styles.buttonsContainer}>
-        <IconButton
-          icon={Icons.edit}
-          color={GlobalStyles.colors.greenAccent}
-          onPress={handleEdit}
-        />
-      </View>
-      <Pressable
-        style={({ pressed }) => pressed && styles.pressed}
-        android_ripple={{ color: GlobalStyles.colors.greenAccent }}
-        onPress={handleOnPress}
+    <>
+      <LocalImagesList
+        visible={showImages}
+        handleClose={() => setShowImages(false)}
+        minorStageIds={minorStageIds}
+      />
+      <View
+        style={[
+          styles.outerContainer,
+          isOver && styles.inactiveOuterContainer,
+          journey.currentJourney && styles.currentOuterContainer,
+        ]}
       >
-        <View style={styles.innerContainer}>
-          <View style={styles.headerContainer}>
-            <ElementTitle>{journey.name}</ElementTitle>
-          </View>
-          <ElementComment content={`${startDate} - ${endDate}`} />
-          <DetailArea elementDetailInfo={elementDetailInfo} />
-          <View style={styles.countryRow}>
-            {countryList.map((country, index) => (
-              <CountryElement
-                country={country}
-                currentCountry={country.name === currentCountry}
-                isLast={index === journey.countries.length - 1}
-                key={generateRandomString()}
-              />
-            ))}
-          </View>
+        <View style={styles.buttonsContainer}>
+          <IconButton
+            icon={Icons.edit}
+            color={GlobalStyles.colors.greenAccent}
+            onPress={handleEdit}
+            containerStyle={styles.button}
+          />
+          {hasImages && (
+            <IconButton
+              icon={Icons.images}
+              color={GlobalStyles.colors.greenAccent}
+              onPress={() => setShowImages(true)}
+              containerStyle={styles.button}
+            />
+          )}
         </View>
-        {/* <CustomProgressBar
+        <Pressable
+          style={({ pressed }) => pressed && styles.pressed}
+          android_ripple={{ color: GlobalStyles.colors.greenAccent }}
+          onPress={handleOnPress}
+        >
+          <View style={styles.innerContainer}>
+            <View style={styles.headerContainer}>
+              <ElementTitle>{journey.name}</ElementTitle>
+            </View>
+            <ElementComment content={`${startDate} - ${endDate}`} />
+            <DetailArea elementDetailInfo={elementDetailInfo} />
+            <View style={styles.countryRow}>
+              {countryList.map((country, index) => (
+                <CountryElement
+                  country={country}
+                  currentCountry={country.name === currentCountry}
+                  isLast={index === journey.countries.length - 1}
+                  key={generateRandomString()}
+                />
+              ))}
+            </View>
+          </View>
+          {/* <CustomProgressBar
             startDate={journey.scheduled_start_time}
             endDate={journey.scheduled_end_time}
           /> */}
-      </Pressable>
-    </View>
+        </Pressable>
+      </View>
+    </>
   );
 };
 
@@ -191,11 +216,16 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: 'absolute',
-    flexDirection: 'row',
     justifyContent: 'flex-end',
     zIndex: 1,
-    right: 4,
-    top: 5,
+    right: 0,
+    top: 0,
+    marginTop: 10,
+  },
+  button: {
+    marginHorizontal: 10,
+    marginBottom: 10,
+    padding: 0,
   },
   countryRow: {
     maxHeight: 60,

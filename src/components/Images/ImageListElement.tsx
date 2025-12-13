@@ -9,7 +9,7 @@ import { GlobalStyles } from '../../constants/styles';
 
 interface ImageListElementProps {
   image: ImageType;
-  onDelete: (image: ImageType) => void;
+  onDelete?: (image: ImageType) => void;
 }
 
 const ImageListElement: React.FC<ImageListElementProps> = ({
@@ -20,7 +20,7 @@ const ImageListElement: React.FC<ImageListElementProps> = ({
 
   function handleDelete() {
     setShowModal(false);
-    onDelete(image);
+    onDelete!(image);
   }
 
   return (
@@ -30,7 +30,7 @@ const ImageListElement: React.FC<ImageListElementProps> = ({
         onClose={() => setShowModal(false)}
         visible={showModal}
         image={image}
-        onDelete={handleDelete}
+        onDelete={onDelete && handleDelete}
       />
       <Pressable style={styles.container} onPress={() => setShowModal(true)}>
         <Image

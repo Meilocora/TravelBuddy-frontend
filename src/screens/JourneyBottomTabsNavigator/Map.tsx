@@ -51,7 +51,6 @@ import {
   getRemainingCountriesPlacesLocations,
 } from '../../utils/location';
 import MapLocationList from '../../components/Maps/MapLocationList/MapLocationList';
-import Popup from '../../components/UI/Popup';
 import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
 import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
@@ -63,20 +62,17 @@ import { CustomCountryContext } from '../../store/custom-country-context';
 import { GlobalStyles, lightMapStyle } from '../../constants/styles';
 import { usePersistedState } from '../../hooks/usePersistedState';
 import { ImageContext } from '../../store/image-context';
-import RouteInfo from '../../components/Maps/RouteInfo';
+import RouteInfo, { RouteInfoType } from '../../components/Maps/RouteInfo';
 import ImageModal from '../../components/UI/ImageModal';
 import { Image as ImageType } from '../../models/image';
 import OpenRouteInGoogleMapsButton from '../../components/Maps/OpenRouteInGoogleMapsButton';
 import ImageMarker from '../../components/Maps/ImageMarker';
+import { DELTA, EDGE_PADDING } from '../../constants/maps';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
   route: RouteProp<JourneyBottomTabsParamsList, 'Map'>;
 }
-
-const DELTA = 0.005;
-
-const EDGE_PADDING = { top: 60, right: 60, bottom: 60, left: 60 };
 
 const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const imageCtx = useContext(ImageContext);
@@ -104,11 +100,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     'standard'
   );
   const [region, setRegion] = useState<Region | null>(null);
-  const [routeInfo, setRouteInfo] = useState<{
-    distance: number;
-    duration: number;
-  } | null>(null);
-  const [popupText, setPopupText] = useState<string | undefined>();
+  const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
   const [pressedLocation, setPressedLocation] = useState<
     Location | undefined
   >();
@@ -338,11 +330,6 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     (m: MapViewDirectionsMode) => setDirectionsMode(m),
     []
   );
-  const handleClosePopup = useCallback(() => setPopupText(undefined), []);
-  const handleCloseMapLocationElement = useCallback(
-    () => setPressedLocation(undefined),
-    []
-  );
 
   function handleHideButtons(identifier: 'locationList' | 'routePlanner') {
     if (identifier === 'locationList') {
@@ -436,14 +423,10 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       allCoords = [...coords];
     }
 
-    if (pressedLocation) {
-      allCoords = [pressedLocation.data];
-    }
-
     if (allCoords.length === 0) return;
 
     fitToItems(allCoords);
-  }, [coords, routePoints, pressedLocation, fitToItems]);
+  }, [coords, routePoints, fitToItems]);
 
   const renderCluster = useCallback((cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -466,6 +449,27 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       </Marker>
     );
   }, []);
+
+  const handlePressMarker = useCallback((location: Location) => {
+    setPressedLocation(location);
+
+    // Map auf den Marker zentrieren
+    if (mapRef.current) {
+      const { latitude, longitude } = location.data;
+      const region: Region = {
+        latitude,
+        longitude,
+        latitudeDelta: DELTA,
+        longitudeDelta: DELTA,
+      };
+      mapRef.current.animateToRegion(region, 250);
+    }
+  }, []);
+
+  function handleCloseMapLocationElement() {
+    setPressedLocation(undefined);
+    fitToItems(coords);
+  }
 
   function handlePressImageMarker(location: ImageLocation) {
     const localImage = imageCtx.findImage(location.id);
@@ -521,13 +525,6 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           mapType={mapType}
           toggleShowImages={() => setShowImages((prevValue) => !prevValue)}
           showImages={showImages}
-        />
-      )}
-      {popupText && (
-        <Popup
-          content={popupText}
-          onClose={handleClosePopup}
-          colorScheme={ColorScheme.accent}
         />
       )}
       <MapScopeSelector
@@ -591,11 +588,12 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
               strokeColor='blue'
               precision='high'
               mode={directionsMode}
-              onError={() => setPopupText('No route found...')}
+              onError={() => setRouteInfo({ display: true })}
               onReady={(result) => {
                 setRouteInfo({
                   distance: result.distance, // in kilometers
                   duration: result.duration, // in minutes
+                  display: true,
                 });
               }}
             />
@@ -625,7 +623,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
                 key={generateRandomString()}
                 location={location}
                 active={isActive}
-                onPressMarker={setPressedLocation.bind(location)}
+                onPressMarker={handlePressMarker}
               />
             );
           })}
@@ -645,7 +643,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             })}
         </ClusteredMapView>
       )}
-      {routeInfo && (
+      {routeInfo?.display && (
         <RouteInfo
           onClose={() => setRouteInfo(null)}
           onDeleteRoute={handleDeleteRoute}

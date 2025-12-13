@@ -210,9 +210,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
             <IconButton
               icon={Icons.filter}
               onPress={handleTapSort}
-              color={
-                sort === 'desc' ? GlobalStyles.colors.amberAccent : undefined
-              }
+              color={GlobalStyles.colors.grayDark}
               style={
                 sort === 'desc'
                   ? { transform: [{ rotate: '180deg' }] }
@@ -231,12 +229,12 @@ const PlacesList: React.FC<PlacesListProps> = ({
             <IconButton
               icon={isFav ? Icons.heartFilled : Icons.heartOutline}
               onPress={() => setIsFav((prevValue) => !prevValue)}
-              color={isFav ? GlobalStyles.colors.amberAccent : undefined}
+              color={isFav ? GlobalStyles.colors.favorite : undefined}
             />
             <IconButton
               icon={isVisited ? Icons.checkmarkFilled : Icons.checkmarkOutline}
               onPress={() => setIsVisited((prevValue) => !prevValue)}
-              color={isVisited ? GlobalStyles.colors.amberAccent : undefined}
+              color={isVisited ? GlobalStyles.colors.visited : undefined}
             />
           </View>
         </View>

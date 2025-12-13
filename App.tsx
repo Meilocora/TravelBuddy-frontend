@@ -59,13 +59,12 @@ import ManageImage from './src/screens/ManageImage';
 import ImagesShowMap from './src/screens/ImagesShowMap';
 
 // PRIO 1 \\
-// Implement using Images of users via Firebase => connect images to placesToVisit and maybe minorStages
-// Map überarbeiten
-// Filter für gallery (Favorite, country, minorStage, place, sort by date)
+// Bilder in CustomCountry ansehen können
+// Bilder beim PlaceToVisit ansehen können
+// LocationElement => Images
+// Bilder in Journey, Major- und MinorStage ansehen können
 
-// TODO: Bilder in MinorStage ansehen können => findMinorStagesImages
-// TODO: Bilder in CustomCountry ansehen können => findCountriesImages
-// TODO: Bilder beim PlaceToVisit ansehen können => findPlacesImages
+// TODO: ImageModal auch swipefähig machen
 
 // PRIO 2 \\
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
@@ -77,11 +76,11 @@ import ImagesShowMap from './src/screens/ImagesShowMap';
 // PRIO 3 \\
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
-// TODO: automate generation of DiaShow for Images of a Journey
 // TODO: Checks für ValidationLog erweitern
 // TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
+// TODO: automate generation of DiaShow for Images of a Journey
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();

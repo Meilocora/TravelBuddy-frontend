@@ -25,6 +25,9 @@ import {
 import Modal from '../../UI/Modal';
 import PlacesToggle from '../Places/PlacesToggle';
 import { UserContext } from '../../../store/user-context';
+import { ImageContext } from '../../../store/image-context';
+import LocalImagesList from '../../Images/LocalImagesList';
+import { PlaceContext } from '../../../store/place-context';
 
 interface CustomCountryFormProps {
   country: CustomCountry;
@@ -46,8 +49,15 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [switchConversion, setSwitchConversion] = useState(false);
+  const [showImages, setShowImages] = useState(false);
 
   const userCtx = useContext(UserContext);
+  const imageCtx = useContext(ImageContext);
+  const placeCtx = useContext(PlaceContext);
+  const places = placeCtx.getPlacesByCountry(country.id);
+  const placeIds = places.map((p) => p.id);
+
+  const hasImages = imageCtx.hasImages('CustomCountry', country.id, placeIds);
 
   // TODO: Speichere die Languages direkt im backend korrekt und lösche dafür das hier raus
   const languages = getLanguageNames(country.languages);
@@ -72,7 +82,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
     }
   }
 
-  // TODO: Delete Code everywhere and make Currencies larger instead (with all infos available)
+  // TODO: Delete "Code" everywhere and make Currencies larger instead (with all infos available)
 
   const [inputs, setInputs] = useState<CustomCountryFormValues>({
     code: {
@@ -188,6 +198,11 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
   return (
     <>
+      <LocalImagesList
+        visible={showImages}
+        handleClose={() => setShowImages(false)}
+        countryId={country.id}
+      />
       {isDeleting && (
         <Modal
           title='Are you sure?'
@@ -205,6 +220,13 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
               {country.name}
             </TextLink>
           )
+        )}
+        {hasImages && (
+          <IconButton
+            icon={Icons.images}
+            onPress={() => setShowImages(true)}
+            style={styles.imagesButton}
+          />
         )}
         <ScrollView>
           <View style={styles.formRow}>
@@ -470,8 +492,8 @@ const styles = StyleSheet.create({
   outerContainer: {},
   container: {
     flex: 1,
-    padding: 12,
-    marginVertical: 20,
+    paddingHorizontal: 12,
+    marginTop: 20,
     marginHorizontal: 10,
   },
   header: {
@@ -480,6 +502,10 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.grayDark,
     fontWeight: 'bold',
     marginBottom: 8,
+  },
+  imagesButton: {
+    position: 'absolute',
+    right: 0,
   },
   underlined: {
     textDecorationLine: 'underline',

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +33,8 @@ import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { ImageContext } from '../../store/image-context';
+import LocalImagesList from '../Images/LocalImagesList';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -61,7 +63,14 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   const mapNavigation =
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
+  const imageCtx = useContext(ImageContext);
+
   const [isOpen, setIsOpen] = useState(false);
+  const [showImages, setShowImages] = useState(false);
+
+  let minorStageIds: number[] = [];
+  majorStage.minorStages &&
+    minorStageIds.push(...majorStage.minorStages.map((s) => s.id));
 
   const moneyAvailable = formatAmount(majorStage.costs.budget);
   const moneyPlanned = formatAmount(majorStage.costs.spent_money);
@@ -72,6 +81,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     majorStage.scheduled_end_time
   );
   const isOver = validateIsOver(majorStage.scheduled_end_time);
+  const hasImages = imageCtx.hasImages('MinorStages', undefined, minorStageIds);
 
   const transportDuration = formatDuration(
     majorStage?.transportation?.start_time,
@@ -175,116 +185,131 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   }
 
   return (
-    <View
-      style={[
-        styles.outerContainer,
-        isOver && styles.inactiveOuterContainer,
-        majorStage.currentMajorStage && styles.currentOuterContainer,
-      ]}
-    >
-      <View style={styles.buttonsContainer}>
-        <IconButton
-          icon={Icons.mapFilled}
-          color={GlobalStyles.colors.amberAccent}
-          onPress={handleTapMap}
-          containerStyle={styles.icon}
-        />
-        <IconButton
-          icon={Icons.edit}
-          color={GlobalStyles.colors.amberAccent}
-          onPress={handleEdit}
-          containerStyle={styles.icon}
-        />
-        {!isOpen ? (
-          <IconButton
-            icon={Icons.openDetails}
-            onPress={() => setIsOpen(true)}
-            color={GlobalStyles.colors.amberAccent}
-            containerStyle={styles.icon}
-            size={30}
-          />
-        ) : (
-          <IconButton
-            icon={Icons.closeDetails}
-            onPress={() => setIsOpen(false)}
-            color={GlobalStyles.colors.amberAccent}
-            containerStyle={styles.icon}
-            size={30}
-          />
-        )}
-      </View>
-      <Pressable
-        style={({ pressed }) => pressed && styles.pressed}
-        android_ripple={{ color: GlobalStyles.colors.amberAccent }}
-        onPress={handleOnPress}
-        onLongPress={onLongPress}
+    <>
+      <LocalImagesList
+        visible={showImages}
+        handleClose={() => setShowImages(false)}
+        minorStageIds={minorStageIds}
+      />
+      <View
+        style={[
+          styles.outerContainer,
+          isOver && styles.inactiveOuterContainer,
+          majorStage.currentMajorStage && styles.currentOuterContainer,
+        ]}
       >
-        <View
-          style={[
-            styles.innerContainer,
-            isActive && styles.activeInnerContainer,
-          ]}
-        >
-          <View style={styles.headerContainer}>
-            <ElementTitle>{`${majorStage.position.toString()}. ${
-              majorStage.title
-            }`}</ElementTitle>
-          </View>
-          <ElementComment content={`${startDate} - ${endDate}`} />
-          {isOpen ? (
-            <>
-              <DetailArea elementDetailInfo={elementDetailInfo} />
-              {majorStage.transportation && (
-                <TransportationBox
-                  majorStageIsOver={isOver}
-                  transportation={majorStage.transportation}
-                  onPressEdit={handleEditTransportation}
-                  customCountryId={majorStage.country.id!}
-                />
-              )}
-              {!majorStage.transportation && !isOver && (
-                <Button
-                  onPress={handleAddTransportation}
-                  mode={ButtonMode.flat}
-                  colorScheme={ColorScheme.accent}
-                >
-                  Add Transportation
-                </Button>
-              )}
-            </>
+        <View style={styles.buttonsContainer}>
+          <IconButton
+            icon={Icons.mapFilled}
+            color={GlobalStyles.colors.amberAccent}
+            onPress={handleTapMap}
+            containerStyle={styles.icon}
+          />
+          <IconButton
+            icon={Icons.edit}
+            color={GlobalStyles.colors.amberAccent}
+            onPress={handleEdit}
+            containerStyle={styles.icon}
+          />
+          {hasImages && (
+            <IconButton
+              icon={Icons.images}
+              color={GlobalStyles.colors.amberAccent}
+              onPress={() => setShowImages(true)}
+              containerStyle={styles.icon}
+            />
+          )}
+          {!isOpen ? (
+            <IconButton
+              icon={Icons.openDetails}
+              onPress={() => setIsOpen(true)}
+              color={GlobalStyles.colors.amberAccent}
+              containerStyle={styles.icon}
+              size={30}
+            />
           ) : (
-            <View style={styles.roughDetailsContainer}>
-              <View style={styles.roughDetailsRow}>
-                <IconButton
-                  icon={Icons.country}
-                  onPress={() => {}}
-                  color={GlobalStyles.colors.grayMedium}
-                  size={18}
-                  containerStyle={styles.icon}
-                />
-                <Text>{majorStage.country.name}</Text>
-              </View>
-              {majorStage.transportation && IconComponent && (
-                <View style={styles.roughDetailsRow}>
-                  <IconComponent
-                    width={18}
-                    height={18}
-                    fill={GlobalStyles.colors.grayMedium}
-                  />
-                  <Text
-                    style={{ marginLeft: 4 }}
-                  >{`(${transportDuration})`}</Text>
-                </View>
-              )}
-            </View>
+            <IconButton
+              icon={Icons.closeDetails}
+              onPress={() => setIsOpen(false)}
+              color={GlobalStyles.colors.amberAccent}
+              containerStyle={styles.icon}
+              size={30}
+            />
           )}
         </View>
-        {/* <CustomProgressBar
+        <Pressable
+          style={({ pressed }) => pressed && styles.pressed}
+          android_ripple={{ color: GlobalStyles.colors.amberAccent }}
+          onPress={handleOnPress}
+          onLongPress={onLongPress}
+        >
+          <View
+            style={[
+              styles.innerContainer,
+              isActive && styles.activeInnerContainer,
+            ]}
+          >
+            <View style={styles.headerContainer}>
+              <ElementTitle>{`${majorStage.position.toString()}. ${
+                majorStage.title
+              }`}</ElementTitle>
+            </View>
+            <ElementComment content={`${startDate} - ${endDate}`} />
+            {isOpen ? (
+              <>
+                <DetailArea elementDetailInfo={elementDetailInfo} />
+                {majorStage.transportation && (
+                  <TransportationBox
+                    majorStageIsOver={isOver}
+                    transportation={majorStage.transportation}
+                    onPressEdit={handleEditTransportation}
+                    customCountryId={majorStage.country.id!}
+                  />
+                )}
+                {!majorStage.transportation && !isOver && (
+                  <Button
+                    onPress={handleAddTransportation}
+                    mode={ButtonMode.flat}
+                    colorScheme={ColorScheme.accent}
+                  >
+                    Add Transportation
+                  </Button>
+                )}
+              </>
+            ) : (
+              <View style={styles.roughDetailsContainer}>
+                <View style={styles.roughDetailsRow}>
+                  <IconButton
+                    icon={Icons.country}
+                    onPress={() => {}}
+                    color={GlobalStyles.colors.grayMedium}
+                    size={18}
+                    containerStyle={styles.icon}
+                  />
+                  <Text>{majorStage.country.name}</Text>
+                </View>
+                {majorStage.transportation && IconComponent && (
+                  <View style={styles.roughDetailsRow}>
+                    <IconComponent
+                      width={18}
+                      height={18}
+                      fill={GlobalStyles.colors.grayMedium}
+                    />
+                    <Text
+                      style={{ marginLeft: 4 }}
+                    >{`(${transportDuration})`}</Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
+          {/* <CustomProgressBar
             startDate={majorStage.scheduled_start_time}
             endDate={majorStage.scheduled_end_time}
           /> */}
-      </Pressable>
-    </View>
+        </Pressable>
+      </View>
+    </>
   );
 };
 

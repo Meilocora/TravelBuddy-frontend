@@ -40,19 +40,15 @@ import { UserContext } from '../store/user-context';
 import ImageMarker from '../components/Maps/ImageMarker';
 import { Image } from '../models/image';
 import ImageModal from '../components/UI/ImageModal';
-import Popup from '../components/UI/Popup';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
+import { DELTA, EDGE_PADDING } from '../constants/maps';
 
 interface ImagesShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ImagesShowMap'>;
   route: RouteProp<StackParamList, 'ImagesShowMap'>;
 }
-
-const DELTA = 0.005;
-
-const EDGE_PADDING = { top: 60, right: 60, bottom: 60, left: 60 };
 
 const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
   navigation,
@@ -78,7 +74,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
-  const [popupText, setPopupText] = useState<string | undefined>();
   const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
 
   const [hasInitialZoom, setHasInitialZoom] = useState(false);
@@ -152,7 +147,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     });
   }
 
-  // ---------- „Nah heranzoomen": 1 Punkt = enge Region, >1 Punkt = Bounding-Box ----------
   const fitToItems = useCallback(
     (pts: LatLng[], isInitial: boolean = false) => {
       if (!mapRef.current || pts.length === 0) return;
@@ -192,7 +186,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     []
   );
 
-  // ---------- Koordinaten aus deinen Locations für fitToCoordinates ----------
   const coords: LatLng[] = useMemo(
     () =>
       shownLocations.map((l) => ({
@@ -202,7 +195,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     [shownLocations]
   );
 
-  // ---------- Wenn sich die angezeigten Locations ändern, zoomen wir passend ----------
   useEffect(() => {
     // nichts zu tun, wenn weder coords noch routePoints da sind
     if (coords.length === 0 && !routePoints) return;
@@ -210,14 +202,8 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     let allCoords = [];
 
     if (routePoints && routePoints.length >= 2) {
-      // Case 1: min. 2 routePoints -> only focus on them + users current location
+      // Case 1: min. 2 routePoints -> only focus on them
       allCoords = [...routePoints];
-      if (userCtx.currentLocation) {
-        allCoords.unshift({
-          latitude: userCtx.currentLocation.latitude,
-          longitude: userCtx.currentLocation.longitude,
-        });
-      }
     } else {
       // Case 2: less than 2 routePoints -> adjust screen to all locations
       allCoords = [...coords];
@@ -296,9 +282,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
           mapType={mapType}
         />
       )}
-      {popupText && (
-        <Popup content={popupText} onClose={() => setPopupText(undefined)} />
-      )}
       <ClusteredMapView
         ref={mapRef}
         initialRegion={region}
@@ -318,23 +301,24 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
         spiralEnabled
         renderCluster={renderCluster}
       >
-        {routePoints && routePoints.length > 0 && (
+        {routePoints && routePoints.length > 1 && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={userCtx.currentLocation}
+            origin={routePoints[0]}
             destination={routePoints[routePoints.length - 1]}
             waypoints={
-              routePoints.length > 1 ? routePoints.slice(0, -1) : undefined
+              routePoints.length > 2 ? routePoints.slice(1, -1) : undefined
             }
             strokeWidth={4}
             strokeColor='blue'
             precision='high'
             mode={directionsMode}
-            onError={() => setPopupText('No route found...')}
+            onError={() => setRouteInfo({ display: true })}
             onReady={(result) => {
               setRouteInfo({
                 distance: result.distance, // in kilometers
                 duration: result.duration, // in minutes
+                display: true,
               });
             }}
           />
@@ -384,17 +368,17 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
             );
           })}
       </ClusteredMapView>
-      {routeInfo && (
+      {routeInfo?.display && (
         <RouteInfo
           onClose={() => setRouteInfo(null)}
           onDeleteRoute={handleDeleteRoute}
           routeInfo={routeInfo}
         />
       )}
-      {routePoints && (
+      {routePoints && routePoints?.length > 1 && (
         <OpenRouteInGoogleMapsButton
           routePoints={routePoints}
-          startPoint={userCtx.currentLocation}
+          startPoint={routePoints[0]}
         />
       )}
     </View>

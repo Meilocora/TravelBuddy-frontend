@@ -1,16 +1,11 @@
-import { ReactElement } from 'react';
+import { ReactElement, useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { GlobalStyles } from '../../constants/styles';
 import { Icons, Journey } from '../../models';
-import {
-  formatDate,
-  formatDateString,
-  formatDurationToDays,
-  parseDate,
-  parseEndDate,
-} from '../../utils';
+import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
 import IconButton from '../UI/IconButton';
+import { ImageContext } from '../../store/image-context';
 
 interface OverviewDetailsProps {
   journey: Journey;
@@ -19,6 +14,8 @@ interface OverviewDetailsProps {
 const OverviewDetails: React.FC<OverviewDetailsProps> = ({
   journey,
 }): ReactElement => {
+  const imageCtx = useContext(ImageContext);
+
   const moneyAvailable = new Intl.NumberFormat('de-DE', {
     style: 'currency',
     currency: 'EUR',
@@ -56,6 +53,8 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
   let completedActivitiesQty = 0;
   let activitiesQty = 0;
 
+  let minorStageIds: number[] = [];
+
   if (journey.majorStages) {
     for (const majorStage of journey.majorStages) {
       parseEndDate(majorStage.scheduled_end_time) < new Date()
@@ -64,6 +63,7 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
       minorStagesQty += majorStage.minorStages?.length || 0;
       if (majorStage.minorStages) {
         for (const minorStage of majorStage.minorStages) {
+          minorStageIds.push(minorStage.id);
           parseEndDate(minorStage.scheduled_end_time) < new Date()
             ? (completedMinorStagesQty += 1)
             : undefined;
@@ -85,6 +85,10 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
       }
     }
   }
+
+  const images = imageCtx.images.filter(
+    (img) => img.minorStageId && minorStageIds.includes(img.minorStageId)
+  ).length;
 
   return (
     <View style={styles.container}>
@@ -126,14 +130,12 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
         </View>
         <View style={styles.element}>
           <IconButton
-            icon={Icons.activity}
+            icon={Icons.images}
             onPress={() => {}}
             color={GlobalStyles.colors.grayMedium}
             containerStyle={styles.icon}
           />
-          <Text style={styles.text}>
-            {completedActivitiesQty.toString()} / {activitiesQty.toString()}
-          </Text>
+          <Text style={styles.text}>{images}</Text>
         </View>
         <View style={styles.element}>
           <IconButton

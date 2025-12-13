@@ -22,6 +22,8 @@ import { CustomCountryContext } from '../../../store/custom-country-context';
 import { isImageLink } from '../../../utils';
 import ImageModal from '../../UI/ImageModal';
 import { useAppData } from '../../../hooks/useAppData';
+import LocalImagesList from '../../Images/LocalImagesList';
+import { ImageContext } from '../../../store/image-context';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
@@ -42,10 +44,15 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
 }): ReactElement => {
   const [isOpened, setIsOpened] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [showImages, setShowImages] = useState(false);
+
   const navigation = useNavigation<NavigationProp<StackParamList>>();
   const placesCtx = useContext(PlaceContext);
+  const imageCtx = useContext(ImageContext);
   const countryCtx = useContext(CustomCountryContext);
   const { triggerRefresh } = useAppData();
+
+  const hasImages = imageCtx.hasImages('PlaceToVisit', place.id);
 
   async function handleToggleFavorite() {
     const response = await toggleFavoritePlace(place.id);
@@ -99,6 +106,11 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
 
   return (
     <>
+      <LocalImagesList
+        visible={showImages}
+        handleClose={() => setShowImages(false)}
+        placeId={place.id}
+      />
       <ImageModal
         link={place.link!}
         onClose={() => setShowImage(false)}
@@ -184,6 +196,13 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
                       }}
                     />
                   </View>
+                )}
+                {hasImages && (
+                  <IconButton
+                    icon={Icons.images}
+                    onPress={() => setShowImages(true)}
+                    color={GlobalStyles.colors.graySoft}
+                  />
                 )}
               </View>
             </View>

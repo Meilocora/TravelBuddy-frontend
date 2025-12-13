@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { GlobalStyles } from '../../../constants/styles';
@@ -37,21 +37,27 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   let places = placesCtx.placesToVisit;
   if (defaultValue) {
     place = places.find((p) => p.id === defaultValue);
-  } else if (autoSuggestEnabled) {
-    if (
-      imageCoords &&
-      imageCoords['latitude'] !== 0 &&
-      imageCoords['longitude'] !== 0
-    ) {
-      const defaultCoords: LatLng = imageCoords;
-      place = placesCtx.findNearestPlace(defaultCoords);
-    } else if (userCtx.currentLocation) {
-      const defaultCoords: LatLng = userCtx.currentLocation;
-      place = placesCtx.findNearestPlace(defaultCoords);
-    }
-    defaultValue = place?.id;
-    onChangePlace(place?.id);
   }
+
+  useEffect(() => {
+    if (!defaultValue && autoSuggestEnabled) {
+      let suggestedPlace: PlaceToVisit | undefined;
+
+      if (
+        imageCoords &&
+        imageCoords['latitude'] !== 0 &&
+        imageCoords['longitude'] !== 0
+      ) {
+        suggestedPlace = placesCtx.findNearestPlace(imageCoords);
+      } else if (userCtx.currentLocation) {
+        suggestedPlace = placesCtx.findNearestPlace(userCtx.currentLocation);
+      }
+
+      if (suggestedPlace) {
+        onChangePlace(suggestedPlace.id);
+      }
+    }
+  }, [defaultValue, autoSuggestEnabled, imageCoords, userCtx.currentLocation]);
 
   function handleOpenModal() {
     setOpenSelection(true);

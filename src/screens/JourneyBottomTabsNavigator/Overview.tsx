@@ -13,7 +13,7 @@ import CheckModal from '../../components/Overview/CheckModal';
 interface OverviewProps {}
 
 const Overview: React.FC<OverviewProps> = (): ReactElement => {
-  const [checkLogs, setCheckLogs] = useState<CheckLog[]>();
+  const [checkLogs, setCheckLogs] = useState<CheckLog[] | undefined>();
 
   const stagesCtx = useContext(StagesContext);
   const journey = stagesCtx.findJourney(stagesCtx.selectedJourneyId!);
@@ -32,13 +32,12 @@ const Overview: React.FC<OverviewProps> = (): ReactElement => {
 
   return (
     <ScrollView style={styles.root} nestedScrollEnabled>
-      {checkLogs && checkLogs.length > 0 && (
-        <CheckModal
-          checkLogs={checkLogs}
-          onClose={handleCloseModal}
-          onTapItem={deleteCheckLog}
-        />
-      )}
+      <CheckModal
+        checkLogs={checkLogs!}
+        visible={!!(checkLogs && checkLogs?.length > 0)}
+        onClose={handleCloseModal}
+        onTapItem={deleteCheckLog}
+      />
       {journey?.description && (
         <DesctipionElement description={journey.description} />
       )}

@@ -2,6 +2,7 @@ import { ReactElement, useContext, useState } from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 import {
   Icons,
@@ -31,7 +32,8 @@ import BusIcon from '../../../assets/bus.svg';
 import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { ImageContext } from '../../store/image-context';
+import LocalImagesList from '../Images/LocalImagesList';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -58,9 +60,11 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const mapNavigation =
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const stagesCtx = useContext(StagesContext);
+  const imageCtx = useContext(ImageContext);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [showImages, setShowImages] = useState(false);
 
   const majorStage = stagesCtx.findMinorStagesMajorStage(minorStage.id);
   const majorStageId = majorStage?.id!;
@@ -76,6 +80,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const moneyAvailable = formatAmount(minorStage.costs.budget);
   const moneyPlanned = formatAmount(minorStage.costs.spent_money);
   const isOver = validateIsOver(minorStage.scheduled_end_time);
+  const hasImages = imageCtx.hasImages('MinorStage', minorStage.id);
 
   const transportDuration = formatDuration(
     minorStage?.transportation?.start_time,
@@ -121,112 +126,127 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   }
 
   return (
-    <View
-      style={[
-        styles.outerContainer,
-        isOver && styles.inactiveOuterContainer,
-        minorStage.currentMinorStage && styles.currentOuterContainer,
-      ]}
-    >
-      <View style={styles.buttonsContainer}>
-        <IconButton
-          icon={Icons.mapFilled}
-          color={GlobalStyles.colors.purpleAccent}
-          onPress={handleTapMap}
-          containerStyle={styles.icon}
-        />
-        <IconButton
-          icon={Icons.edit}
-          color={GlobalStyles.colors.purpleAccent}
-          onPress={handleEdit}
-          containerStyle={styles.icon}
-        />
-        {!isOpen ? (
-          <IconButton
-            icon={Icons.openDetails}
-            onPress={() => setIsOpen(true)}
-            color={GlobalStyles.colors.purpleAccent}
-            containerStyle={styles.icon}
-            size={30}
-          />
-        ) : (
-          <IconButton
-            icon={Icons.closeDetails}
-            onPress={() => setIsOpen(false)}
-            color={GlobalStyles.colors.purpleAccent}
-            containerStyle={styles.icon}
-            size={30}
-          />
-        )}
-      </View>
-      <Pressable
-        onLongPress={onLongPress}
-        style={({ pressed }) => pressed && styles.pressed}
-        android_ripple={{ color: GlobalStyles.colors.purpleAccent }}
+    <>
+      <LocalImagesList
+        visible={showImages}
+        handleClose={() => setShowImages(false)}
+        minorStageId={minorStage.id}
+      />
+      <View
+        style={[
+          styles.outerContainer,
+          isOver && styles.inactiveOuterContainer,
+          minorStage.currentMinorStage && styles.currentOuterContainer,
+        ]}
       >
-        <View
-          style={[
-            styles.innerContainer,
-            isActive && styles.activeInnerContainer,
-          ]}
-        >
-          <View style={styles.headerContainer}>
-            <ElementTitle>{`${minorStage.position.toString()}. ${
-              minorStage.title
-            }`}</ElementTitle>
-          </View>
-          <ElementComment content={`${startDate} - ${endDate}`} />
-          {isOpen && (
-            <>
-              <DetailArea elementDetailInfo={elementDetailInfo} />
-              {minorStage.accommodation.place !== '' && (
-                <AccommodationBox
-                  minorStage={minorStage}
-                  customCountryId={majorStage?.country.id!}
-                />
-              )}
-              <ContentBox
-                journeyId={journeyId}
-                majorStageId={majorStageId}
-                minorStage={minorStage}
-              />
-            </>
+        <View style={styles.buttonsContainer}>
+          <IconButton
+            icon={Icons.mapFilled}
+            color={GlobalStyles.colors.purpleAccent}
+            onPress={handleTapMap}
+            containerStyle={styles.icon}
+          />
+          <IconButton
+            icon={Icons.edit}
+            color={GlobalStyles.colors.purpleAccent}
+            onPress={handleEdit}
+            containerStyle={styles.icon}
+          />
+          {hasImages && (
+            <IconButton
+              icon={Icons.images}
+              color={GlobalStyles.colors.purpleAccent}
+              onPress={() => setShowImages(true)}
+              containerStyle={styles.icon}
+            />
           )}
-          {!isOpen && minorStage.accommodation.place && (
-            <View style={styles.roughDetailsContainer}>
-              <View style={styles.roughDetailsRow}>
-                <IconButton
-                  icon={Icons.place}
-                  onPress={() => {}}
-                  color={GlobalStyles.colors.grayMedium}
-                  size={18}
-                  containerStyle={styles.icon}
-                />
-                <Text style={styles.text} numberOfLines={2}>
-                  {minorStage.accommodation.place}
-                </Text>
-              </View>
-              {minorStage.transportation && IconComponent && (
-                <View style={styles.roughDetailsRow}>
-                  <IconComponent
-                    width={18}
-                    height={18}
-                    fill={GlobalStyles.colors.grayMedium}
-                  />
-                  <Text
-                    style={{ marginLeft: 4 }}
-                  >{`(${transportDuration})`}</Text>
-                </View>
-              )}
-            </View>
+          {!isOpen ? (
+            <IconButton
+              icon={Icons.openDetails}
+              onPress={() => setIsOpen(true)}
+              color={GlobalStyles.colors.purpleAccent}
+              containerStyle={styles.icon}
+              size={30}
+            />
+          ) : (
+            <IconButton
+              icon={Icons.closeDetails}
+              onPress={() => setIsOpen(false)}
+              color={GlobalStyles.colors.purpleAccent}
+              containerStyle={styles.icon}
+              size={30}
+            />
           )}
         </View>
-        {/* <CustomProgressBar
+        <Pressable
+          onLongPress={onLongPress}
+          style={({ pressed }) => pressed && styles.pressed}
+          android_ripple={{ color: GlobalStyles.colors.purpleAccent }}
+        >
+          <View
+            style={[
+              styles.innerContainer,
+              isActive && styles.activeInnerContainer,
+            ]}
+          >
+            <View style={styles.headerContainer}>
+              <ElementTitle>{`${minorStage.position.toString()}. ${
+                minorStage.title
+              }`}</ElementTitle>
+            </View>
+            <ElementComment content={`${startDate} - ${endDate}`} />
+            {isOpen && (
+              <>
+                <DetailArea elementDetailInfo={elementDetailInfo} />
+                {minorStage.accommodation.place !== '' && (
+                  <AccommodationBox
+                    minorStage={minorStage}
+                    customCountryId={majorStage?.country.id!}
+                  />
+                )}
+                <ContentBox
+                  journeyId={journeyId}
+                  majorStageId={majorStageId}
+                  minorStage={minorStage}
+                />
+              </>
+            )}
+            {!isOpen && minorStage.accommodation.place && (
+              <View style={styles.roughDetailsContainer}>
+                <View style={styles.roughDetailsRow}>
+                  <IconButton
+                    icon={Icons.place}
+                    onPress={() => {}}
+                    color={GlobalStyles.colors.grayMedium}
+                    size={18}
+                    containerStyle={styles.icon}
+                  />
+                  <Text style={styles.text} numberOfLines={2}>
+                    {minorStage.accommodation.place}
+                  </Text>
+                </View>
+                {minorStage.transportation && IconComponent && (
+                  <View style={styles.roughDetailsRow}>
+                    <IconComponent
+                      width={18}
+                      height={18}
+                      fill={GlobalStyles.colors.grayMedium}
+                    />
+                    <Text
+                      style={{ marginLeft: 4 }}
+                    >{`(${transportDuration})`}</Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
+          {/* <CustomProgressBar
         startDate={minorStage.scheduled_start_time}
         endDate={minorStage.scheduled_end_time}
       /> */}
-      </Pressable>
-    </View>
+        </Pressable>
+      </View>
+    </>
   );
 };
 

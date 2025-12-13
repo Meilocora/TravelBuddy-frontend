@@ -8,6 +8,7 @@ import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
 import IconButton from '../UI/IconButton';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import Button from '../UI/Button';
+import { ImageContext } from '../../store/image-context';
 
 interface UserStatsProps {
   journeys: Journey[];
@@ -15,14 +16,13 @@ interface UserStatsProps {
   isVisible: boolean;
 }
 
-// TODO: Add images
-
 const UserStats: React.FC<UserStatsProps> = ({
   journeys,
   toggleVisivility,
   isVisible,
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
+  const imageCtx = useContext(ImageContext);
 
   const totalBudget = journeys.reduce(
     (sum, journey) => sum + (journey.costs?.budget || 0),
@@ -59,8 +59,7 @@ const UserStats: React.FC<UserStatsProps> = ({
   let plannedMajorStages = 0;
   let completedMinorStages = 0;
   let plannedMinorStages = 0;
-  let plannedActivities = 0;
-  let completedActivities = 0;
+  const images = imageCtx.images.length;
 
   for (const journey of journeys) {
     journey.countries.forEach((country) => {
@@ -108,15 +107,6 @@ const UserStats: React.FC<UserStatsProps> = ({
         parseEndDate(minorStage.scheduled_end_time) < new Date()
           ? (completedMinorStages += 1)
           : undefined;
-
-        if (minorStage.activities) {
-          for (const activity of minorStage.activities) {
-            plannedActivities += 1;
-            parseEndDate(minorStage.scheduled_end_time) < new Date()
-              ? (completedActivities += 1)
-              : undefined;
-          }
-        }
       }
     }
   }
@@ -202,15 +192,12 @@ const UserStats: React.FC<UserStatsProps> = ({
             </View>
             <View style={styles.element}>
               <IconButton
-                icon={Icons.activity}
+                icon={Icons.images}
                 onPress={() => {}}
                 color={GlobalStyles.colors.grayMedium}
                 containerStyle={styles.icon}
               />
-              <Text style={styles.text}>
-                {completedActivities.toString()} /{' '}
-                {plannedActivities.toString()}
-              </Text>
+              <Text style={styles.text}>{images}</Text>
             </View>
             <View style={styles.element}>
               <IconButton
