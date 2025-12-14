@@ -27,7 +27,7 @@ import { StagesContext } from '../../store/stages-context';
 import AmountElement from '../UI/form/Money/AmountElement';
 import ExpoDateTimePicker from '../UI/form/ExpoDateTimePicker';
 import CustomLinkInput from '../UI/form/CustomLinkInput';
-import ImageModal from '../UI/ImageModal';
+import LinkImageModal from '../UI/LinkImageModal';
 
 type InputValidationResponse = {
   transportation?: Transportation;
@@ -340,7 +340,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
 
   return (
     <>
-      <ImageModal
+      <LinkImageModal
         link={inputs.link.value}
         onClose={() => setShowImage(false)}
         visible={showImage}

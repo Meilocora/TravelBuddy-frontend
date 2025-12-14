@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react';
 
-import { Image } from '../models/image';
+import { Image } from '../models/media';
 import { fetchAllImages } from '../utils/http/image';
 
 interface ImageContextType {

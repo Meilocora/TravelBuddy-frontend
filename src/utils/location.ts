@@ -17,7 +17,7 @@ import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
 import { useContext } from 'react';
 import { StagesContext } from '../store/stages-context';
 import { CustomCountryContext } from '../store/custom-country-context';
-import { Image } from '../models/image';
+import { Image } from '../models/media';
 
 const GOOGLE_API_KEY =
   Constants.expoConfig?.extra?.googleApiKey ||

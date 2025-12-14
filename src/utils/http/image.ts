@@ -2,8 +2,8 @@ import { AxiosResponse } from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 
-import { deleteUserImage, uploadUserImage } from '../image';
-import { Image, ImageFormValues } from '../../models/image';
+import { deleteUserImage, uploadMedia, uploadUserImage } from '../image';
+import { Image, ImageFormValues } from '../../models/media';
 import api from './api';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -47,6 +47,8 @@ interface ManageImageProps {
   error?: string;
 }
 
+// TODO: Image/ Video durch Media ersetzen
+
 export const addImage = async (
   userId: number,
   imageFormValues: ImageFormValues
@@ -57,6 +59,56 @@ export const addImage = async (
       localUri: imageFormValues.url.value,
       userId,
     });
+
+    // TODO: Das darüber durch das hier ersetzen
+    // const downloadUrl = await uploadMedia({
+    //   uri: imageFormValues.url.value,
+    //   path: `images/${userId}`,
+    // });
+
+    imageFormValues.url.value = downloadUrl;
+  } catch (error) {
+    // Error from firebase upload
+    return {
+      status: 500,
+      error: 'Could not add image! Firebase upload failed.',
+    };
+  }
+
+  // 2. Create image in backend (url = downloadUrl from firebase)
+  try {
+    const response: AxiosResponse<ManageImageProps> = await api.post(
+      `${prefix}/add-image`,
+      imageFormValues
+    );
+
+    // Error from backend
+    if (response.data.error) {
+      return { status: response.data.status, error: response.data.error };
+    }
+
+    return { status: response.data.status };
+  } catch (error) {
+    // Error from frontend
+    return {
+      status: 500,
+      error: 'Could not add image! Backend request failed.',
+    };
+  }
+};
+
+export const addVideo = async (
+  userId: number,
+  imageFormValues: ImageFormValues
+): Promise<ManageImageProps> => {
+  // 1. Upload to Firebase Storage
+  try {
+    // TODO: Das darüber durch das hier ersetzen
+    const downloadUrl = await uploadMedia({
+      uri: imageFormValues.url.value,
+      path: `videos/${userId}`,
+    });
+
     imageFormValues.url.value = downloadUrl;
   } catch (error) {
     // Error from firebase upload

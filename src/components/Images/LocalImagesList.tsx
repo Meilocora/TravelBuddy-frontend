@@ -10,7 +10,7 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { ImageContext } from '../../store/image-context';
 import ImageListElement from './ImageListElement';
-import { Image } from '../../models/image';
+import { Image } from '../../models/media';
 import { PlaceContext } from '../../store/place-context';
 import { GlobalStyles } from '../../constants/styles';
 import Button from '../UI/Button';
@@ -84,7 +84,11 @@ const LocalImagesList: React.FC<LocalImagesListProps> = ({
                 exiting={FadeOutDown}
                 style={styles.itemContainer}
               >
-                <ImageListElement image={item} />
+                <ImageListElement
+                  image={item}
+                  index={index}
+                  images={images.length > 1 ? images : undefined}
+                />
                 {index === imageCtx.images.length - 1 && (
                   <View style={{ height: 75 }}></View>
                 )}

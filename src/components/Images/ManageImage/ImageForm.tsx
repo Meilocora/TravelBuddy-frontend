@@ -11,7 +11,7 @@ import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import { formatDateTime, parseDateAndTime } from '../../../utils';
-import { Image, ImageFormValues, ImageValues } from '../../../models/image';
+import { Image, ImageFormValues, ImageValues } from '../../../models/media';
 import { addImage, updateImage } from '../../../utils/http/image';
 import LocationPicker from '../../UI/form/LocationPicker';
 import ExpoDateTimePicker from '../../UI/form/ExpoDateTimePicker';

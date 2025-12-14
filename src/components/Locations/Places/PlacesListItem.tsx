@@ -20,10 +20,10 @@ import {
 } from '../../../utils/http/place_to_visit';
 import { CustomCountryContext } from '../../../store/custom-country-context';
 import { isImageLink } from '../../../utils';
-import ImageModal from '../../UI/ImageModal';
 import { useAppData } from '../../../hooks/useAppData';
 import LocalImagesList from '../../Images/LocalImagesList';
 import { ImageContext } from '../../../store/image-context';
+import LinkImageModal from '../../UI/LinkImageModal';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
@@ -111,7 +111,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
         handleClose={() => setShowImages(false)}
         placeId={place.id}
       />
-      <ImageModal
+      <LinkImageModal
         link={place.link!}
         onClose={() => setShowImage(false)}
         visible={showImage}

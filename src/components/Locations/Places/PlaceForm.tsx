@@ -29,9 +29,9 @@ import IconButton from '../../UI/IconButton';
 import Modal from '../../UI/Modal';
 import { CustomCountryContext } from '../../../store/custom-country-context';
 import LocationPicker from '../../UI/form/LocationPicker';
-import ImageModal from '../../UI/ImageModal';
 import CustomCheckBox from '../../UI/form/CustomCheckBox';
 import CustomLinkInput from '../../UI/form/CustomLinkInput';
+import LinkImageModal from '../../UI/LinkImageModal';
 
 type InputValidationResponse = {
   place?: PlaceToVisit;
@@ -183,7 +183,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
   return (
     <>
-      <ImageModal
+      <LinkImageModal
         link={inputs.link.value}
         onClose={() => setShowImage(false)}
         visible={showImage}

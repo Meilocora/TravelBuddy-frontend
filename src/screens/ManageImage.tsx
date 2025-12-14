@@ -21,7 +21,7 @@ import {
 } from '@react-navigation/native';
 import { useAppData } from '../hooks/useAppData';
 import { ImageContext } from '../store/image-context';
-import { Image, ImageValues } from '../models/image';
+import { Image, ImageValues } from '../models/media';
 import ImageForm from '../components/Images/ManageImage/ImageForm';
 import { UserContext } from '../store/user-context';
 

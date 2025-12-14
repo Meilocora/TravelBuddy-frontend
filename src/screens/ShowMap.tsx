@@ -50,7 +50,7 @@ import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import { ImageContext } from '../store/image-context';
-import { Image as ImageType } from '../models/image';
+import { Image as ImageType } from '../models/media';
 import ImageMarker from '../components/Maps/ImageMarker';
 import { DELTA, EDGE_PADDING } from '../constants/maps';
 
@@ -333,7 +333,6 @@ const ShowMap: React.FC<ShowMapProps> = ({
     <View style={styles.container}>
       <ImageModal
         image={showImageModal}
-        link={showImageModal?.url || ''}
         onClose={() => setShowImageModal(undefined)}
         visible={typeof showImageModal !== 'undefined'}
         onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}

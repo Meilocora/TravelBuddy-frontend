@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import IconButton from '../IconButton';
 import { Icons } from '../../../models';
-import { isImageLink } from '../../../utils';
+import { isImageLink, uploadMedia } from '../../../utils';
 import { UserContext } from '../../../store/user-context';
 import { GlobalStyles } from '../../../constants/styles';
 
@@ -79,6 +79,42 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
     addImage(url, lat, lng, timestamp);
   }
 
+  // TODO: NEU
+  //   async function pickVideoFromLibrary() {
+  //   const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (perm.status !== 'granted') {
+  //     alert('Wir brauchen Zugriff auf deine Galerie.');
+  //     return;
+  //   }
+
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+  //     quality: 1,
+  //   });
+
+  //   if (result.canceled) return;
+
+  //   const asset = result.assets[0];
+  //   const uri = asset.uri;
+  //   const duration = asset.duration; // Sekunden (optional)
+
+  //    // Upload zu Firebase
+  //   const videoUrl = await uploadMedia({
+  //     uri,
+  //     path: `videos/${userCtx.id}`,
+  //   });
+
+  //   // In dein Backend schicken (media_type: "video")
+  //   await createMedia({
+  //     url: videoUrl,
+  //     media_type: 'video',
+  //     duration,
+  //     // latitude: location?.coords.latitude,
+  //     // longitude: location?.coords.longitude,
+  //     // minor_stage_id, place_to_visit_id, ...
+  //   });
+  // }
+
   async function handleTakePhoto() {
     // Request camera permissions
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -120,6 +156,40 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({
     addImage(url, lat, lng);
     setUrl(url);
   }
+
+  // TODO: NEU
+  //   async function recordVideo() {
+  //   const cameraPerm = await ImagePicker.requestCameraPermissionsAsync();
+  //   if (cameraPerm.status !== 'granted') {
+  //     alert('Wir brauchen Zugriff auf die Kamera.');
+  //     return;
+  //   }
+
+  //   const result = await ImagePicker.launchCameraAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+  //     videoMaxDuration: 60, // z.B. max. 60 Sekunden
+  //     quality: 1,
+  //   });
+
+  //   if (result.canceled) return;
+
+  //   const asset = result.assets[0];
+  //   const uri = asset.uri;
+  //   const duration = asset.duration;
+
+  //    const videoUrl = await uploadMedia({
+  //     uri,
+  //     path: `videos/${userId}`,
+  //   });
+
+  //   await createMedia({
+  //     url: videoUrl,
+  //     media_type: 'video',
+  //     duration,
+  //     // latitude: location?.coords.latitude,
+  //     // longitude: location?.coords.longitude,
+  //   });
+  // }
 
   function handlePressFavorite() {
     setIsFav((prevValue) => !prevValue);

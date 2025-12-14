@@ -38,7 +38,7 @@ import { usePersistedState } from '../hooks/usePersistedState';
 import { ImageContext } from '../store/image-context';
 import { UserContext } from '../store/user-context';
 import ImageMarker from '../components/Maps/ImageMarker';
-import { Image } from '../models/image';
+import { Image } from '../models/media';
 import ImageModal from '../components/UI/ImageModal';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
@@ -268,7 +268,6 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     <View style={styles.container}>
       <ImageModal
         image={showImageModal}
-        link={showImageModal?.url || ''}
         onClose={() => setShowImageModal(undefined)}
         visible={typeof showImageModal !== 'undefined'}
         onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}

@@ -18,8 +18,8 @@ import LocationPicker from '../../UI/form/LocationPicker';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
 import CustomLinkInput from '../../UI/form/CustomLinkInput';
-import ImageModal from '../../UI/ImageModal';
 import CustomCheckBox from '../../UI/form/CustomCheckBox';
+import LinkImageModal from '../../UI/LinkImageModal';
 
 type InputValidationResponse = {
   activity?: Activity;
@@ -189,7 +189,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
   return (
     <>
-      <ImageModal
+      <LinkImageModal
         link={inputs.link.value}
         onClose={() => setShowImage(false)}
         visible={showImage}

@@ -1,49 +1,52 @@
-import { ReactElement, useEffect, useState } from 'react';
-import {
-  Alert,
-  Modal,
-  View,
-  StyleSheet,
-  Pressable,
-  Image,
-  useWindowDimensions,
-  Text,
-} from 'react-native';
-import ImageZoom from 'react-native-image-pan-zoom';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import ImageViewing from 'react-native-image-viewing';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LatLng } from 'react-native-maps';
 
 import { GlobalStyles } from '../../constants/styles';
 import IconButton from './IconButton';
 import { Icons, ImageLocation, StackParamList } from '../../models';
-import { Image as ImageType } from '../../models/image';
+import { Image as ImageType } from '../../models/media';
 import { downloadUserImage } from '../../utils/http';
-import { LatLng } from 'react-native-maps';
 
 interface ImageModalProps {
   image?: ImageType;
-  visible: boolean;
-  link: string;
-  onClose: () => void;
-  onDelete?: () => void;
-  onCalcRoute?: (coords: LatLng) => void;
+  images?: ImageType[];
+  initialIndex?: number;
 
-  // TODO: Enable Swiping, when many images are given
+  visible: boolean;
+  onClose: () => void;
+
+  onDelete?: (image: ImageType) => void;
+  onCalcRoute?: (coords: LatLng, image: ImageType) => void;
 }
 
 const ImageModal: React.FC<ImageModalProps> = ({
   image,
+  images,
+  initialIndex = 0,
   visible,
-  link,
   onClose,
   onDelete,
   onCalcRoute,
-}): ReactElement => {
+}): ReactElement | null => {
   const isFocused = useIsFocused();
-
-  const [showText, setShowText] = useState(true);
-
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
+
+  // intern Index of currently displayed Image
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  // several images or only one
+  const allImages: ImageType[] = useMemo(() => {
+    if (images && images.length > 0) return images;
+    if (image) return [image];
+    return [];
+  }, [images, image]);
+
+  const currentImage: ImageType | undefined =
+    allImages.length > 0 ? allImages[currentIndex] : undefined;
 
   useEffect(() => {
     if (!isFocused && visible) {
@@ -51,184 +54,210 @@ const ImageModal: React.FC<ImageModalProps> = ({
     }
   }, [isFocused, visible, onClose]);
 
-  const { width, height } = useWindowDimensions();
+  // ImageViewing needs { uri: string }[]
+  const viewerImages = useMemo(
+    () => allImages.map((img) => ({ uri: img.url })),
+    [allImages]
+  );
 
-  const editNavigation =
-    useNavigation<NativeStackNavigationProp<StackParamList>>();
-
-  function handlePressEdit() {
-    editNavigation.navigate('ManageImage', { imageId: image!.id });
-  }
-
-  function handleClose() {
-    setShowText(true);
-    onClose();
-  }
-
-  function handleCalcRoute() {
-    onClose();
-    onCalcRoute!({ latitude: image!.latitude!, longitude: image!.longitude! });
-  }
-
-  function handleShowLocation() {
-    if (!image || !image.latitude || !image.longitude) {
-      return;
-    }
-    const location: ImageLocation = {
-      id: image.id,
-      latitude: image?.latitude,
-      longitude: image?.longitude,
-      url: image?.url,
-      description: image?.description,
-      favourite: image?.favorite,
-    };
-
-    navigation.navigate('ImagesShowMap', { imageLocation: location });
+  if (!visible || allImages.length === 0) {
+    return null;
   }
 
   async function handleDownload() {
-    const response = await downloadUserImage({ image: image! });
+    if (!currentImage) return;
+    const response = await downloadUserImage({ image: currentImage });
     if (response.success) {
-      Alert.alert('Success', 'Image saved to gallery!');
+      Alert.alert('Success', 'Image successfully saved to gallery!');
       onClose();
     } else if (response.error) {
-      Alert.alert('Error', response.error || 'Failed to download image');
+      Alert.alert('Error', response.error || 'Download failed');
     }
   }
 
-  return (
-    <>
-      <Modal
-        visible={visible}
-        transparent
-        animationType='fade'
-        onRequestClose={handleClose}
-        statusBarTranslucent
-      >
-        <Pressable style={styles.modalOverlay} onPress={handleClose}>
-          <View style={styles.closeButtonContainer}>
-            <IconButton
-              icon={Icons.close}
-              onPress={handleClose}
-              color={GlobalStyles.colors.graySoft}
-              size={32}
-            />
-          </View>
+  function handleShowLocation() {
+    if (
+      !currentImage ||
+      currentImage.latitude == null ||
+      currentImage.longitude == null
+    ) {
+      return;
+    }
 
-          <Pressable
-            style={styles.imageContainer}
-            onPress={(e) => e.stopPropagation()}
-          >
-            {/* @ts-ignore: Typdefinition of lib does not know children for some reason */}
-            <ImageZoom
-              cropWidth={width}
-              cropHeight={height}
-              imageWidth={width * 0.9}
-              imageHeight={height * 0.85}
-              minScale={1}
-              maxScale={4}
-            >
-              <Image
-                source={{ uri: link }}
-                style={{
-                  width: width * 0.9,
-                  height: height * 0.85,
-                }}
-                resizeMode='contain'
-              />
-            </ImageZoom>
-          </Pressable>
-          {image && (
-            <View style={styles.detailsContainer}>
-              {showText && (
-                <Pressable onPress={() => setShowText(false)}>
-                  <Text style={styles.description}>{image.description}</Text>
-                </Pressable>
-              )}
-              <View style={styles.buttonsContainer}>
-                <IconButton
-                  icon={Icons.download}
-                  onPress={handleDownload}
-                  color={GlobalStyles.colors.graySoft}
-                  size={30}
-                />
-                {image.latitude && (
-                  <IconButton
-                    icon={Icons.location}
-                    onPress={handleShowLocation}
-                    color={GlobalStyles.colors.visited}
-                    size={30}
-                  />
+    const location: ImageLocation = {
+      id: currentImage.id,
+      latitude: currentImage.latitude,
+      longitude: currentImage.longitude,
+      url: currentImage.url,
+      description: currentImage.description,
+      favourite: currentImage.favorite,
+    };
+
+    onClose();
+    navigation.navigate('ImagesShowMap', { imageLocation: location });
+  }
+
+  function handleCalcRouteInternal() {
+    if (
+      !currentImage ||
+      currentImage.latitude == null ||
+      currentImage.longitude == null ||
+      !onCalcRoute
+    ) {
+      return;
+    }
+
+    onCalcRoute(
+      {
+        latitude: currentImage.latitude,
+        longitude: currentImage.longitude,
+      },
+      currentImage
+    );
+    onClose();
+  }
+
+  function handleDelete() {
+    if (!currentImage || !onDelete) return;
+    onDelete(currentImage);
+  }
+
+  function handleEdit() {
+    if (!currentImage) return;
+    navigation.navigate('ManageImage', { imageId: currentImage.id });
+  }
+
+  return (
+    <ImageViewing
+      images={viewerImages}
+      imageIndex={currentIndex}
+      visible={visible}
+      onRequestClose={onClose}
+      onImageIndexChange={setCurrentIndex}
+      swipeToCloseEnabled
+      doubleTapToZoomEnabled
+      backgroundColor='#000000F0'
+      presentationStyle='fullScreen'
+      animationType='none'
+      HeaderComponent={() => (
+        <View style={styles.header}>
+          <Text style={styles.timestamp}>{currentImage?.timestamp}</Text>
+          <IconButton
+            icon={Icons.close}
+            onPress={onClose}
+            color={GlobalStyles.colors.graySoft}
+            size={30}
+            style={styles.closeIcon}
+          />
+        </View>
+      )}
+      FooterComponent={
+        currentImage
+          ? () => (
+              <View style={styles.footer}>
+                {!!currentImage.description && (
+                  <Text style={styles.description}>
+                    {currentImage.description}
+                  </Text>
                 )}
-                {onCalcRoute && (
+                <View style={styles.buttonsRow}>
                   <IconButton
-                    icon={Icons.routePlanner}
-                    onPress={handleCalcRoute}
+                    icon={Icons.download}
+                    onPress={handleDownload}
                     color={GlobalStyles.colors.graySoft}
-                    size={30}
+                    size={28}
                   />
-                )}
-                <IconButton
-                  icon={Icons.edit}
-                  onPress={handlePressEdit}
-                  color={GlobalStyles.colors.edit}
-                  size={30}
-                />
-                {onDelete && (
+                  {currentImage.latitude != null &&
+                    currentImage.longitude != null && (
+                      <IconButton
+                        icon={Icons.location}
+                        onPress={handleShowLocation}
+                        color={GlobalStyles.colors.visited}
+                        size={28}
+                      />
+                    )}
+                  {onCalcRoute && (
+                    <IconButton
+                      icon={Icons.routePlanner}
+                      onPress={handleCalcRouteInternal}
+                      color={GlobalStyles.colors.graySoft}
+                      size={28}
+                    />
+                  )}
                   <IconButton
-                    icon={Icons.delete}
-                    onPress={onDelete}
-                    color={GlobalStyles.colors.error200}
-                    size={30}
+                    icon={Icons.edit}
+                    onPress={handleEdit}
+                    color={GlobalStyles.colors.edit}
+                    size={28}
                   />
-                )}
+                  {onDelete && (
+                    <IconButton
+                      icon={Icons.delete}
+                      onPress={handleDelete}
+                      color={GlobalStyles.colors.error200}
+                      size={28}
+                    />
+                  )}
+                </View>
+                <Text style={styles.counter}>
+                  {currentIndex + 1} / {allImages.length}
+                </Text>
               </View>
-            </View>
-          )}
-        </Pressable>
-      </Modal>
-    </>
+            )
+          : undefined
+      }
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    top: 35,
-    right: 20,
-    zIndex: 10,
-  },
-  imageContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  detailsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  description: {
-    color: GlobalStyles.colors.graySoft,
-    marginBottom: 6,
-    maxWidth: '80%',
-  },
-  buttonsContainer: {
+  header: {
+    marginTop: 40,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  timestamp: {
+    color: GlobalStyles.colors.graySoft,
+    fontStyle: 'italic',
+  },
+  closeIcon: {
+    position: 'absolute',
+    right: 0,
+    // top: 0,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerHint: {
+    color: GlobalStyles.colors.graySoft,
+    fontSize: 12,
+  },
+  footer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    paddingTop: 8,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  description: {
+    color: GlobalStyles.colors.graySoft,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  buttonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  counter: {
+    color: GlobalStyles.colors.graySoft,
+    textAlign: 'center',
+    marginTop: 8,
+    fontSize: 12,
   },
 });
 

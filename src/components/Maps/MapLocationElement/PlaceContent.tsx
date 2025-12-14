@@ -13,11 +13,11 @@ import IconButton from '../../UI/IconButton';
 import { StagesContext } from '../../../store/stages-context';
 import TextLink from '../../UI/TextLink';
 import { GlobalStyles } from '../../../constants/styles';
-import ImageModal from '../../UI/ImageModal';
 import { isImageLink } from '../../../utils';
 import { LatLng } from 'react-native-maps';
 import { ImageContext } from '../../../store/image-context';
 import LocalImagesList from '../../Images/LocalImagesList';
+import LinkImageModal from '../../UI/LinkImageModal';
 
 interface PlaceContentProps {
   place: PlaceToVisit;
@@ -77,7 +77,7 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
         placeId={place.id}
       />
       {isImageLink(place.link) && (
-        <ImageModal
+        <LinkImageModal
           link={place.link!}
           onClose={() => setShowImage(false)}
           visible={showImage}

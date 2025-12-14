@@ -25,7 +25,7 @@ import ImagesList from '../../components/Images/ImagesList';
 import FloatingButton from '../../components/UI/FloatingButton';
 import { UserContext } from '../../store/user-context';
 import { deleteImage } from '../../utils/http';
-import { Image } from '../../models/image';
+import { Image } from '../../models/media';
 import Modal from '../../components/UI/Modal';
 
 interface GalleryProps {

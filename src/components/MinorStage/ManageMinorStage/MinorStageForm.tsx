@@ -1,6 +1,5 @@
 import { ReactElement, useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Checkbox } from 'react-native-paper';
 
 import {
   ButtonMode,
@@ -28,8 +27,8 @@ import AmountElement from '../../UI/form/Money/AmountElement';
 import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 import PositionSelector from '../../UI/form/PositionSelector';
 import CustomLinkInput from '../../UI/form/CustomLinkInput';
-import ImageModal from '../../UI/ImageModal';
 import CustomCheckBox from '../../UI/form/CustomCheckBox';
+import LinkImageModal from '../../UI/LinkImageModal';
 
 type InputValidationResponse = {
   minorStage?: MinorStage;
@@ -290,7 +289,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   return (
     <>
-      <ImageModal
+      <LinkImageModal
         link={inputs.accommodation_link.value}
         onClose={() => setShowImage(false)}
         visible={showImage}

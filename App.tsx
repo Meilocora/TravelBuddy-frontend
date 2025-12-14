@@ -59,11 +59,6 @@ import ManageImage from './src/screens/ManageImage';
 import ImagesShowMap from './src/screens/ImagesShowMap';
 
 // PRIO 1 \\
-// Bilder in CustomCountry ansehen können
-// Bilder beim PlaceToVisit ansehen können
-// LocationElement => Images
-// Bilder in Journey, Major- und MinorStage ansehen können
-
 // TODO: ImageModal auch swipefähig machen
 
 // PRIO 2 \\

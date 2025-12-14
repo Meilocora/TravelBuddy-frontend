@@ -1,28 +1,41 @@
-import { ReactElement, useContext, useState } from 'react';
-import { FlatList, RefreshControlProps, StyleSheet, View } from 'react-native';
+import { ReactElement, useContext, useMemo, useState } from 'react';
+import {
+  RefreshControlProps,
+  SectionList,
+  SectionListData,
+  StyleSheet,
+  View,
+  Text,
+} from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { ImageContext } from '../../store/image-context';
+import { PlaceContext } from '../../store/place-context';
 import ImageListElement from './ImageListElement';
-import { Image } from '../../models/image';
+import { Image } from '../../models/media';
 import { Icons } from '../../models';
 import IconButton from '../UI/IconButton';
 import { GlobalStyles } from '../../constants/styles';
 import ImagesListFilters from './ImageListFilters';
 import { parseDateAndTime } from '../../utils';
-import { PlaceContext } from '../../store/place-context';
 
 interface ImagesListProps {
   refreshControl?: React.ReactElement<RefreshControlProps>;
   onDelete: (image: Image) => void;
 }
 
+// Eine Zeile in der Galerie: bis zu 3 Bilder
+type ImageRow = Image[];
+
+interface ImageMonthSection {
+  title: string; // "Januar 2025"
+  data: ImageRow[];
+}
+
 const ImagesList: React.FC<ImagesListProps> = ({
   refreshControl,
   onDelete,
 }): ReactElement => {
-  // TODO: longPress => mehrere images markieren + löschen oder zu minorStage bzw. PlaceToVisit zuordnen
-
   const [showFilters, setShowFilters] = useState(false);
   const [sortDate, setSortDate] = useState<'asc' | 'desc'>('asc');
   const [filterFav, setFilterFav] = useState(false);
@@ -33,44 +46,38 @@ const ImagesList: React.FC<ImagesListProps> = ({
   >();
   const [filterTimespan, setFilterTimespan] = useState<
     'all' | 'one_year' | 'custom'
-  >();
+  >('all'); // TODO: aktuell noch ungenutzt
 
   const imageCtx = useContext(ImageContext);
   const placeCtx = useContext(PlaceContext);
 
   function handleTapSort() {
-    if (sortDate === 'asc') {
-      setSortDate('desc');
-    } else {
-      setSortDate('asc');
-    }
+    setSortDate((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   }
 
-  let images = imageCtx.images;
+  // -------- 1) Filter & Sort wie bisher --------
+  let images = [...imageCtx.images];
 
-  if (sortDate === 'desc') {
-    images = images.sort(
-      (a, b) =>
-        parseDateAndTime(b.timestamp).getTime() -
-        parseDateAndTime(a.timestamp).getTime()
-    );
-  } else {
-    images = images.sort(
-      (a, b) =>
-        parseDateAndTime(a.timestamp).getTime() -
-        parseDateAndTime(b.timestamp).getTime()
-    );
-  }
+  // Sortierung nach Datum
+  images.sort((a, b) => {
+    const da = parseDateAndTime(a.timestamp).getTime();
+    const db = parseDateAndTime(b.timestamp).getTime();
+    return sortDate === 'desc' ? db - da : da - db;
+  });
 
+  // Favoriten-Filter
   if (filterFav) {
     images = images.filter((img) => img.favorite === true);
   }
+  // Place-Filter
   if (filterPlace) {
     images = images.filter((img) => img.placeToVisitId === filterPlace);
   }
+  // MinorStage-Filter
   if (filterMinorStage) {
     images = images.filter((img) => img.minorStageId === filterMinorStage);
   }
+  // Country-Filter
   if (filterCountry) {
     const places = placeCtx.getPlacesByCountry(filterCountry);
     const placeIds = places.map((p) => p.id);
@@ -79,8 +86,60 @@ const ImagesList: React.FC<ImagesListProps> = ({
     );
   }
 
+  const globalIndexMap = useMemo(() => {
+    const map = new Map<number, number>();
+    images.forEach((img, idx) => {
+      map.set(img.id, idx);
+    });
+    return map;
+  }, [images]);
+
+  // -------- 2) Gruppierung nach Monat -> Sections --------
+
+  const sections: ImageMonthSection[] = useMemo(() => {
+    // Map: monthKey -> { title, images[] }
+    const monthMap = new Map<string, { title: string; images: Image[] }>();
+
+    for (const img of images) {
+      const date = parseDateAndTime(img.timestamp);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`; // z.B. "2025-0"
+
+      const monthLabel = date.toLocaleDateString('de-DE', {
+        month: 'long',
+        year: 'numeric',
+      }); // "Januar 2025"
+
+      if (!monthMap.has(monthKey)) {
+        monthMap.set(monthKey, { title: monthLabel, images: [] });
+      }
+      monthMap.get(monthKey)!.images.push(img);
+    }
+
+    // Hilfsfunktion: Images in 3er-Reihen aufteilen
+    const chunkIntoRows = (arr: Image[], size: number = 3): ImageRow[] => {
+      const rows: ImageRow[] = [];
+      for (let i = 0; i < arr.length; i += size) {
+        rows.push(arr.slice(i, i + size));
+      }
+      return rows;
+    };
+
+    const result: ImageMonthSection[] = [];
+
+    // Map behält Insertion-Order basierend auf sortierten images
+    monthMap.forEach((value) => {
+      result.push({
+        title: value.title,
+        data: chunkIntoRows(value.images, 3),
+      });
+    });
+
+    return result;
+  }, [images]);
+
   return (
     <View style={styles.container}>
+      {/* Buttons: Sort, Filter, Fav */}
       <View style={styles.buttonContainer}>
         <IconButton
           icon={Icons.filter}
@@ -107,6 +166,7 @@ const ImagesList: React.FC<ImagesListProps> = ({
           }
         />
       </View>
+
       {showFilters && (
         <ImagesListFilters
           filterMinorStage={filterMinorStage}
@@ -118,24 +178,64 @@ const ImagesList: React.FC<ImagesListProps> = ({
           setFilterCountry={setFilterCountry}
         />
       )}
-      {/* TODO: Trenner zwischen Monaten einfügen */}
-      <FlatList
-        data={images}
+
+      {/* -------- 3) SectionList mit Monats-Trennern & 3er-Grid -------- */}
+      <SectionList
+        sections={sections}
         refreshControl={refreshControl}
-        numColumns={3}
+        keyExtractor={(row, index) => {
+          // row ist hier ImageRow (Array von Images)
+          const firstId = row[0]?.id ?? `row-${index}`;
+          return `${firstId}-${index}`;
+        }}
         contentContainerStyle={styles.list}
-        renderItem={({ item, index }) => (
-          <Animated.View
-            entering={FadeInDown.delay(index * 100).duration(500)}
-            exiting={FadeOutDown}
-            style={styles.itemContainer}
-          >
-            <ImageListElement image={item} onDelete={onDelete} />
-            {index === imageCtx.images.length - 1 && (
-              <View style={{ height: 75 }}></View>
-            )}
-          </Animated.View>
+        ListFooterComponent={<View style={{ height: 75 }} />}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.monthHeader}>
+            <View style={styles.monthLine} />
+            <View style={styles.monthLabelContainer}>
+              <Text style={styles.monthText}>{section.title}</Text>
+            </View>
+            <View style={styles.monthLine} />
+          </View>
         )}
+        renderItem={({
+          item: row,
+          index: rowIndex,
+          section,
+        }: {
+          item: ImageRow;
+          index: number;
+          section: SectionListData<ImageRow, ImageMonthSection>;
+        }) => {
+          // row = bis zu 3 Bilder (eine Zeile)
+          return (
+            <View style={styles.row}>
+              {row.map((img, colIndex) => {
+                // für Animation: "Pseudo-Gesamtindex"
+                const globalIndex = globalIndexMap.get(img.id) ?? 0;
+                const animationIndex = rowIndex * 3 + colIndex;
+                return (
+                  <Animated.View
+                    key={img.id.toString()}
+                    entering={FadeInDown.delay(animationIndex * 50).duration(
+                      500
+                    )}
+                    exiting={FadeOutDown}
+                    style={styles.itemContainer}
+                  >
+                    <ImageListElement
+                      image={img}
+                      index={globalIndex}
+                      images={images.length > 1 ? images : undefined}
+                      onDelete={onDelete}
+                    />
+                  </Animated.View>
+                );
+              })}
+            </View>
+          );
+        }}
       />
     </View>
   );
@@ -152,10 +252,38 @@ const styles = StyleSheet.create({
     marginTop: 6,
     paddingHorizontal: 4,
   },
+  // Eine Zeile mit bis zu 3 Items
+  row: {
+    flexDirection: 'row',
+  },
   itemContainer: {
     flex: 1 / 3,
     aspectRatio: 1,
     padding: 1,
+  },
+  // Monatsheader (Trenner)
+  monthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 4,
+    paddingHorizontal: 4,
+  },
+  monthLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: GlobalStyles.colors.grayMedium,
+    opacity: 0.4,
+  },
+  monthLabelContainer: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 12,
+    backgroundColor: GlobalStyles.colors.graySoft + '22', // leichter Tint
+  },
+  monthText: {
+    fontSize: 12,
+    color: GlobalStyles.colors.grayDark,
   },
 });
 
