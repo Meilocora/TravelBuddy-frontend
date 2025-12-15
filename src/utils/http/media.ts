@@ -129,9 +129,10 @@ export const deleteMedium = async (
   medium: Medium,
   userId: number
 ): Promise<ManageMediumProps> => {
-  // 1. Delete to Firebase Storage
+  // 1. Delete medium from Firebase Storage
   try {
     await deleteUserImage({
+      folderName: medium.mediumType === 'image' ? 'images' : 'videos',
       imageUrl: medium.url,
       userId: userId,
     });
@@ -143,7 +144,24 @@ export const deleteMedium = async (
     };
   }
 
-  // 2. Delete medium in backend
+  // 2. If video => Delete thumbnail from Firebase Storage
+  if (medium.mediumType === 'video' && medium.thumbnailUrl) {
+    try {
+      await deleteUserImage({
+        folderName: 'video-thumbnails',
+        imageUrl: medium.thumbnailUrl,
+        userId: userId,
+      });
+    } catch (error) {
+      // Error from firebase upload
+      return {
+        status: 500,
+        error: 'Could not delete medium! Firebase deletion failed.',
+      };
+    }
+  }
+
+  // 3. Delete medium in backend
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.delete(
       `${prefix}/delete-medium/${medium.id}`

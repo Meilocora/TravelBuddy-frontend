@@ -37,6 +37,7 @@ export interface Location {
 
 export interface MediumLocation {
   id: number;
+  mediumType: 'image' | 'video';
   latitude: number;
   longitude: number;
   url: string;

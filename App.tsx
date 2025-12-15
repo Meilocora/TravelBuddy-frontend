@@ -67,6 +67,7 @@ import MediaShowMap from './src/screens/MediaShowMap';
 // PRIO 2 \\
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
+// TODO: Videos + durations zu Statistiken hinzufügen
 // TODO: Checks für ValidationLog erweitern
 // TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Outsource inputChangedHandler and related handlers from the Forms

@@ -259,7 +259,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
               onPress={handlePressFavorite}
               color='red'
               containerStyle={styles.icon}
-              size={32}
+              size={46}
             />
           </View>
         ) : (
@@ -323,8 +323,8 @@ const styles = StyleSheet.create({
   icon: {
     position: 'absolute',
     zIndex: 2,
-    bottom: 6,
-    right: 6,
+    bottom: 10,
+    right: 10,
   },
   buttonsRow: {
     position: 'absolute',

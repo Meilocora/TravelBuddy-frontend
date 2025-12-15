@@ -100,6 +100,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
 
     const location: MediumLocation = {
       id: currentMedium.id,
+      mediumType: currentMedium.mediumType,
       latitude: currentMedium.latitude,
       longitude: currentMedium.longitude,
       url: currentMedium.url,
@@ -156,6 +157,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
         visible={videoVisible}
         uri={videoUri ?? ''}
         onClose={() => setVideoVisible(false)}
+        shouldPlay={true}
       />
       <ImageViewing
         images={viewerImages}
@@ -190,6 +192,20 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                     </Text>
                   )}
                   <View style={styles.buttonsRow}>
+                    <IconButton
+                      icon={Icons.download}
+                      onPress={handleDownload}
+                      color={GlobalStyles.colors.graySoft}
+                      size={28}
+                    />
+                    {onCalcRoute && (
+                      <IconButton
+                        icon={Icons.routePlanner}
+                        onPress={handleCalcRouteInternal}
+                        color={GlobalStyles.colors.graySoft}
+                        size={28}
+                      />
+                    )}
                     {currentMedium.mediumType === 'video' && (
                       <IconButton
                         icon={Icons.play}
@@ -198,12 +214,6 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                         size={30}
                       />
                     )}
-                    <IconButton
-                      icon={Icons.download}
-                      onPress={handleDownload}
-                      color={GlobalStyles.colors.graySoft}
-                      size={28}
-                    />
                     {currentMedium.latitude != null &&
                       currentMedium.longitude != null && (
                         <IconButton
@@ -213,14 +223,6 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                           size={28}
                         />
                       )}
-                    {onCalcRoute && (
-                      <IconButton
-                        icon={Icons.routePlanner}
-                        onPress={handleCalcRouteInternal}
-                        color={GlobalStyles.colors.graySoft}
-                        size={28}
-                      />
-                    )}
                     <IconButton
                       icon={Icons.edit}
                       onPress={handleEdit}
@@ -250,11 +252,12 @@ const MediaModal: React.FC<MediuaModalProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 40,
+    marginTop: 20,
     paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   timestamp: {
     color: GlobalStyles.colors.graySoft,

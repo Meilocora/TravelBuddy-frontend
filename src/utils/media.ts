@@ -56,11 +56,13 @@ export async function uploadMedium({ uri, path }: UploadMediumParams) {
 }
 
 export type DeleteUserImageParams = {
+  folderName: 'images' | 'videos' | 'video-thumbnails';
   imageUrl: string; // The full download URL from Firebase Storage
   userId: number;
 };
 
 export async function deleteUserImage({
+  folderName,
   imageUrl,
   userId,
 }: DeleteUserImageParams): Promise<void> {
@@ -71,7 +73,9 @@ export async function deleteUserImage({
       throw new Error('Not authenticated with Firebase');
     }
     // Extract the path from the Firebase Storage URL
-    const decodedUrl = decodeURIComponent(`$${userId}/${imageUrl}`);
+    const decodedUrl = decodeURIComponent(
+      `${folderName}/${userId}/${imageUrl}`
+    );
     const pathMatch = decodedUrl.match(/\/o\/(.+?)\?/);
 
     if (!pathMatch || !pathMatch[1]) {

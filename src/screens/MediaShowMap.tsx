@@ -42,7 +42,6 @@ import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import { DELTA, EDGE_PADDING } from '../constants/maps';
-import VideoModal from '../components/UI/VideoModal';
 import MediumMarker from '../components/Maps/MediumMarker';
 import MediaModal from '../components/UI/MediaModal';
 
@@ -268,21 +267,13 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
 
   return (
     <View style={styles.container}>
-      {showMediumModal?.mediumType === 'image' ? (
+      {showMediumModal && (
         <MediaModal
           medium={showMediumModal}
           onClose={() => setShowMediumModal(undefined)}
           visible={typeof showMediumModal !== 'undefined'}
           onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
         />
-      ) : (
-        showMediumModal?.mediumType === 'video' && (
-          <VideoModal
-            uri={showMediumModal?.url}
-            onClose={() => setShowMediumModal(undefined)}
-            visible={typeof showMediumModal !== 'undefined'}
-          />
-        )
       )}
       {showSettings && (
         <MapSettings

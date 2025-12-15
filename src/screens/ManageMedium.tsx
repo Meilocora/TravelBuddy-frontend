@@ -125,7 +125,7 @@ const ManageMedium: React.FC<ManageMediumProps> = ({
         setError(error);
         return;
       } else {
-        const popupText = 'ImagMedium successfully added!';
+        const popupText = 'Medium successfully added!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'Gallery',
           params: { popupText: popupText, refresh: true },

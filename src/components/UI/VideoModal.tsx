@@ -9,9 +9,15 @@ interface VideoModalProps {
   visible: boolean;
   uri: string;
   onClose: () => void;
+  shouldPlay?: boolean;
 }
 
-const VideoModal: React.FC<VideoModalProps> = ({ visible, uri, onClose }) => {
+const VideoModal: React.FC<VideoModalProps> = ({
+  visible,
+  uri,
+  onClose,
+  shouldPlay = false,
+}) => {
   const videoRef = useRef<Video | null>(null);
   const [rotation, setRotation] = useState(0);
 
@@ -55,7 +61,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ visible, uri, onClose }) => {
             source={{ uri }}
             useNativeControls
             resizeMode={ResizeMode.CONTAIN}
-            shouldPlay={false}
+            shouldPlay={shouldPlay}
           />
         </View>
       </View>
@@ -72,13 +78,13 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 35,
+    top: 20,
     right: 20,
     zIndex: 10,
   },
   rotateButton: {
     position: 'absolute',
-    top: 35,
+    top: 20,
     left: 20,
     zIndex: 10,
   },

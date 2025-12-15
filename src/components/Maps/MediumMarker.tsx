@@ -3,8 +3,9 @@ import { LatLng, MapMarker, Marker } from 'react-native-maps';
 import { StyleSheet, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 
-import { MediumLocation } from '../../models';
+import { Icons, MediumLocation } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
+import IconButton from '../UI/IconButton';
 
 const HEIGHT = 52;
 const WIDTH = 52;
@@ -26,7 +27,8 @@ const MediumMarker: React.FC<MediumMarkerProps> = ({
 
   const markerRef = useRef<MapMarker>(null);
 
-  const { description, favourite, latitude, longitude, url } = mediumLocation;
+  const { mediumType, description, favourite, latitude, longitude, url } =
+    mediumLocation;
 
   function handlePressMarker() {
     onPressMarker?.(mediumLocation);
@@ -61,6 +63,14 @@ const MediumMarker: React.FC<MediumMarkerProps> = ({
           onError={handleMediumError}
           cachePolicy='memory-disk'
         />
+        {mediumType === 'video' && (
+          <IconButton
+            icon={Icons.play}
+            onPress={() => {}}
+            color={GlobalStyles.colors.graySoftSemi}
+            style={styles.playIcon}
+          />
+        )}
         <View
           style={[
             styles.ring,
@@ -76,7 +86,7 @@ const styles = StyleSheet.create({
   photoWrap: {
     width: WIDTH,
     height: HEIGHT,
-    borderRadius: WIDTH / 2,
+    borderRadius: 15,
     overflow: 'hidden',
     backgroundColor: GlobalStyles.colors.graySoft, // Platzhalter-Hintergrund
     alignItems: 'center',
@@ -93,7 +103,7 @@ const styles = StyleSheet.create({
     left: -1,
     right: -1,
     bottom: -1,
-    borderRadius: WIDTH / 2 + 1,
+    borderRadius: 15,
     borderWidth: 2,
     borderColor: GlobalStyles.colors.graySoft,
   },
@@ -102,6 +112,9 @@ const styles = StyleSheet.create({
   },
   ringFav: {
     borderColor: GlobalStyles.colors.favorite,
+  },
+  playIcon: {
+    position: 'absolute',
   },
 });
 

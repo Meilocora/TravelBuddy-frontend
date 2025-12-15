@@ -683,6 +683,7 @@ export function formatMediumToLocation(
   }
   return {
     id: medium.id,
+    mediumType: medium.mediumType,
     latitude: medium.latitude!,
     longitude: medium.longitude!,
     url: medium.mediumType === 'video' ? medium.thumbnailUrl! : medium.url,
