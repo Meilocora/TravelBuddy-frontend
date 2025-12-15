@@ -8,15 +8,15 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
-import { ImageContext } from '../../store/image-context';
-import ImageListElement from './ImageListElement';
-import { Image } from '../../models/media';
+import { MediumContext } from '../../store/medium-context';
+import { Medium } from '../../models/media';
 import { PlaceContext } from '../../store/place-context';
 import { GlobalStyles } from '../../constants/styles';
 import Button from '../UI/Button';
 import { ButtonMode, ColorScheme } from '../../models';
+import MediaListElement from './MediaListElement';
 
-interface LocalImagesListProps {
+interface LocalMediaListProps {
   visible: boolean;
   handleClose: () => void;
   countryId?: number;
@@ -25,7 +25,7 @@ interface LocalImagesListProps {
   placeId?: number;
 }
 
-const LocalImagesList: React.FC<LocalImagesListProps> = ({
+const LocalMediaList: React.FC<LocalMediaListProps> = ({
   visible,
   handleClose,
   countryId,
@@ -33,29 +33,29 @@ const LocalImagesList: React.FC<LocalImagesListProps> = ({
   minorStageIds,
   placeId,
 }): ReactElement => {
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const placeCtx = useContext(PlaceContext);
 
   const { width, height } = useWindowDimensions();
 
-  let images: Image[] | undefined = [];
+  let media: Medium[] | undefined = [];
   if (countryId) {
     const places = placeCtx.getPlacesByCountry(countryId);
     const placeIds = places.map((p) => p.id);
-    images = imageCtx.images.filter(
-      (img) => img.placeToVisitId && placeIds.includes(img.placeToVisitId)
+    media = mediumCtx.media.filter(
+      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId)
     );
   } else if (minorStageId) {
-    images = imageCtx.images.filter((img) => img.minorStageId === minorStageId);
+    media = mediumCtx.media.filter((m) => m.minorStageId === minorStageId);
   } else if (minorStageIds) {
-    images = imageCtx.images.filter(
-      (img) => img.minorStageId && minorStageIds.includes(img.minorStageId)
+    media = mediumCtx.media.filter(
+      (m) => m.minorStageId && minorStageIds.includes(m.minorStageId)
     );
   } else if (placeId) {
-    images = imageCtx.images.filter((img) => img.placeToVisitId === placeId);
+    media = mediumCtx.media.filter((m) => m.placeToVisitId === placeId);
   }
 
-  if (!images) {
+  if (!media) {
     return <View></View>;
   }
 
@@ -75,7 +75,7 @@ const LocalImagesList: React.FC<LocalImagesListProps> = ({
           ]}
         >
           <FlatList
-            data={images}
+            data={media}
             numColumns={3}
             contentContainerStyle={styles.list}
             renderItem={({ item, index }) => (
@@ -84,12 +84,12 @@ const LocalImagesList: React.FC<LocalImagesListProps> = ({
                 exiting={FadeOutDown}
                 style={styles.itemContainer}
               >
-                <ImageListElement
-                  image={item}
+                <MediaListElement
+                  medium={item}
                   index={index}
-                  images={images.length > 1 ? images : undefined}
+                  media={media.length > 1 ? media : undefined}
                 />
-                {index === imageCtx.images.length - 1 && (
+                {index === mediumCtx.media.length - 1 && (
                   <View style={{ height: 75 }}></View>
                 )}
               </Animated.View>
@@ -142,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LocalImagesList;
+export default LocalMediaList;

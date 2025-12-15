@@ -54,21 +54,17 @@ import StagesContextProvider from './src/store/stages-context';
 import UserContextProvider from './src/store/user-context';
 import AuthGradient from './src/components/UI/LinearGradients/AuthGradient';
 import Gallery from './src/screens/BottomTabsNavigator/Gallery';
-import ImageContextProvider from './src/store/image-context';
-import ManageImage from './src/screens/ManageImage';
-import ImagesShowMap from './src/screens/ImagesShowMap';
+import MediumContextProvider from './src/store/medium-context';
+import ManageMedium from './src/screens/ManageMedium';
+import MediaShowMap from './src/screens/MediaShowMap';
 
 // PRIO 1 \\
-// TODO: ImageModal auch swipefähig machen
-
-// PRIO 2 \\
 // TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
 // TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route
-// TODO: Also allow videos
 
-// PRIO 3 \\
+// PRIO 2 \\
 // TODO: Animationen einfügen
 // TODO: Error Farben überprüfen
 // TODO: Checks für ValidationLog erweitern
@@ -320,7 +316,7 @@ const AuthenticatedStack = () => {
       <StagesContextProvider>
         <CustomCountryContextProvider>
           <PlaceContextProvider>
-            <ImageContextProvider>
+            <MediumContextProvider>
               <Stack.Navigator
                 screenOptions={() => ({
                   headerTintColor: GlobalStyles.colors.grayDark,
@@ -355,8 +351,8 @@ const AuthenticatedStack = () => {
                 />
                 <Stack.Screen name='ManageJourney' component={ManageJourney} />
                 <Stack.Screen
-                  name='ManageImage'
-                  component={ManageImage}
+                  name='ManageMedium'
+                  component={ManageMedium}
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -377,9 +373,9 @@ const AuthenticatedStack = () => {
                   component={LocationPickMap}
                 />
                 <Stack.Screen name='ShowMap' component={ShowMap} />
-                <Stack.Screen name='ImagesShowMap' component={ImagesShowMap} />
+                <Stack.Screen name='MediaShowMap' component={MediaShowMap} />
               </Stack.Navigator>
-            </ImageContextProvider>
+            </MediumContextProvider>
           </PlaceContextProvider>
         </CustomCountryContextProvider>
       </StagesContextProvider>

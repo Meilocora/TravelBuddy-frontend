@@ -25,9 +25,9 @@ import {
 import Modal from '../../UI/Modal';
 import PlacesToggle from '../Places/PlacesToggle';
 import { UserContext } from '../../../store/user-context';
-import { ImageContext } from '../../../store/image-context';
-import LocalImagesList from '../../Images/LocalImagesList';
+import { MediumContext } from '../../../store/medium-context';
 import { PlaceContext } from '../../../store/place-context';
+import LocalMediaList from '../../Images/LocalMediaList';
 
 interface CustomCountryFormProps {
   country: CustomCountry;
@@ -49,15 +49,15 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [switchConversion, setSwitchConversion] = useState(false);
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
 
   const userCtx = useContext(UserContext);
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const placeCtx = useContext(PlaceContext);
   const places = placeCtx.getPlacesByCountry(country.id);
   const placeIds = places.map((p) => p.id);
 
-  const hasImages = imageCtx.hasImages('CustomCountry', country.id, placeIds);
+  const hasMedia = mediumCtx.hasMedia('CustomCountry', country.id, placeIds);
 
   // TODO: Speichere die Languages direkt im backend korrekt und lösche dafür das hier raus
   const languages = getLanguageNames(country.languages);
@@ -198,9 +198,9 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
   return (
     <>
-      <LocalImagesList
-        visible={showImages}
-        handleClose={() => setShowImages(false)}
+      <LocalMediaList
+        visible={showMedia}
+        handleClose={() => setShowMedia(false)}
         countryId={country.id}
       />
       {isDeleting && (
@@ -221,10 +221,10 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
             </TextLink>
           )
         )}
-        {hasImages && (
+        {hasMedia && (
           <IconButton
             icon={Icons.images}
-            onPress={() => setShowImages(true)}
+            onPress={() => setShowMedia(true)}
             style={styles.imagesButton}
           />
         )}

@@ -11,42 +11,42 @@ import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import { formatDateTime, parseDateAndTime } from '../../../utils';
-import { Image, ImageFormValues, ImageValues } from '../../../models/media';
-import { addImage, updateImage } from '../../../utils/http/image';
+import { Medium, MediumFormValues, MediumValues } from '../../../models/media';
+import { addMedium, updateMedium } from '../../../utils/http/media';
 import LocationPicker from '../../UI/form/LocationPicker';
 import ExpoDateTimePicker from '../../UI/form/ExpoDateTimePicker';
-import CustomImagePicker from '../../UI/form/ImagePicker';
 import { UserContext } from '../../../store/user-context';
 import MinorStageSelector from './MinorStageSelector';
 import PlaceToVisitSelector from './PlaceToVisitSelector';
 import { StagesContext } from '../../../store/stages-context';
 import { LatLng } from 'react-native-maps';
+import CustomMediumPicker from '../../UI/form/MediumPicker';
 
 type InputValidationResponse = {
-  image?: Image;
+  medium?: Medium;
   error?: string;
   status: number;
 };
 
-interface ImageFormProps {
+interface MediumFormProps {
   onCancel: () => void;
   onSubmit: (response: InputValidationResponse) => void;
   submitButtonLabel: string;
-  defaultValues?: ImageValues;
+  defaultValues?: MediumValues;
   isEditing?: boolean;
-  editImageId?: number;
+  editMediumId?: number;
 }
 
-const ImageForm: React.FC<ImageFormProps> = ({
+const MediumForm: React.FC<MediumFormProps> = ({
   onCancel,
   onSubmit,
   submitButtonLabel,
   defaultValues,
   isEditing,
-  editImageId,
+  editMediumId,
 }): ReactElement => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageCoords, setImageCoords] = useState<LatLng | undefined>(
+  const [mediumCoords, setMediumCoords] = useState<LatLng | undefined>(
     defaultValues?.latitude && defaultValues?.longitude
       ? { latitude: defaultValues.latitude, longitude: defaultValues.longitude }
       : undefined
@@ -59,8 +59,14 @@ const ImageForm: React.FC<ImageFormProps> = ({
     ? defaultValues.timestamp
     : formatDateTime(new Date());
 
-  const [inputs, setInputs] = useState<ImageFormValues>({
+  const [inputs, setInputs] = useState<MediumFormValues>({
     url: { value: defaultValues?.url || '', isValid: true, errors: [] },
+    mediumType: defaultValues?.mediumType || 'image',
+    duration: {
+      value: defaultValues?.duration || undefined,
+      isValid: true,
+      errors: [],
+    },
     favorite: {
       value: defaultValues?.favorite || false,
       isValid: true,
@@ -129,9 +135,9 @@ const ImageForm: React.FC<ImageFormProps> = ({
     setIsSubmitting(true);
     let response: InputValidationResponse;
     if (isEditing) {
-      response = await updateImage(inputs, editImageId!);
+      response = await updateMedium(inputs, editMediumId!);
     } else if (!isEditing && inputs.url.value) {
-      response = await addImage(userCtx.userId!, inputs);
+      response = await addMedium(userCtx.userId!, inputs);
     }
 
     const { error, status } = response!;
@@ -174,8 +180,10 @@ const ImageForm: React.FC<ImageFormProps> = ({
     });
   }
 
-  function handlePickImage(
+  function handlePickMedium(
     url: string,
+    mediumType: 'image' | 'video',
+    duration?: number,
     lat?: number,
     lng?: number,
     timestamp?: Date
@@ -183,6 +191,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
     setInputs((currInputs) => {
       return {
         ...currInputs,
+        mediumType: mediumType,
         url: {
           value: url,
           isValid: true,
@@ -208,11 +217,18 @@ const ImageForm: React.FC<ImageFormProps> = ({
             errors: [],
           },
         }),
+        ...(duration && {
+          duration: {
+            value: duration,
+            isValid: true,
+            errors: [],
+          },
+        }),
       };
     });
 
     if (lat !== undefined && lng !== undefined) {
-      setImageCoords({ latitude: lat, longitude: lng });
+      setMediumCoords({ latitude: lat, longitude: lng });
     }
   }
 
@@ -222,14 +238,15 @@ const ImageForm: React.FC<ImageFormProps> = ({
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps='handled'
       >
-        <CustomImagePicker
+        <CustomMediumPicker
           defaultValue={inputs.url.value}
-          addImage={handlePickImage}
+          defaultMediumType={inputs.mediumType}
+          addMedium={handlePickMedium}
           favorite={inputs.favorite.value}
           setFavorite={() =>
             inputChangedHandler('favorite', !inputs.favorite.value)
           }
-          editing={!!editImageId}
+          editing={!!editMediumId}
         />
         <View style={styles.formContainer}>
           <View>
@@ -249,7 +266,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
                 onChangePlace={(placeId) =>
                   inputChangedHandler('placeToVisitId', placeId)
                 }
-                imageCoords={imageCoords}
+                mediumCoords={mediumCoords}
               />
             </View>
             <View style={styles.formRow}>
@@ -278,7 +295,7 @@ const ImageForm: React.FC<ImageFormProps> = ({
             <View style={styles.formRow}>
               <Input
                 label='Description'
-                maxLength={FormLimits.imageDescription}
+                maxLength={FormLimits.mediumDescription}
                 invalid={!inputs.description.isValid}
                 errors={inputs.description.errors}
                 textInputConfig={{
@@ -344,4 +361,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageForm;
+export default MediumForm;

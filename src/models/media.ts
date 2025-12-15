@@ -1,76 +1,41 @@
 import { Validable } from './other_models';
 
-export interface Image {
+export interface Medium {
   id: number;
   url: string;
+  mediumType: 'image' | 'video';
+  thumbnailUrl?: string;
   favorite: boolean;
   latitude: number | null;
   longitude: number | null;
+  duration?: number;
   timestamp: string;
   minorStageId?: number;
   placeToVisitId?: number;
   description: string;
 }
 
-export interface ImageValues {
+export interface MediumValues {
   url: string;
+  mediumType: 'image' | 'video';
+  thumbnailUrl?: string;
   favorite: boolean;
   latitude?: number;
   longitude?: number;
+  duration?: number;
   timestamp?: string;
   minorStageId?: number;
   placeToVisitId?: number;
   description: string;
 }
 
-export interface CustomMedia {
-  id: number;
-  url: string;
-  mediaType: 'image' | 'video';
-  thumbnailUrl?: string;
-  favorite: boolean;
-  latitude: number | null;
-  longitude: number | null;
-  duration?: number;
-  timestamp: string;
-  minorStageId?: number;
-  placeToVisitId?: number;
-  description: string;
-}
-
-export interface MediaValues {
-  url: string;
-  mediaType: 'image' | 'video';
-  thumbnailUrl?: string;
-  favorite: boolean;
-  latitude: number;
-  longitude: number;
-  duration?: number;
-  timestamp: string;
-  minorStageId?: number;
-  placeToVisitId?: number;
-  description: string;
-}
-
-export interface MediaFormValues {
+export interface MediumFormValues {
   url: Validable<string>;
-  mediaType: 'image' | 'video';
-  thumbnailUrl?: Validable<string | undefined>;
+  mediumType: 'image' | 'video';
   favorite: Validable<boolean>;
   latitude: Validable<number | undefined>;
   longitude: Validable<number | undefined>;
   duration?: Validable<number | undefined>;
-  timestamp: Validable<string | undefined>;
-  minorStageId?: Validable<number | undefined>;
-  placeToVisitId?: Validable<number | undefined>;
-  description: Validable<string>;
-}
-
-export interface ImageFormValues {
-  url: Validable<string>;
-  favorite: Validable<boolean>;
-  latitude: Validable<number | undefined>;
-  longitude: Validable<number | undefined>;
   timestamp: Validable<string | undefined>;
   minorStageId?: Validable<number | undefined>;
   placeToVisitId?: Validable<number | undefined>;

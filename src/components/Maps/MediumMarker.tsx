@@ -3,21 +3,21 @@ import { LatLng, MapMarker, Marker } from 'react-native-maps';
 import { StyleSheet, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 
-import { ImageLocation } from '../../models';
+import { MediumLocation } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 
 const HEIGHT = 52;
 const WIDTH = 52;
 
-interface ImageMarkerProps {
-  imageLocation: ImageLocation;
-  onPressMarker: (location: ImageLocation) => void;
+interface MediumMarkerProps {
+  mediumLocation: MediumLocation;
+  onPressMarker: (location: MediumLocation) => void;
   active?: boolean;
-  coordinate?: LatLng;
+  coordinate?: LatLng; // only needed for clustering
 }
 
-const ImageMarker: React.FC<ImageMarkerProps> = ({
-  imageLocation,
+const MediumMarker: React.FC<MediumMarkerProps> = ({
+  mediumLocation,
   onPressMarker,
   active,
   coordinate,
@@ -26,13 +26,13 @@ const ImageMarker: React.FC<ImageMarkerProps> = ({
 
   const markerRef = useRef<MapMarker>(null);
 
-  const { description, favourite, latitude, longitude, url } = imageLocation;
+  const { description, favourite, latitude, longitude, url } = mediumLocation;
 
   function handlePressMarker() {
-    onPressMarker?.(imageLocation);
+    onPressMarker?.(mediumLocation);
   }
 
-  function handleImageError() {
+  function handleMediumError() {
     setTracksViewChanges(false);
   }
 
@@ -58,7 +58,7 @@ const ImageMarker: React.FC<ImageMarkerProps> = ({
           style={styles.photo}
           contentFit='cover'
           transition={150}
-          onError={handleImageError}
+          onError={handleMediumError}
           cachePolicy='memory-disk'
         />
         <View
@@ -105,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageMarker;
+export default MediumMarker;

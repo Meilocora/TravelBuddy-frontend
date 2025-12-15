@@ -33,8 +33,8 @@ import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { ImageContext } from '../../store/image-context';
-import LocalImagesList from '../Images/LocalImagesList';
+import { MediumContext } from '../../store/medium-context';
+import LocalMediaList from '../Images/LocalMediaList';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -63,10 +63,10 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   const mapNavigation =
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
 
   let minorStageIds: number[] = [];
   majorStage.minorStages &&
@@ -81,7 +81,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     majorStage.scheduled_end_time
   );
   const isOver = validateIsOver(majorStage.scheduled_end_time);
-  const hasImages = imageCtx.hasImages('MinorStages', undefined, minorStageIds);
+  const hasMedia = mediumCtx.hasMedia('MinorStages', undefined, minorStageIds);
 
   const transportDuration = formatDuration(
     majorStage?.transportation?.start_time,
@@ -186,9 +186,9 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
 
   return (
     <>
-      <LocalImagesList
-        visible={showImages}
-        handleClose={() => setShowImages(false)}
+      <LocalMediaList
+        visible={showMedia}
+        handleClose={() => setShowMedia(false)}
         minorStageIds={minorStageIds}
       />
       <View
@@ -211,11 +211,11 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
             onPress={handleEdit}
             containerStyle={styles.icon}
           />
-          {hasImages && (
+          {hasMedia && (
             <IconButton
               icon={Icons.images}
               color={GlobalStyles.colors.amberAccent}
-              onPress={() => setShowImages(true)}
+              onPress={() => setShowMedia(true)}
               containerStyle={styles.icon}
             />
           )}

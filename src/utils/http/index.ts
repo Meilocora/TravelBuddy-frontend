@@ -7,4 +7,4 @@ export * from './place_to_visit';
 export * from './transportation';
 export * from './activity';
 export * from './common';
-export * from './image';
+export * from './media';

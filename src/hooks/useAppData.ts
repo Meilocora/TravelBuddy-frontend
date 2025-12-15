@@ -7,7 +7,7 @@ import { CustomCountryContext } from '../store/custom-country-context';
 import { PlaceContext } from '../store/place-context';
 import { UserContext } from '../store/user-context';
 import { getCurrentLocation, useLocationPermissions } from '../utils/location';
-import { ImageContext } from '../store/image-context';
+import { MediumContext } from '../store/medium-context';
 
 export function useAppData() {
   const [isFetching, setIsFetching] = useState(false);
@@ -21,7 +21,7 @@ export function useAppData() {
   const stagesCtx = useContext(StagesContext);
   const countryCtx = useContext(CustomCountryContext);
   const placesCtx = useContext(PlaceContext);
-  const imagesCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   useEffect(() => {
     async function getData() {
@@ -45,14 +45,14 @@ export function useAppData() {
         const countriesBackendError =
           await countryCtx.fetchUsersCustomCountries();
         const placesBackendError = await placesCtx.fetchPlacesToVisit();
-        const imagesBackendError = await imagesCtx.fetchImages();
+        const mediaBackendError = await mediumCtx.fetchMedia();
 
         if (userInfoBackendError) collectedErrors.push(userInfoBackendError);
         if (userBackendError) collectedErrors.push(userBackendError);
         if (stagesBackendError) collectedErrors.push(stagesBackendError);
         if (countriesBackendError) collectedErrors.push(countriesBackendError);
         if (placesBackendError) collectedErrors.push(placesBackendError);
-        if (imagesBackendError) collectedErrors.push(imagesBackendError);
+        if (mediaBackendError) collectedErrors.push(mediaBackendError);
 
         setErrors(collectedErrors);
       } catch (err) {

@@ -8,7 +8,7 @@ import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
 import IconButton from '../UI/IconButton';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import Button from '../UI/Button';
-import { ImageContext } from '../../store/image-context';
+import { MediumContext } from '../../store/medium-context';
 
 interface UserStatsProps {
   journeys: Journey[];
@@ -22,7 +22,7 @@ const UserStats: React.FC<UserStatsProps> = ({
   isVisible,
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   const totalBudget = journeys.reduce(
     (sum, journey) => sum + (journey.costs?.budget || 0),
@@ -59,7 +59,7 @@ const UserStats: React.FC<UserStatsProps> = ({
   let plannedMajorStages = 0;
   let completedMinorStages = 0;
   let plannedMinorStages = 0;
-  const images = imageCtx.images.length;
+  const media = mediumCtx.media.length;
 
   for (const journey of journeys) {
     journey.countries.forEach((country) => {
@@ -197,7 +197,7 @@ const UserStats: React.FC<UserStatsProps> = ({
                 color={GlobalStyles.colors.grayMedium}
                 containerStyle={styles.icon}
               />
-              <Text style={styles.text}>{images}</Text>
+              <Text style={styles.text}>{media}</Text>
             </View>
             <View style={styles.element}>
               <IconButton

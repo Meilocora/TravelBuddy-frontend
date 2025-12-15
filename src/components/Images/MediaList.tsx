@@ -9,30 +9,30 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
-import { ImageContext } from '../../store/image-context';
+import { MediumContext } from '../../store/medium-context';
 import { PlaceContext } from '../../store/place-context';
-import ImageListElement from './ImageListElement';
-import { Image } from '../../models/media';
+import { Medium } from '../../models/media';
 import { Icons } from '../../models';
 import IconButton from '../UI/IconButton';
 import { GlobalStyles } from '../../constants/styles';
-import ImagesListFilters from './ImageListFilters';
 import { parseDateAndTime } from '../../utils';
+import MediaListFilters from './MediaListFilters';
+import MediaListElement from './MediaListElement';
 
-interface ImagesListProps {
+interface MediaListProps {
   refreshControl?: React.ReactElement<RefreshControlProps>;
-  onDelete: (image: Image) => void;
+  onDelete: (medium: Medium) => void;
 }
 
 // Eine Zeile in der Galerie: bis zu 3 Bilder
-type ImageRow = Image[];
+type MediaRow = Medium[];
 
-interface ImageMonthSection {
+interface MediaMonthSection {
   title: string; // "Januar 2025"
-  data: ImageRow[];
+  data: MediaRow[];
 }
 
-const ImagesList: React.FC<ImagesListProps> = ({
+const MediaList: React.FC<MediaListProps> = ({
   refreshControl,
   onDelete,
 }): ReactElement => {
@@ -48,7 +48,7 @@ const ImagesList: React.FC<ImagesListProps> = ({
     'all' | 'one_year' | 'custom'
   >('all'); // TODO: aktuell noch ungenutzt
 
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const placeCtx = useContext(PlaceContext);
 
   function handleTapSort() {
@@ -56,10 +56,10 @@ const ImagesList: React.FC<ImagesListProps> = ({
   }
 
   // -------- 1) Filter & Sort wie bisher --------
-  let images = [...imageCtx.images];
+  let media = [...mediumCtx.media];
 
   // Sortierung nach Datum
-  images.sort((a, b) => {
+  media.sort((a, b) => {
     const da = parseDateAndTime(a.timestamp).getTime();
     const db = parseDateAndTime(b.timestamp).getTime();
     return sortDate === 'desc' ? db - da : da - db;
@@ -67,41 +67,41 @@ const ImagesList: React.FC<ImagesListProps> = ({
 
   // Favoriten-Filter
   if (filterFav) {
-    images = images.filter((img) => img.favorite === true);
+    media = media.filter((m) => m.favorite === true);
   }
   // Place-Filter
   if (filterPlace) {
-    images = images.filter((img) => img.placeToVisitId === filterPlace);
+    media = media.filter((m) => m.placeToVisitId === filterPlace);
   }
   // MinorStage-Filter
   if (filterMinorStage) {
-    images = images.filter((img) => img.minorStageId === filterMinorStage);
+    media = media.filter((m) => m.minorStageId === filterMinorStage);
   }
   // Country-Filter
   if (filterCountry) {
     const places = placeCtx.getPlacesByCountry(filterCountry);
     const placeIds = places.map((p) => p.id);
-    images = images.filter(
-      (img) => img.placeToVisitId && placeIds.includes(img.placeToVisitId)
+    media = media.filter(
+      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId)
     );
   }
 
   const globalIndexMap = useMemo(() => {
     const map = new Map<number, number>();
-    images.forEach((img, idx) => {
-      map.set(img.id, idx);
+    media.forEach((m, idx) => {
+      map.set(m.id, idx);
     });
     return map;
-  }, [images]);
+  }, [media]);
 
   // -------- 2) Gruppierung nach Monat -> Sections --------
 
-  const sections: ImageMonthSection[] = useMemo(() => {
-    // Map: monthKey -> { title, images[] }
-    const monthMap = new Map<string, { title: string; images: Image[] }>();
+  const sections: MediaMonthSection[] = useMemo(() => {
+    // Map: monthKey -> { title, media[] }
+    const monthMap = new Map<string, { title: string; media: Medium[] }>();
 
-    for (const img of images) {
-      const date = parseDateAndTime(img.timestamp);
+    for (const m of media) {
+      const date = parseDateAndTime(m.timestamp);
       const monthKey = `${date.getFullYear()}-${date.getMonth()}`; // z.B. "2025-0"
 
       const monthLabel = date.toLocaleDateString('de-DE', {
@@ -110,32 +110,30 @@ const ImagesList: React.FC<ImagesListProps> = ({
       }); // "Januar 2025"
 
       if (!monthMap.has(monthKey)) {
-        monthMap.set(monthKey, { title: monthLabel, images: [] });
+        monthMap.set(monthKey, { title: monthLabel, media: [] });
       }
-      monthMap.get(monthKey)!.images.push(img);
+      monthMap.get(monthKey)!.media.push(m);
     }
 
-    // Hilfsfunktion: Images in 3er-Reihen aufteilen
-    const chunkIntoRows = (arr: Image[], size: number = 3): ImageRow[] => {
-      const rows: ImageRow[] = [];
+    const chunkIntoRows = (arr: Medium[], size: number = 3): MediaRow[] => {
+      const rows: MediaRow[] = [];
       for (let i = 0; i < arr.length; i += size) {
         rows.push(arr.slice(i, i + size));
       }
       return rows;
     };
 
-    const result: ImageMonthSection[] = [];
+    const result: MediaMonthSection[] = [];
 
-    // Map behält Insertion-Order basierend auf sortierten images
     monthMap.forEach((value) => {
       result.push({
         title: value.title,
-        data: chunkIntoRows(value.images, 3),
+        data: chunkIntoRows(value.media, 3),
       });
     });
 
     return result;
-  }, [images]);
+  }, [media]);
 
   return (
     <View style={styles.container}>
@@ -168,7 +166,7 @@ const ImagesList: React.FC<ImagesListProps> = ({
       </View>
 
       {showFilters && (
-        <ImagesListFilters
+        <MediaListFilters
           filterMinorStage={filterMinorStage}
           setFilterMinorStage={setFilterMinorStage}
           filterPlace={filterPlace}
@@ -184,7 +182,6 @@ const ImagesList: React.FC<ImagesListProps> = ({
         sections={sections}
         refreshControl={refreshControl}
         keyExtractor={(row, index) => {
-          // row ist hier ImageRow (Array von Images)
           const firstId = row[0]?.id ?? `row-${index}`;
           return `${firstId}-${index}`;
         }}
@@ -204,30 +201,28 @@ const ImagesList: React.FC<ImagesListProps> = ({
           index: rowIndex,
           section,
         }: {
-          item: ImageRow;
+          item: MediaRow;
           index: number;
-          section: SectionListData<ImageRow, ImageMonthSection>;
+          section: SectionListData<MediaRow, MediaMonthSection>;
         }) => {
-          // row = bis zu 3 Bilder (eine Zeile)
           return (
             <View style={styles.row}>
-              {row.map((img, colIndex) => {
-                // für Animation: "Pseudo-Gesamtindex"
-                const globalIndex = globalIndexMap.get(img.id) ?? 0;
+              {row.map((m, colIndex) => {
+                const globalIndex = globalIndexMap.get(m.id) ?? 0;
                 const animationIndex = rowIndex * 3 + colIndex;
                 return (
                   <Animated.View
-                    key={img.id.toString()}
+                    key={m.id.toString()}
                     entering={FadeInDown.delay(animationIndex * 50).duration(
                       500
                     )}
                     exiting={FadeOutDown}
                     style={styles.itemContainer}
                   >
-                    <ImageListElement
-                      image={img}
+                    <MediaListElement
+                      medium={m}
                       index={globalIndex}
-                      images={images.length > 1 ? images : undefined}
+                      media={media.length > 1 ? media : undefined}
                       onDelete={onDelete}
                     />
                   </Animated.View>
@@ -287,4 +282,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagesList;
+export default MediaList;

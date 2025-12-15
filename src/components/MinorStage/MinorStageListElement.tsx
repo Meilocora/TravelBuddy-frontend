@@ -32,8 +32,8 @@ import BusIcon from '../../../assets/bus.svg';
 import PlaneIcon from '../../../assets/plane.svg';
 import TrainIcon from '../../../assets/train.svg';
 import OtherIcon from '../../../assets/other.svg';
-import { ImageContext } from '../../store/image-context';
-import LocalImagesList from '../Images/LocalImagesList';
+import { MediumContext } from '../../store/medium-context';
+import LocalMediaList from '../Images/LocalMediaList';
 
 const iconMap: { [key: string]: React.FC<any> } = {
   boat: BoatIcon,
@@ -61,10 +61,10 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
   const stagesCtx = useContext(StagesContext);
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
 
   const majorStage = stagesCtx.findMinorStagesMajorStage(minorStage.id);
   const majorStageId = majorStage?.id!;
@@ -80,7 +80,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const moneyAvailable = formatAmount(minorStage.costs.budget);
   const moneyPlanned = formatAmount(minorStage.costs.spent_money);
   const isOver = validateIsOver(minorStage.scheduled_end_time);
-  const hasImages = imageCtx.hasImages('MinorStage', minorStage.id);
+  const hasMedia = mediumCtx.hasMedia('MinorStage', minorStage.id);
 
   const transportDuration = formatDuration(
     minorStage?.transportation?.start_time,
@@ -127,9 +127,9 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
 
   return (
     <>
-      <LocalImagesList
-        visible={showImages}
-        handleClose={() => setShowImages(false)}
+      <LocalMediaList
+        visible={showMedia}
+        handleClose={() => setShowMedia(false)}
         minorStageId={minorStage.id}
       />
       <View
@@ -152,11 +152,11 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
             onPress={handleEdit}
             containerStyle={styles.icon}
           />
-          {hasImages && (
+          {hasMedia && (
             <IconButton
               icon={Icons.images}
               color={GlobalStyles.colors.purpleAccent}
-              onPress={() => setShowImages(true)}
+              onPress={() => setShowMedia(true)}
               containerStyle={styles.icon}
             />
           )}

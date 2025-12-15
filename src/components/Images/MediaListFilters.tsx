@@ -1,18 +1,18 @@
 import { ReactElement, useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import MinorStageSelector from './ManageImage/MinorStageSelector';
-import PlaceToVisitSelector from './ManageImage/PlaceToVisitSelector';
+
+import MinorStageSelector from './ManageMedia/MinorStageSelector';
+import PlaceToVisitSelector from './ManageMedia/PlaceToVisitSelector';
 import Input from '../UI/form/Input';
 import Button from '../UI/Button';
 import { ButtonMode, ColorScheme, Icons } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
-import CountrySelector from '../MajorStage/ManageMajorStage/CountrySelector';
 import CountriesSelection from '../Journeys/ManageJourney/CountriesSelection';
 import { fetchCustomCountries } from '../../utils/http';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import IconButton from '../UI/IconButton';
 
-interface ImagesListFiltersProps {
+interface MediaListFiltersProps {
   filterMinorStage: number | undefined;
   setFilterMinorStage: (minorStageId: number | undefined) => void;
   filterPlace: number | undefined;
@@ -22,7 +22,7 @@ interface ImagesListFiltersProps {
   setFilterCountry: (countryId: number | undefined) => void;
 }
 
-const ImagesListFilters: React.FC<ImagesListFiltersProps> = ({
+const MediaListFilters: React.FC<MediaListFiltersProps> = ({
   filterMinorStage,
   setFilterMinorStage,
   filterPlace,
@@ -149,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagesListFilters;
+export default MediaListFilters;

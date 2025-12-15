@@ -29,12 +29,11 @@ import MapViewDirections, {
 import ClusteredMapView from 'react-native-map-clustering';
 
 import {
-  ColorScheme,
   Icons,
-  ImageLocation,
   JourneyBottomTabsParamsList,
   Location,
   MapType,
+  MediumLocation,
   StackParamList,
 } from '../../models';
 import MapsMarker from '../../components/Maps/MapsMarker';
@@ -43,7 +42,7 @@ import MapScopeSelector, {
 } from '../../components/Maps/MapScopeSelector';
 import {
   addColor,
-  formatImageToLocation,
+  formatMediumToLocation,
   getMapLocationsFromJourney,
   getMapLocationsFromMajorStage,
   getMapLocationsFromMinorStage,
@@ -55,19 +54,19 @@ import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
 import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
 import { UserContext } from '../../store/user-context';
-import { formatRouteDuration, generateRandomString } from '../../utils';
+import { generateRandomString } from '../../utils';
 import IconButton from '../../components/UI/IconButton';
 import MapSettings from '../../components/Maps/MapSettings';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import { GlobalStyles, lightMapStyle } from '../../constants/styles';
 import { usePersistedState } from '../../hooks/usePersistedState';
-import { ImageContext } from '../../store/image-context';
 import RouteInfo, { RouteInfoType } from '../../components/Maps/RouteInfo';
-import ImageModal from '../../components/UI/ImageModal';
-import { Image as ImageType } from '../../models/media';
 import OpenRouteInGoogleMapsButton from '../../components/Maps/OpenRouteInGoogleMapsButton';
-import ImageMarker from '../../components/Maps/ImageMarker';
 import { DELTA, EDGE_PADDING } from '../../constants/maps';
+import { MediumContext } from '../../store/medium-context';
+import { Medium } from '../../models/media';
+import MediaModal from '../../components/UI/MediaModal';
+import MediumMarker from '../../components/Maps/MediumMarker';
 
 interface MapProps {
   navigation: NativeStackNavigationProp<JourneyBottomTabsParamsList, 'Map'>;
@@ -75,7 +74,7 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
   const stagesCtx = useContext(StagesContext);
   const customCountryCtx = useContext(CustomCountryContext);
@@ -91,7 +90,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     'map_show_all_places',
     false
   );
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
 
@@ -106,7 +105,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   >();
 
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
-  const [showImageModal, setShowImageModal] = useState<ImageType | undefined>();
+  const [showMediaModal, setShowMediaModal] = useState<Medium | undefined>();
 
   const [showContent, setShowContent] = useState([
     { button: true, list: false },
@@ -125,7 +124,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const minorStage = route.params?.minorStage;
   const majorStage = route.params?.majorStage;
 
-  // get all images that are connected to the shown stage
+  // get all media that are connected to the shown stage
   let minorStageIds: number[] = [];
   if (minorStage) {
     minorStageIds.push(minorStage.id);
@@ -147,12 +146,12 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     }
   }
 
-  let imageLocations: ImageLocation[] = [];
-  if (showImages) {
-    for (const img of imageCtx.images) {
-      if (img.minorStageId && img.minorStageId in minorStageIds) {
-        const imgLoc = formatImageToLocation(img);
-        imgLoc && imageLocations.push(imgLoc);
+  let mediaLocations: MediumLocation[] = [];
+  if (showMedia) {
+    for (const m of mediumCtx.media) {
+      if (m.minorStageId && m.minorStageId in minorStageIds) {
+        const mLoc = formatMediumToLocation(m);
+        mLoc && mediaLocations.push(mLoc);
       }
     }
   }
@@ -471,9 +470,9 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     fitToItems(coords);
   }
 
-  function handlePressImageMarker(location: ImageLocation) {
-    const localImage = imageCtx.findImage(location.id);
-    setShowImageModal(localImage);
+  function handlePressMediumMarker(location: MediumLocation) {
+    const localMedium = mediumCtx.findMedium(location.id);
+    setShowMediaModal(localMedium);
   }
 
   function handleLongPress(e: LongPressEvent) {
@@ -501,10 +500,10 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
 
   return (
     <View style={styles.root}>
-      <ImageModal
-        image={showImageModal}
-        onClose={() => setShowImageModal(undefined)}
-        visible={typeof showImageModal !== 'undefined'}
+      <MediaModal
+        medium={showMediaModal}
+        onClose={() => setShowMediaModal(undefined)}
+        visible={typeof showMediaModal !== 'undefined'}
         onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
       />
       {showSettings && (
@@ -522,8 +521,8 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           setMode={handleChangeDirectionsMode}
           setMapType={setMapType}
           mapType={mapType}
-          toggleShowImages={() => setShowImages((prevValue) => !prevValue)}
-          showImages={showImages}
+          toggleShowMedia={() => setShowMedia((prevValue) => !prevValue)}
+          showMedia={showMedia}
         />
       )}
       <MapScopeSelector
@@ -626,13 +625,13 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
               />
             );
           })}
-          {imageLocations &&
-            imageLocations.map((loc) => {
+          {mediaLocations &&
+            mediaLocations.map((loc) => {
               return (
-                <ImageMarker
-                  imageLocation={loc}
+                <MediumMarker
+                  mediumLocation={loc}
                   key={loc.url}
-                  onPressMarker={handlePressImageMarker}
+                  onPressMarker={handlePressMediumMarker}
                   coordinate={{
                     latitude: loc.latitude,
                     longitude: loc.longitude,

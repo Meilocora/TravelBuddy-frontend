@@ -2,18 +2,12 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { ReactElement, useContext, useState } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
-import {
-  BottomTabsParamList,
-  CustomCountry,
-  Icons,
-  Journey,
-} from '../../models';
+import { CustomCountry, Icons, Journey } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 import {
   formatAmount,
   formatDateString,
   formatDurationToDays,
-  formatProgress,
   generateRandomString,
   validateIsOver,
 } from '../../utils';
@@ -26,8 +20,8 @@ import ElementComment from '../UI/list/ElementComment';
 import { StagesContext } from '../../store/stages-context';
 import CountryElement from '../UI/CountryElement';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { ImageContext } from '../../store/image-context';
-import LocalImagesList from '../Images/LocalImagesList';
+import { MediumContext } from '../../store/medium-context';
+import LocalMediaList from '../Images/LocalMediaList';
 
 interface JourneyListElementProps {
   journey: Journey;
@@ -37,9 +31,9 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   journey,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setshowMedia] = useState(false);
 
   const moneyAvailable = formatAmount(journey.costs.budget);
   const moneyPlanned = formatAmount(journey.costs.spent_money);
@@ -75,7 +69,7 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   }
 
   const isOver = validateIsOver(journey.scheduled_end_time);
-  const hasImages = imageCtx.hasImages('MinorStages', undefined, minorStageIds);
+  const hasMedia = mediumCtx.hasMedia('MinorStages', undefined, minorStageIds);
 
   const elementDetailInfo: ElementDetailInfo[] = [
     { icon: Icons.duration, value: `${durationInDays} days` },
@@ -112,9 +106,9 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
 
   return (
     <>
-      <LocalImagesList
-        visible={showImages}
-        handleClose={() => setShowImages(false)}
+      <LocalMediaList
+        visible={showMedia}
+        handleClose={() => setshowMedia(false)}
         minorStageIds={minorStageIds}
       />
       <View
@@ -131,11 +125,11 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
             onPress={handleEdit}
             containerStyle={styles.button}
           />
-          {hasImages && (
+          {hasMedia && (
             <IconButton
               icon={Icons.images}
               color={GlobalStyles.colors.greenAccent}
-              onPress={() => setShowImages(true)}
+              onPress={() => setshowMedia(true)}
               containerStyle={styles.button}
             />
           )}

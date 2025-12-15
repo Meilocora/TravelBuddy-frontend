@@ -15,9 +15,9 @@ import TextLink from '../../UI/TextLink';
 import { GlobalStyles } from '../../../constants/styles';
 import { isImageLink } from '../../../utils';
 import { LatLng } from 'react-native-maps';
-import { ImageContext } from '../../../store/image-context';
-import LocalImagesList from '../../Images/LocalImagesList';
+import { MediumContext } from '../../../store/medium-context';
 import LinkImageModal from '../../UI/LinkImageModal';
+import LocalMediaList from '../../Images/LocalMediaList';
 
 interface PlaceContentProps {
   place: PlaceToVisit;
@@ -31,7 +31,7 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
   addRoutePoint,
 }): ReactElement => {
   const [showImage, setShowImage] = useState(false);
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
@@ -39,14 +39,14 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
   const placeNavigation =
     useNavigation<NativeStackNavigationProp<StackParamList>>();
 
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const stagesCtx = useContext(StagesContext);
   const majorStage = minorStageId
     ? stagesCtx.findMinorStagesMajorStage(minorStageId)
     : undefined;
   const journey = stagesCtx.findMajorStagesJourney(majorStage?.id!);
 
-  const hasImages = imageCtx.hasImages('PlaceToVisit', place.id);
+  const hasMedia = mediumCtx.hasMedia('PlaceToVisit', place.id);
 
   function handleGoToStage() {
     if (minorStageId) {
@@ -71,9 +71,9 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
 
   return (
     <>
-      <LocalImagesList
-        visible={showImages}
-        handleClose={() => setShowImages(false)}
+      <LocalMediaList
+        visible={showMedia}
+        handleClose={() => setShowMedia(false)}
         placeId={place.id}
       />
       {isImageLink(place.link) && (
@@ -117,10 +117,10 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
               size={24}
             />
           )}
-          {hasImages && (
+          {hasMedia && (
             <IconButton
               icon={Icons.images}
-              onPress={() => setShowImages(true)}
+              onPress={() => setShowMedia(true)}
               color={GlobalStyles.colors.grayDark}
               containerStyle={styles.button}
             />

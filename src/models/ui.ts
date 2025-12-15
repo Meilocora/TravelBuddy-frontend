@@ -38,6 +38,7 @@ export enum Icons {
   mapFilled = 'map',
   duration = 'hourglass-outline',
   place = 'home-outline',
+  play = 'play',
   country = 'flag',
   compass = 'compass-outline',
   walk = 'walk',
@@ -60,6 +61,8 @@ export enum Icons {
   clipboard = 'clipboard-outline',
   bookOutline = 'book-outline',
   bookFilled = 'book',
+  videocam = 'videocam',
+  refresh = 'refresh',
 }
 
 export enum ButtonMode {

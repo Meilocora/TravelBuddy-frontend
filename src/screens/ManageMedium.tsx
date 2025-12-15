@@ -10,7 +10,6 @@ import {
 } from '../models';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
-import { deleteImage } from '../utils/http';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../components/UI/Modal';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
@@ -19,24 +18,24 @@ import {
   RouteProp,
   useNavigation,
 } from '@react-navigation/native';
-import { useAppData } from '../hooks/useAppData';
-import { ImageContext } from '../store/image-context';
-import { Image, ImageValues } from '../models/media';
-import ImageForm from '../components/Images/ManageImage/ImageForm';
+import { MediumContext } from '../store/medium-context';
+import { Medium, MediumValues } from '../models/media';
+import ImageForm from '../components/Images/ManageMedia/MediumForm';
 import { UserContext } from '../store/user-context';
+import { deleteMedium } from '../utils/http';
 
-interface ManageImageProps {
-  navigation: NativeStackNavigationProp<StackParamList, 'ManageImage'>;
-  route: RouteProp<StackParamList, 'ManageImage'>;
+interface ManageMediumProps {
+  navigation: NativeStackNavigationProp<StackParamList, 'ManageMedium'>;
+  route: RouteProp<StackParamList, 'ManageMedium'>;
 }
 
 interface ConfirmHandlerProps {
   error?: string;
   status: number;
-  image?: Image;
+  medium?: Medium;
 }
 
-const ManageImage: React.FC<ManageImageProps> = ({
+const ManageMedium: React.FC<ManageMediumProps> = ({
   route,
   navigation,
 }): ReactElement => {
@@ -46,37 +45,40 @@ const ManageImage: React.FC<ManageImageProps> = ({
   const galleryNavigation =
     useNavigation<NavigationProp<BottomTabsParamList>>();
 
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
 
-  const editedImageId = route.params?.imageId;
-  let isEditing = !!editedImageId;
+  const editedMediumId = route.params?.mediumId;
+  let isEditing = !!editedMediumId;
 
-  const selectedImage = imageCtx.findImage(editedImageId!);
+  const selectedMedium = mediumCtx.findMedium(editedMediumId!);
 
-  const initialLat = route.params.lat || selectedImage?.latitude || undefined;
-  const initialLng = route.params.lng || selectedImage?.longitude || undefined;
+  const initialLat = route.params.lat || selectedMedium?.latitude || undefined;
+  const initialLng = route.params.lng || selectedMedium?.longitude || undefined;
 
   // Empty, when no default values provided
-  const [defaultValues, setDefaultValues] = useState<ImageValues>({
-    url: selectedImage?.url || '',
-    favorite: selectedImage?.favorite || false,
+  const [defaultValues, setDefaultValues] = useState<MediumValues>({
+    url: selectedMedium?.url || '',
+    favorite: selectedMedium?.favorite || false,
     latitude: initialLat,
     longitude: initialLng,
-    timestamp: selectedImage?.timestamp || undefined,
-    minorStageId: selectedImage?.minorStageId || undefined,
-    placeToVisitId: selectedImage?.placeToVisitId || undefined,
-    description: selectedImage?.description || '',
+    timestamp: selectedMedium?.timestamp || undefined,
+    minorStageId: selectedMedium?.minorStageId || undefined,
+    placeToVisitId: selectedMedium?.placeToVisitId || undefined,
+    description: selectedMedium?.description || '',
+    mediumType: selectedMedium?.mediumType || 'image',
+    duration: selectedMedium?.duration || undefined,
+    thumbnailUrl: selectedMedium?.thumbnailUrl || undefined,
   });
 
-  async function deleteImageHandler() {
+  async function deleteMediumHandler() {
     try {
-      const { error, status } = await deleteImage(
-        selectedImage!,
+      const { error, status } = await deleteMedium(
+        selectedMedium!,
         userCtx.userId!
       );
       if (!error && status === 200) {
-        const popupText = 'Image successfully deleted!';
+        const popupText = 'Medium successfully deleted!';
         galleryNavigation.navigate('Gallery', {
           popupText: popupText,
           refresh: true,
@@ -86,7 +88,7 @@ const ManageImage: React.FC<ManageImageProps> = ({
         return;
       }
     } catch (error) {
-      setError('Could not delete image!');
+      setError('Could not delete medium!');
     }
     setIsDeleting(false);
     return;
@@ -112,7 +114,7 @@ const ManageImage: React.FC<ManageImageProps> = ({
         setError(error);
         return;
       } else {
-        const popupText = 'Image successfully updated!';
+        const popupText = 'Medium successfully updated!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'Gallery',
           params: { popupText: popupText, refresh: true },
@@ -123,7 +125,7 @@ const ManageImage: React.FC<ManageImageProps> = ({
         setError(error);
         return;
       } else {
-        const popupText = 'Image successfully added!';
+        const popupText = 'ImagMedium successfully added!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'Gallery',
           params: { popupText: popupText, refresh: true },
@@ -137,20 +139,21 @@ const ManageImage: React.FC<ManageImageProps> = ({
       {isDeleting && (
         <Modal
           title='Are you sure?'
-          content={`The Image will be deleted from this app permanently!`}
-          onConfirm={deleteImageHandler}
+          content={`The Medium will be deleted from this app permanently!`}
+          onConfirm={deleteMediumHandler}
           onCancel={closeModalHandler}
         />
       )}
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown}>
         <ImageForm
+          key={editedMediumId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}
           defaultValues={isEditing ? defaultValues : undefined}
           isEditing={isEditing}
-          editImageId={editedImageId}
+          editMediumId={editedMediumId}
         />
         {isEditing && (
           <View style={styles.btnContainer}>
@@ -176,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ManageImage;
+export default ManageMedium;

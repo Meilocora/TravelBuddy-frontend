@@ -28,16 +28,16 @@ import Constants from 'expo-constants';
 
 import {
   Icons,
-  ImageLocation,
   Location,
   MapType,
+  MediumLocation,
   StackParamList,
 } from '../models';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import MapsMarker from '../components/Maps/MapsMarker';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import {
-  formatImageToLocation,
+  formatMediumToLocation,
   formatPlaceToLocation,
   getRegionForLocations,
 } from '../utils/location';
@@ -45,14 +45,14 @@ import { CustomCountryContext } from '../store/custom-country-context';
 import IconButton from '../components/UI/IconButton';
 import MapLocationElement from '../components/Maps/MapLocationElement/MapLocationElement';
 import { usePersistedState } from '../hooks/usePersistedState';
-import ImageModal from '../components/UI/ImageModal';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
-import { ImageContext } from '../store/image-context';
-import { Image as ImageType } from '../models/media';
-import ImageMarker from '../components/Maps/ImageMarker';
+import { MediumContext } from '../store/medium-context';
+import MediumMarker from '../components/Maps/MediumMarker';
 import { DELTA, EDGE_PADDING } from '../constants/maps';
+import { Medium } from '../models/media';
+import MediaModal from '../components/UI/MediaModal';
 
 interface ShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ShowMap'>;
@@ -64,7 +64,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
   route,
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   const mapRef = useRef<MapView>(null);
 
@@ -74,7 +74,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [isFav, setIsFav] = useState(true);
   const [isVisited, setIsVisited] = useState(true);
-  const [showImages, setShowImages] = useState(false);
+  const [showMedia, setShowMedia] = useState(false);
   const [region, setRegion] = useState<Region>({
     latitude: location?.data.latitude || 0,
     longitude: location?.data.longitude || 0,
@@ -84,7 +84,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
   const [pressedLocation, setPressedLocation] = useState<
     Location | undefined
   >();
-  const [showImageModal, setShowImageModal] = useState<ImageType | undefined>();
+  const [showMediumModal, setShowMediumModal] = useState<Medium | undefined>();
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
@@ -120,11 +120,11 @@ const ShowMap: React.FC<ShowMapProps> = ({
     return locations;
   }, [customCountryIds, customCountryCtx, isFav, isVisited]);
 
-  let imageLocations: ImageLocation[] = [];
-  if (showImages) {
-    for (const img of imageCtx.images) {
-      const imgLoc = formatImageToLocation(img);
-      imgLoc && imageLocations.push(imgLoc);
+  let mediaLocations: MediumLocation[] = [];
+  if (showMedia) {
+    for (const m of mediumCtx.media) {
+      const mLoc = formatMediumToLocation(m);
+      mLoc && mediaLocations.push(mLoc);
     }
   }
 
@@ -300,9 +300,9 @@ const ShowMap: React.FC<ShowMapProps> = ({
     fitToItems(coords, true);
   }
 
-  function handlePressImageMarker(location: ImageLocation) {
-    const localImage = imageCtx.findImage(location.id);
-    setShowImageModal(localImage);
+  function handlePressMediumMarker(location: MediumLocation) {
+    const localMedium = mediumCtx.findMedium(location.id);
+    setShowMediumModal(localMedium);
   }
 
   function handleLongPress(e: LongPressEvent) {
@@ -331,10 +331,10 @@ const ShowMap: React.FC<ShowMapProps> = ({
 
   return (
     <View style={styles.container}>
-      <ImageModal
-        image={showImageModal}
-        onClose={() => setShowImageModal(undefined)}
-        visible={typeof showImageModal !== 'undefined'}
+      <MediaModal
+        medium={showMediumModal}
+        onClose={() => setShowMediumModal(undefined)}
+        visible={typeof showMediumModal !== 'undefined'}
         onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
       />
       {showSettings && (
@@ -344,8 +344,8 @@ const ShowMap: React.FC<ShowMapProps> = ({
           setMode={(m: MapViewDirectionsMode) => setDirectionsMode(m)}
           setMapType={setMapType}
           mapType={mapType}
-          toggleShowImages={() => setShowImages((prevValue) => !prevValue)}
-          showImages={showImages}
+          toggleShowMedia={() => setShowMedia((prevValue) => !prevValue)}
+          showMedia={showMedia}
         />
       )}
       <ClusteredMapView
@@ -432,13 +432,13 @@ const ShowMap: React.FC<ShowMapProps> = ({
               />
             );
           })}
-        {imageLocations &&
-          imageLocations.map((loc) => {
+        {mediaLocations &&
+          mediaLocations.map((loc) => {
             return (
-              <ImageMarker
-                imageLocation={loc}
+              <MediumMarker
+                mediumLocation={loc}
                 key={loc.url}
-                onPressMarker={handlePressImageMarker}
+                onPressMarker={handlePressMediumMarker}
                 coordinate={{
                   latitude: loc.latitude,
                   longitude: loc.longitude,

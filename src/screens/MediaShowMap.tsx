@@ -26,51 +26,53 @@ import MapViewDirections, {
   MapViewDirectionsMode,
 } from 'react-native-maps-directions';
 
-import { Icons, ImageLocation, MapType, StackParamList } from '../models';
+import { Icons, MapType, MediumLocation, StackParamList } from '../models';
 import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import {
-  formatImageToLocation,
-  getRegionForImageLocations,
+  formatMediumToLocation,
+  getRegionForMediumLocations,
 } from '../utils/location';
 import IconButton from '../components/UI/IconButton';
 import { usePersistedState } from '../hooks/usePersistedState';
-import { ImageContext } from '../store/image-context';
+import { MediumContext } from '../store/medium-context';
 import { UserContext } from '../store/user-context';
-import ImageMarker from '../components/Maps/ImageMarker';
-import { Image } from '../models/media';
-import ImageModal from '../components/UI/ImageModal';
+import { Medium } from '../models/media';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import { DELTA, EDGE_PADDING } from '../constants/maps';
+import VideoModal from '../components/UI/VideoModal';
+import MediumMarker from '../components/Maps/MediumMarker';
+import MediaModal from '../components/UI/MediaModal';
 
-interface ImagesShowMapProps {
-  navigation: NativeStackNavigationProp<StackParamList, 'ImagesShowMap'>;
-  route: RouteProp<StackParamList, 'ImagesShowMap'>;
+interface MediaShowMapProps {
+  navigation: NativeStackNavigationProp<StackParamList, 'MediaShowMap'>;
+  route: RouteProp<StackParamList, 'MediaShowMap'>;
 }
 
-const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
+const MediaShowMap: React.FC<MediaShowMapProps> = ({
   navigation,
   route,
 }): ReactElement => {
-  const imagesCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
 
   const mapRef = useRef<MapView>(null);
 
-  const imageLocation = route.params.imageLocation;
+  const mediumLocation = route.params.mediumLocation;
 
   const [showSettings, setShowSettings] = useState(false);
   const [isFav, setIsFav] = useState(true);
   const [region, setRegion] = useState<Region>({
-    latitude: imageLocation?.latitude || userCtx.currentLocation?.latitude || 0,
+    latitude:
+      mediumLocation?.latitude || userCtx.currentLocation?.latitude || 0,
     longitude:
-      imageLocation?.longitude || userCtx.currentLocation?.longitude || 0,
+      mediumLocation?.longitude || userCtx.currentLocation?.longitude || 0,
     latitudeDelta: DELTA,
     longitudeDelta: DELTA,
   });
-  const [showImageModal, setShowImageModal] = useState<Image | undefined>();
+  const [showMediumModal, setShowMediumModal] = useState<Medium | undefined>();
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
   const [directionsMode, setDirectionsMode] =
     usePersistedState<MapViewDirectionsMode>('map_directions_mode', 'DRIVING');
@@ -87,15 +89,15 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     Constants.expoConfig?.extra?.googleApiKey ||
     process.env.REACT_APP_GOOGLE_API_KEY;
 
-  let shownLocations: ImageLocation[] = [];
-  for (const img of imagesCtx.images) {
-    const imgLocation = formatImageToLocation(img);
+  let shownLocations: MediumLocation[] = [];
+  for (const m of mediumCtx.media) {
+    const mLocation = formatMediumToLocation(m);
     if (
-      imgLocation &&
-      imgLocation.latitude !== imageLocation?.latitude &&
-      imgLocation.longitude !== imageLocation?.longitude
+      mLocation &&
+      mLocation.latitude !== mediumLocation?.latitude &&
+      mLocation.longitude !== mediumLocation?.longitude
     ) {
-      shownLocations.push(imgLocation);
+      shownLocations.push(mLocation);
     }
   }
 
@@ -105,8 +107,8 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
 
   useEffect(() => {
     async function calculateRegion() {
-      if (shownLocations && !imageLocation) {
-        setRegion(await getRegionForImageLocations(shownLocations));
+      if (shownLocations && !mediumLocation) {
+        setRegion(await getRegionForMediumLocations(shownLocations));
       }
     }
     calculateRegion();
@@ -141,7 +143,7 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     const lat = event.nativeEvent.coordinate.latitude;
     const lng = event.nativeEvent.coordinate.longitude;
 
-    navigation.navigate('ManageImage', {
+    navigation.navigate('ManageMedium', {
       lat: lat,
       lng: lng,
     });
@@ -151,12 +153,12 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     (pts: LatLng[], isInitial: boolean = false) => {
       if (!mapRef.current || pts.length === 0) return;
 
-      if (imageLocation && isInitial && !hasInitialZoom) {
+      if (mediumLocation && isInitial && !hasInitialZoom) {
         setTimeout(() => {
           if (!mapRef.current) return;
           const tight: Region = {
-            latitude: imageLocation.latitude,
-            longitude: imageLocation.longitude,
+            latitude: mediumLocation.latitude,
+            longitude: mediumLocation.longitude,
             latitudeDelta: DELTA,
             longitudeDelta: DELTA,
           };
@@ -208,10 +210,10 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
       // Case 2: less than 2 routePoints -> adjust screen to all locations
       allCoords = [...coords];
 
-      if (imageLocation) {
+      if (mediumLocation) {
         allCoords.push({
-          latitude: imageLocation.latitude,
-          longitude: imageLocation.longitude,
+          latitude: mediumLocation.latitude,
+          longitude: mediumLocation.longitude,
         });
       }
     }
@@ -219,7 +221,7 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     if (allCoords.length === 0) return;
 
     fitToItems(allCoords, !hasInitialZoom);
-  }, [coords, routePoints, imageLocation, fitToItems, hasInitialZoom]);
+  }, [coords, routePoints, mediumLocation, fitToItems, hasInitialZoom]);
 
   const renderCluster = useCallback((cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -243,9 +245,9 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
     );
   }, []);
 
-  function handlePressMarker(location: ImageLocation) {
-    const localImage = imagesCtx.findImage(location.id);
-    setShowImageModal(localImage);
+  function handlePressMarker(location: MediumLocation) {
+    const localMedium = mediumCtx.findMedium(location.id);
+    setShowMediumModal(localMedium);
   }
 
   function handleLongPress(e: LongPressEvent) {
@@ -266,12 +268,22 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
 
   return (
     <View style={styles.container}>
-      <ImageModal
-        image={showImageModal}
-        onClose={() => setShowImageModal(undefined)}
-        visible={typeof showImageModal !== 'undefined'}
-        onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
-      />
+      {showMediumModal?.mediumType === 'image' ? (
+        <MediaModal
+          medium={showMediumModal}
+          onClose={() => setShowMediumModal(undefined)}
+          visible={typeof showMediumModal !== 'undefined'}
+          onCalcRoute={(localCoords: LatLng) => setRoutePoints([localCoords])}
+        />
+      ) : (
+        showMediumModal?.mediumType === 'video' && (
+          <VideoModal
+            uri={showMediumModal?.url}
+            onClose={() => setShowMediumModal(undefined)}
+            visible={typeof showMediumModal !== 'undefined'}
+          />
+        )
+      )}
       {showSettings && (
         <MapSettings
           onClose={() => setShowSettings(false)}
@@ -340,23 +352,23 @@ const ImagesShowMap: React.FC<ImagesShowMapProps> = ({
               }}
             />
           ))}
-        {imageLocation && (
-          <ImageMarker
-            imageLocation={imageLocation}
-            key={imageLocation.url}
+        {mediumLocation && (
+          <MediumMarker
+            mediumLocation={mediumLocation}
+            key={mediumLocation.url}
             active={true}
             onPressMarker={handlePressMarker}
             coordinate={{
-              latitude: imageLocation.latitude,
-              longitude: imageLocation.longitude,
+              latitude: mediumLocation.latitude,
+              longitude: mediumLocation.longitude,
             }}
           />
         )}
         {shownLocations &&
           shownLocations.map((loc) => {
             return (
-              <ImageMarker
-                imageLocation={loc}
+              <MediumMarker
+                mediumLocation={loc}
                 key={loc.url}
                 onPressMarker={handlePressMarker}
                 coordinate={{
@@ -410,4 +422,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagesShowMap;
+export default MediaShowMap;

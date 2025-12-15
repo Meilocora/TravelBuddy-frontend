@@ -5,7 +5,7 @@ import { GlobalStyles } from '../../constants/styles';
 import { Icons, Journey } from '../../models';
 import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
 import IconButton from '../UI/IconButton';
-import { ImageContext } from '../../store/image-context';
+import { MediumContext } from '../../store/medium-context';
 
 interface OverviewDetailsProps {
   journey: Journey;
@@ -14,7 +14,7 @@ interface OverviewDetailsProps {
 const OverviewDetails: React.FC<OverviewDetailsProps> = ({
   journey,
 }): ReactElement => {
-  const imageCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
 
   const moneyAvailable = new Intl.NumberFormat('de-DE', {
     style: 'currency',
@@ -86,8 +86,8 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
     }
   }
 
-  const images = imageCtx.images.filter(
-    (img) => img.minorStageId && minorStageIds.includes(img.minorStageId)
+  const media = mediumCtx.media.filter(
+    (m) => m.minorStageId && minorStageIds.includes(m.minorStageId)
   ).length;
 
   return (
@@ -135,7 +135,7 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
             color={GlobalStyles.colors.grayMedium}
             containerStyle={styles.icon}
           />
-          <Text style={styles.text}>{images}</Text>
+          <Text style={styles.text}>{media}</Text>
         </View>
         <View style={styles.element}>
           <IconButton

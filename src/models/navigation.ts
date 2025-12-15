@@ -1,5 +1,5 @@
 import { NavigatorScreenParams, RouteProp } from '@react-navigation/native';
-import { ImageLocation, Location, MapLocation } from './map';
+import { Location, MapLocation, MediumLocation } from './map';
 import { ColorScheme } from './ui';
 import { MajorStage } from './major_stage';
 import { MinorStage } from './minor_stage';
@@ -80,10 +80,10 @@ export type StackParamList = {
     colorScheme?: string;
     location?: Location;
   };
-  ImagesShowMap: {
-    imageLocation?: ImageLocation;
+  MediaShowMap: {
+    mediumLocation?: MediumLocation;
   };
-  ManageImage: { imageId?: number; lat?: number; lng?: number };
+  ManageMedium: { mediumId?: number; lat?: number; lng?: number };
 };
 
 export type AuthStackParamList = {

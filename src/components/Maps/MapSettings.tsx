@@ -26,8 +26,8 @@ interface MapSettingsProps {
   showPastLocations?: boolean;
   toggleShowAllPlaces?: () => void;
   showAllPlaces?: boolean;
-  toggleShowImages?: () => void;
-  showImages?: boolean;
+  toggleShowMedia?: () => void;
+  showMedia?: boolean;
 }
 
 const MapSettings: React.FC<MapSettingsProps> = ({
@@ -40,8 +40,8 @@ const MapSettings: React.FC<MapSettingsProps> = ({
   showPastLocations,
   toggleShowAllPlaces,
   showAllPlaces,
-  toggleShowImages,
-  showImages,
+  toggleShowMedia,
+  showMedia,
 }): ReactElement => {
   // Drag-to-dismiss logic
   const translateY = useSharedValue(0);
@@ -150,9 +150,9 @@ const MapSettings: React.FC<MapSettingsProps> = ({
             Show all Places of country
           </SettingItem>
         )}
-        {typeof showImages === 'boolean' && (
-          <SettingItem onPress={toggleShowImages!} state={showImages}>
-            Show Images
+        {typeof showMedia === 'boolean' && (
+          <SettingItem onPress={toggleShowMedia!} state={showMedia}>
+            Show Media
           </SettingItem>
         )}
         <View>

@@ -15,7 +15,7 @@ interface PlaceToVisitSelectorProps {
   invalid: boolean;
   defaultValue: number | undefined;
   errors: string[];
-  imageCoords?: LatLng;
+  mediumCoords?: LatLng;
   autoSuggestion?: boolean;
 }
 
@@ -24,7 +24,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   invalid,
   defaultValue,
   errors,
-  imageCoords,
+  mediumCoords,
   autoSuggestion = true,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState(false);
@@ -44,11 +44,11 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
       let suggestedPlace: PlaceToVisit | undefined;
 
       if (
-        imageCoords &&
-        imageCoords['latitude'] !== 0 &&
-        imageCoords['longitude'] !== 0
+        mediumCoords &&
+        mediumCoords['latitude'] !== 0 &&
+        mediumCoords['longitude'] !== 0
       ) {
-        suggestedPlace = placesCtx.findNearestPlace(imageCoords);
+        suggestedPlace = placesCtx.findNearestPlace(mediumCoords);
       } else if (userCtx.currentLocation) {
         suggestedPlace = placesCtx.findNearestPlace(userCtx.currentLocation);
       }
@@ -57,7 +57,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
         onChangePlace(suggestedPlace.id);
       }
     }
-  }, [defaultValue, autoSuggestEnabled, imageCoords, userCtx.currentLocation]);
+  }, [defaultValue, autoSuggestEnabled, mediumCoords, userCtx.currentLocation]);
 
   function handleOpenModal() {
     setOpenSelection(true);

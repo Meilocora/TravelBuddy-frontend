@@ -19,14 +19,14 @@ import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { GlobalStyles } from '../../constants/styles';
-import { ImageContext } from '../../store/image-context';
 import IconButton from '../../components/UI/IconButton';
-import ImagesList from '../../components/Images/ImagesList';
 import FloatingButton from '../../components/UI/FloatingButton';
 import { UserContext } from '../../store/user-context';
-import { deleteImage } from '../../utils/http';
-import { Image } from '../../models/media';
 import Modal from '../../components/UI/Modal';
+import { Medium } from '../../models/media';
+import { MediumContext } from '../../store/medium-context';
+import { deleteMedium } from '../../utils/http';
+import MediaList from '../../components/Images/MediaList';
 
 interface GalleryProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'Gallery'>;
@@ -41,14 +41,14 @@ const Gallery: React.FC<GalleryProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
-  const [deletingImage, setDeletingImage] = useState<Image | undefined>(
+  const [deletingMedium, setDeletingMedium] = useState<Medium | undefined>(
     undefined
   );
 
-  const imagesCtx = useContext(ImageContext);
+  const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
 
-  const imageNavigation =
+  const mediumNavigation =
     useNavigation<NativeStackNavigationProp<StackParamList>>();
   const showMapNavigation = useNavigation<NavigationProp<StackParamList>>();
 
@@ -56,35 +56,35 @@ const Gallery: React.FC<GalleryProps> = ({
     setPopupText(null);
   }
 
-  function handleAddImage() {
-    imageNavigation.navigate('ManageImage', {
-      imageId: undefined,
+  function handleAddMedium() {
+    mediumNavigation.navigate('ManageMedium', {
+      mediumId: undefined,
     });
   }
 
-  async function deleteImageHandler() {
+  async function deleteMediumHandler() {
     setDeletePending(true);
     try {
-      const { error, status } = await deleteImage(
-        deletingImage!,
+      const { error, status } = await deleteMedium(
+        deletingMedium!,
         userCtx.userId!
       );
       if (!error && status === 200) {
-        imagesCtx.deleteImage(deletingImage!.id);
-        imagesCtx.fetchImages();
+        mediumCtx.deleteMedium(deletingMedium!.id);
+        mediumCtx.fetchMedia();
       } else {
         setError(error!);
         return;
       }
     } catch (error) {
-      setError('Could not delete image!');
+      setError('Could not delete medium!');
     }
     setIsDeleting(false);
     setDeletePending(false);
   }
 
-  function deleteHandler(image: Image) {
-    setDeletingImage(image);
+  function deleteHandler(medium: Medium) {
+    setDeletingMedium(medium);
     setIsDeleting(true);
   }
 
@@ -98,7 +98,7 @@ const Gallery: React.FC<GalleryProps> = ({
         setPopupText(route.params?.popupText);
       }
       if (route.params?.refresh) {
-        imagesCtx.fetchImages();
+        mediumCtx.fetchMedia();
       }
     }
     activatePopup();
@@ -113,21 +113,21 @@ const Gallery: React.FC<GalleryProps> = ({
   }, [navigation]);
 
   function handlePressEarth() {
-    showMapNavigation.navigate('ImagesShowMap', {});
+    showMapNavigation.navigate('MediaShowMap', {});
   }
 
   let content;
 
-  if (imagesCtx.images.length === 0) {
-    content = <InfoText content='No Images found!' />;
+  if (mediumCtx.media.length === 0) {
+    content = <InfoText content='No media found!' />;
   } else {
     content = (
-      <ImagesList
+      <MediaList
         onDelete={deleteHandler}
         refreshControl={
           <RefreshControl
             refreshing={false}
-            onRefresh={() => imagesCtx.fetchImages()}
+            onRefresh={() => mediumCtx.fetchMedia()}
             colors={[GlobalStyles.colors.greenAccent]}
             tintColor={GlobalStyles.colors.greenAccent}
           />
@@ -141,15 +141,15 @@ const Gallery: React.FC<GalleryProps> = ({
       {isDeleting && (
         <Modal
           title='Are you sure?'
-          content={`The Image will be deleted from this app permanently!`}
-          onConfirm={deleteImageHandler}
+          content={`The ${deletingMedium?.mediumType} will be deleted from this app permanently!`}
+          onConfirm={deleteMediumHandler}
           onCancel={closeModalHandler}
           confirmText={deletePending ? 'Deleting...' : 'Delete'}
         />
       )}
       <CurrentElementList />
       {content}
-      <FloatingButton onPress={handleAddImage} />
+      <FloatingButton onPress={handleAddMedium} />
       {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
     </View>
   );

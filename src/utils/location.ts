@@ -3,21 +3,18 @@ import Constants from 'expo-constants';
 import * as ExpoLocation from 'expo-location';
 import { generateColorsSet } from './generator';
 import {
-  ImageLocation,
   Journey,
   Location,
   LocationType,
   MajorStage,
   MapScopeType,
+  MediumLocation,
   MinorStage,
   PlaceToVisit,
   TransportationType,
 } from '../models';
-import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
-import { useContext } from 'react';
-import { StagesContext } from '../store/stages-context';
-import { CustomCountryContext } from '../store/custom-country-context';
-import { Image } from '../models/media';
+import { parseDateAndTime, parseEndDate } from './formatting';
+import { Medium } from '../models/media';
 
 const GOOGLE_API_KEY =
   Constants.expoConfig?.extra?.googleApiKey ||
@@ -128,8 +125,8 @@ export async function getRegionForLocations(
   };
 }
 
-export async function getRegionForImageLocations(
-  locations: ImageLocation[]
+export async function getRegionForMediumLocations(
+  locations: MediumLocation[]
 ): Promise<Region> {
   if (locations.length === 0) {
     // Default region if no locations are available
@@ -678,17 +675,19 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
   };
 }
 
-export function formatImageToLocation(image: Image): ImageLocation | undefined {
-  if (!image.latitude || !image.longitude) {
+export function formatMediumToLocation(
+  medium: Medium
+): MediumLocation | undefined {
+  if (!medium.latitude || !medium.longitude) {
     return undefined;
   }
   return {
-    id: image.id,
-    latitude: image.latitude!,
-    longitude: image.longitude!,
-    url: image.url,
-    description: image.description || '',
-    favourite: image.favorite,
+    id: medium.id,
+    latitude: medium.latitude!,
+    longitude: medium.longitude!,
+    url: medium.mediumType === 'video' ? medium.thumbnailUrl! : medium.url,
+    description: medium.description || '',
+    favourite: medium.favorite,
   };
 }
 

@@ -35,7 +35,7 @@ export interface Location {
   favourite?: boolean;
 }
 
-export interface ImageLocation {
+export interface MediumLocation {
   id: number;
   latitude: number;
   longitude: number;

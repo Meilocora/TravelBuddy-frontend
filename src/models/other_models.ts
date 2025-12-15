@@ -139,6 +139,6 @@ export enum FormLimits {
   activityName = 50,
   activitiesDescription = 150,
   spendingName = 30,
-  imageDescription = 200,
+  mediumDescription = 200,
   deleteSize = 62,
 }
