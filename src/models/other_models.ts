@@ -7,10 +7,25 @@ export interface Costs {
 }
 
 export interface CurrencyInfo {
+  id?: number; // for custom currencies only
   code: string;
   name: string;
   symbol: string;
   conversionRate: number;
+}
+
+export interface CustomCurrencyValues {
+  code: string;
+  name: string;
+  symbol: string;
+  conversionRate: number;
+}
+
+export interface CustomCurrencyFormValues {
+  code: Validable<string>;
+  name: Validable<string>;
+  symbol: Validable<string>;
+  conversionRate: Validable<number>;
 }
 
 export interface Spending {
@@ -141,4 +156,7 @@ export enum FormLimits {
   spendingName = 30,
   mediumDescription = 200,
   deleteSize = 62,
+  currencyCode = 6,
+  currencySymbol = 6,
+  currencyName = 18,
 }

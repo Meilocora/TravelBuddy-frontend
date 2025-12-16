@@ -57,10 +57,9 @@ import Gallery from './src/screens/BottomTabsNavigator/Gallery';
 import MediumContextProvider from './src/store/medium-context';
 import ManageMedium from './src/screens/ManageMedium';
 import MediaShowMap from './src/screens/MediaShowMap';
+import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
-// TODO: Custom Country bearbeiten lassen (Capital, Code, Population, Region, Subregion, Languages)
-// TODO: Screen für eigene Währung...ggf. über User Profile oder das CurrencyModal?
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route
 
@@ -141,7 +140,6 @@ const BottomTabsNavigator = () => {
               }}
             />
           ),
-          // TODO: Add headerLeft for a refresh Button => better in User and here Chatbot Button
         })}
       >
         <BottomTabs.Screen
@@ -218,7 +216,6 @@ const JourneyBottomTabsNavigator = () => {
           },
           tabBarInactiveTintColor: GlobalStyles.colors.amberDark,
           tabBarActiveTintColor: GlobalStyles.colors.amberAccent,
-          // tabBarActiveBackgroundColor: GlobalStyles.colors.amberDark,
           tabBarLabelStyle: {
             fontSize: 14,
           },
@@ -364,6 +361,10 @@ const AuthenticatedStack = () => {
                 <Stack.Screen
                   name='ManageCustomCountry'
                   component={ManageCustomCountry}
+                />
+                <Stack.Screen
+                  name='ManageCustomCurrency'
+                  component={ManageCustomCurrency}
                 />
                 <Stack.Screen
                   name='ManagePlaceToVisit'

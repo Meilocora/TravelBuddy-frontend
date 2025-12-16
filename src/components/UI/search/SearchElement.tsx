@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,6 +18,7 @@ import InfoText from '../InfoText';
 import { GlobalStyles } from '../../../constants/styles';
 import ListItem from './ListItem';
 import ErrorOverlay from '../ErrorOverlay';
+import { CustomCountryContext } from '../../../store/custom-country-context';
 
 interface SearchElementProps<T, U> {
   onFetchRequest: (
@@ -45,6 +46,8 @@ const SearchElement = <T, U>({
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
     useState<string>(searchTerm);
 
+  const countryCtx = useContext(CustomCountryContext);
+
   // Activate Timer, so that the API is not called on every key stroke
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -60,7 +63,12 @@ const SearchElement = <T, U>({
   useEffect(() => {
     async function fetchData() {
       if (debouncedSearchTerm !== '' && debouncedSearchTerm.length > 1) {
-        const { items, error } = await onFetchRequest(debouncedSearchTerm);
+        let { items, error } = await onFetchRequest(debouncedSearchTerm);
+        const chosenNames = countryCtx.getCustomCountriesnames();
+
+        if (items && chosenNames) {
+          items = items.filter((item) => !chosenNames.includes(item as string));
+        }
 
         if (!error && items) {
           setFetchedData(items);

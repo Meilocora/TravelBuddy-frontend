@@ -14,12 +14,14 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { CurrencyInfo, Icons } from '../../../../models';
+import { CurrencyInfo, Icons, StackParamList } from '../../../../models';
 import { GlobalStyles } from '../../../../constants/styles';
 import { UserContext } from '../../../../store/user-context';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import IconButton from '../../IconButton';
 import Search from '../../../Locations/Search';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface CurrenciesModalProps {
   onCloseModal: () => void;
@@ -32,18 +34,51 @@ const CurrenciesModal: React.FC<CurrenciesModalProps> = ({
 }): ReactElement => {
   const userCtx = useContext(UserContext);
 
+  const currencyNavigator =
+    useNavigation<NativeStackNavigationProp<StackParamList>>();
+
+  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
   const [search, setSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   let currencies = userCtx.currencies;
+
+  if (sort === 'desc') {
+    currencies = [...currencies].sort((a, b) => b.name.localeCompare(a.name));
+  } else {
+    currencies = [...currencies].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   if (searchTerm !== '') {
     currencies = currencies.filter((currency) =>
       currency.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
+  function handleTapAddCurrency() {
+    onCloseModal();
+    currencyNavigator.navigate('ManageCustomCurrency', {});
+  }
+
+  function handleTapSort() {
+    if (sort === 'asc') {
+      setSort('desc');
+    } else {
+      setSort('asc');
+    }
+  }
+
   function handleTapSearch() {
     setSearch((prevValue) => !prevValue);
+  }
+
+  function handleLongPress(currency: CurrencyInfo) {
+    if (currency.id) {
+      onCloseModal();
+      currencyNavigator.navigate('ManageCustomCurrency', {
+        currencyId: currency.id,
+      });
+    }
   }
 
   // Drag-to-dismiss logic
@@ -101,6 +136,21 @@ const CurrenciesModal: React.FC<CurrenciesModalProps> = ({
           </View>
           <View style={styles.iconButtonsContainer}>
             <IconButton
+              icon={Icons.add}
+              onPress={handleTapAddCurrency}
+              color={GlobalStyles.colors.grayDark}
+            />
+            <IconButton
+              icon={Icons.filter}
+              onPress={handleTapSort}
+              color={GlobalStyles.colors.grayDark}
+              style={
+                sort === 'desc'
+                  ? { transform: [{ rotate: '180deg' }] }
+                  : undefined
+              }
+            />
+            <IconButton
               icon={Icons.search}
               onPress={handleTapSearch}
               color={
@@ -122,8 +172,14 @@ const CurrenciesModal: React.FC<CurrenciesModalProps> = ({
           currencies.map((item) => (
             <Pressable
               key={item.code}
-              style={styles.listRow}
+              style={[
+                styles.listRow,
+                item.id
+                  ? { backgroundColor: GlobalStyles.colors.amberSoft }
+                  : undefined,
+              ]}
               onPress={() => onSelectCurrency(item)}
+              onLongPress={() => handleLongPress(item)}
               android_ripple={{ color: GlobalStyles.colors.grayMedium }}
             >
               <Text style={styles.symbol}>{item.symbol}</Text>

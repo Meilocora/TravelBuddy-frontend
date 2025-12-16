@@ -36,7 +36,7 @@ const CountryGridTile: React.FC<CountryGridTileProps> = ({
       style={[styles.container, country.visited ? styles.visited : undefined]}
     >
       <Pressable
-        android_ripple={{ color: GlobalStyles.colors.amberBg }}
+        android_ripple={{ color: GlobalStyles.colors.greenBg }}
         onPress={onPressHandler}
         style={({ pressed }) => [
           styles.button,

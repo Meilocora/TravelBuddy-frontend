@@ -53,6 +53,7 @@ export type StackParamList = {
   ManageJourney: { journeyId?: number };
   JourneyBottomTabsNavigator: NavigatorScreenParams<JourneyBottomTabsParamsList>;
   ManageCustomCountry: { countryId: number };
+  ManageCustomCurrency: { currencyId?: number };
   ManagePlaceToVisit: {
     placeId: number | null;
     countryId: number | null;

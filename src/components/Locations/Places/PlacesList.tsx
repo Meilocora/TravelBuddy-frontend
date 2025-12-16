@@ -222,7 +222,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
               onPress={handleTapSearch}
               color={
                 search || searchTerm
-                  ? GlobalStyles.colors.amberAccent
+                  ? GlobalStyles.colors.greenAccent
                   : undefined
               }
             />

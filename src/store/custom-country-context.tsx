@@ -12,6 +12,7 @@ interface CustomCountryContextType {
   findCountriesPlaces: (countryId: number) => PlaceToVisit[] | undefined;
   getCustomCountriesIds: () => number[] | undefined;
   findPlacesCountry: (location: Location) => CustomCountry | undefined;
+  getCustomCountriesnames: () => string[] | undefined;
 }
 
 export const CustomCountryContext = createContext<CustomCountryContextType>({
@@ -23,6 +24,7 @@ export const CustomCountryContext = createContext<CustomCountryContextType>({
   findCountriesPlaces: () => undefined,
   getCustomCountriesIds: () => undefined,
   findPlacesCountry: () => undefined,
+  getCustomCountriesnames: () => undefined,
 });
 
 export default function CustomCountryContextProvider({
@@ -106,6 +108,10 @@ export default function CustomCountryContextProvider({
     return;
   }
 
+  function getCustomCountriesnames() {
+    return customCountries.map((c) => c.name);
+  }
+
   const value = {
     customCountries,
     fetchUsersCustomCountries,
@@ -115,6 +121,7 @@ export default function CustomCountryContextProvider({
     findCountriesPlaces,
     getCustomCountriesIds,
     findPlacesCountry,
+    getCustomCountriesnames,
   };
 
   return (

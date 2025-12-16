@@ -28,6 +28,8 @@ import { UserContext } from '../../../store/user-context';
 import { MediumContext } from '../../../store/medium-context';
 import { PlaceContext } from '../../../store/place-context';
 import LocalMediaList from '../../Images/LocalMediaList';
+import LanguagesSelector from './LanguagesSelector';
+import CurrenciesSelector from './CurrenciesSelector';
 
 interface CustomCountryFormProps {
   country: CustomCountry;
@@ -59,10 +61,10 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
   const hasMedia = mediumCtx.hasMedia('CustomCountry', country.id, placeIds);
 
-  // TODO: Speichere die Languages direkt im backend korrekt und lösche dafür das hier raus
   const languages = getLanguageNames(country.languages);
   const population = formatQuantity(country.population);
   let currency = country.currencies;
+  let displayedCurrency = currency && currency[0];
 
   const currencyObj = userCtx.currencies?.find((c) =>
     Array.isArray(country.currencies)
@@ -70,73 +72,63 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
       : c.code === country.currencies
   );
 
-  if (currencyObj && currencyObj.code !== 'EUR') {
-    currency = `${currencyObj.code} ~ ${(
-      1 / currencyObj.conversionRate
-    ).toFixed(2)}€`;
+  if (displayedCurrency !== '' && currencyObj && currencyObj.code !== 'EUR') {
+    displayedCurrency = `${currencyObj.name} (${currencyObj.code}) \n1${
+      currencyObj.symbol
+    } ~ ${(1 / currencyObj.conversionRate).toFixed(2)}€`;
 
     if (switchConversion) {
-      currency = `1€ ~ ${currencyObj.conversionRate.toFixed(2)} ${
+      displayedCurrency = `${currencyObj.name} (${
         currencyObj.code
-      }`;
+      }) \n1€ ~ ${currencyObj.conversionRate.toFixed(2)} ${currencyObj.symbol}`;
     }
+  } else if (currencyObj && currencyObj.code === 'EUR') {
+    displayedCurrency = `${currencyObj.name} (${currencyObj.code}, ${currencyObj.symbol})`;
   }
 
-  // TODO: Delete "Code" everywhere and make Currencies larger instead (with all infos available)
-
   const [inputs, setInputs] = useState<CustomCountryFormValues>({
-    code: {
-      value: country?.code || null,
-      isValid: true,
-      errors: [],
-    },
-    timezones: {
-      value: country?.timezones || null,
-      isValid: true,
-      errors: [],
-    },
     currencies: {
-      value: country?.currencies || null,
+      value: country?.currencies || undefined,
       isValid: true,
       errors: [],
     },
     languages: {
-      value: country?.languages || null,
+      value: country?.languages || undefined,
       isValid: true,
       errors: [],
     },
     capital: {
-      value: country?.capital || null,
+      value: country?.capital || undefined,
       isValid: true,
       errors: [],
     },
     population: {
-      value: country?.population || null,
+      value: country?.population || undefined,
       isValid: true,
       errors: [],
     },
     region: {
-      value: country?.region || null,
+      value: country?.region || undefined,
       isValid: true,
       errors: [],
     },
     subregion: {
-      value: country?.subregion || null,
+      value: country?.subregion || undefined,
       isValid: true,
       errors: [],
     },
     visum_regulations: {
-      value: country?.visum_regulations || null,
+      value: country?.visum_regulations || undefined,
       isValid: true,
       errors: [],
     },
     best_time_to_visit: {
-      value: country?.best_time_to_visit || null,
+      value: country?.best_time_to_visit || undefined,
       isValid: true,
       errors: [],
     },
     general_information: {
-      value: country?.general_information || null,
+      value: country?.general_information || undefined,
       isValid: true,
       errors: [],
     },
@@ -147,11 +139,23 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
     headerStyle = { ...headerStyle, ...styles.underlined };
   }
 
-  function inputChangedHandler(inputIdentifier: string, enteredValue: string) {
+  function inputChangedHandler(
+    inputIdentifier: string,
+    enteredValue: string | string[] | undefined
+  ) {
     setInputs((currInputs) => {
       return {
         ...currInputs,
         [inputIdentifier]: { value: enteredValue, isValid: true, errors: [] }, // dynamically use propertynames for objects
+      };
+    });
+  }
+
+  function handleChangeLanguages(languages: string[] | undefined) {
+    setInputs((currInputs) => {
+      return {
+        ...currInputs,
+        languages: { value: languages || undefined, isValid: true, errors: [] },
       };
     });
   }
@@ -191,9 +195,9 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
     setIsDeleting(false);
   }
 
-  let buttonLabel = 'Save';
+  let buttonLabel = 'Submitt';
   if (isSubmitting) {
-    buttonLabel = 'Saving...';
+    buttonLabel = 'Submitting...';
   }
 
   return (
@@ -236,7 +240,10 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   title='Capital'
                   value={country.capital || 'No data...'}
                 />
-                <InfoPoint title='Code' value={country.code || 'No data...'} />
+                <InfoPoint
+                  title='Population'
+                  value={population?.toString() || 'No data...'}
+                />
               </>
             ) : (
               <>
@@ -253,50 +260,39 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   }}
                 />
                 <Input
-                  label='Code'
-                  maxLength={FormLimits.countryCode}
-                  invalid={!inputs.code.isValid}
-                  errors={inputs.code.errors}
+                  label='Population'
+                  maxLength={FormLimits.countryLanguages}
+                  invalid={!inputs.population.isValid}
+                  errors={inputs.population.errors}
                   isEditing={isEditing}
                   style={styles.input}
                   textInputConfig={{
-                    value: inputs.code.value?.toString(),
-                    onChangeText: inputChangedHandler.bind(this, 'code'),
+                    keyboardType: 'decimal-pad',
+                    value: inputs.population.value?.toString(),
+                    onChangeText: inputChangedHandler.bind(this, 'population'),
                   }}
                 />
               </>
             )}
           </View>
           <View style={styles.formRow}>
-            {/* TODO: Use CurrenciesModal here + Add a "add Currency" button */}
-            <Pressable
-              style={{ width: '50%' }}
-              onPress={() => setSwitchConversion((prevValue) => !prevValue)}
-            >
-              <InfoPoint
-                title='Currencies'
-                value={currency || 'No data...'}
-                touchable={currencyObj && currencyObj.code !== 'EUR'}
-              />
-            </Pressable>
             {!isEditing ? (
-              <InfoPoint
-                title='Population'
-                value={population?.toString() || 'No data...'}
-              />
+              <Pressable
+                style={{ width: '100%' }}
+                onPress={() => setSwitchConversion((prevValue) => !prevValue)}
+              >
+                <InfoPoint
+                  title='Currencies'
+                  value={displayedCurrency || 'No data...'}
+                  touchable={currencyObj && currencyObj.code !== 'EUR'}
+                />
+              </Pressable>
             ) : (
-              <Input
-                label='Population'
-                maxLength={FormLimits.countryLanguages}
-                invalid={!inputs.population.isValid}
-                errors={inputs.population.errors}
-                isEditing={isEditing}
-                style={styles.input}
-                textInputConfig={{
-                  keyboardType: 'decimal-pad',
-                  value: inputs.population.value?.toString(),
-                  onChangeText: inputChangedHandler.bind(this, 'population'),
-                }}
+              <CurrenciesSelector
+                currencyCode={inputs.currencies.value}
+                onChangeCurrencies={(currencyCode) =>
+                  inputChangedHandler('currencies', currencyCode)
+                }
               />
             )}
           </View>
@@ -348,38 +344,9 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                 value={languages?.toString() || 'No data...'}
               />
             ) : (
-              <Input
-                label='Languages'
-                maxLength={FormLimits.countryLanguages}
-                invalid={!inputs.languages.isValid}
-                errors={inputs.languages.errors}
-                isEditing={isEditing}
-                style={styles.input}
-                textInputConfig={{
-                  value: inputs.languages.value?.toString(),
-                  onChangeText: inputChangedHandler.bind(this, 'languages'),
-                }}
-              />
-            )}
-          </View>
-          <View style={styles.formRow}>
-            {!isEditing ? (
-              <InfoPoint
-                title='Timezones'
-                value={country.timezones?.toString() || 'No data...'}
-              />
-            ) : (
-              <Input
-                label='Timezones'
-                maxLength={FormLimits.countryTimezones}
-                invalid={!inputs.timezones.isValid}
-                errors={inputs.timezones.errors}
-                isEditing={isEditing}
-                style={styles.input}
-                textInputConfig={{
-                  value: inputs.timezones.value?.toString(),
-                  onChangeText: inputChangedHandler.bind(this, 'timezones'),
-                }}
+              <LanguagesSelector
+                onChangeLanguages={handleChangeLanguages}
+                languageCodes={inputs.languages.value}
               />
             )}
           </View>
@@ -457,10 +424,12 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
               />
             )}
           </View>
-          <PlacesToggle
-            isShowingPlaces={isShowingPlaces}
-            handleTogglePlaces={handleTogglePlaces}
-          />
+          {!isEditing && (
+            <PlacesToggle
+              isShowingPlaces={isShowingPlaces}
+              handleTogglePlaces={handleTogglePlaces}
+            />
+          )}
           <View style={styles.buttonsContainer}>
             {!isEditing && (
               <IconButton
@@ -476,6 +445,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   colorScheme={ColorScheme.primary}
                   onPress={validateInputs}
                   disabled={isSubmitting}
+                  style={styles.button}
                 >
                   {buttonLabel}
                 </Button>
@@ -525,6 +495,9 @@ const styles = StyleSheet.create({
   },
   input: {
     marginVertical: 4,
+  },
+  button: {
+    marginBottom: 12,
   },
 });
 

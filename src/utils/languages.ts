@@ -1,29 +1,3 @@
-export function getLanguageNames(
-  codes: string[],
-  mainLangOnly?: boolean
-): string | null {
-  if (!codes) {
-    return null;
-  }
-
-  let languages: string[] = [];
-
-  codes.forEach((code) => {
-    const lang = LANGUAGES.find((language) => language.code === code.trim());
-    if (!lang) {
-      return null;
-    } else if (lang.name) {
-      return languages.push(lang.name);
-    }
-  });
-
-  if (mainLangOnly) {
-    return languages[0];
-  }
-
-  return codes.length > 1 ? languages.join(', ') : languages[0];
-}
-
 const LANGUAGES = [
   {
     code: 'ab',
@@ -762,3 +736,63 @@ const LANGUAGES = [
     name: 'Zulu',
   },
 ];
+
+export function getLanguageNames(
+  codes: string[] | undefined,
+  mainLangOnly?: boolean
+): string | undefined {
+  if (!codes) {
+    return undefined;
+  }
+
+  let languages: string[] = [];
+
+  codes.forEach((code) => {
+    const lang = LANGUAGES.find((language) => language.code === code.trim());
+    if (!lang) {
+      return null;
+    } else if (lang.name) {
+      return languages.push(lang.name);
+    }
+  });
+
+  if (mainLangOnly) {
+    return languages[0];
+  }
+
+  return codes.length > 1 ? languages.join(', ') : languages[0];
+}
+
+export function getLanguageName(code: string): string | undefined {
+  const lang = LANGUAGES.find((language) => language.code === code.trim());
+  if (!lang) {
+    return undefined;
+  } else if (lang.name) {
+    return lang.name;
+  }
+  return undefined;
+}
+
+export function getLanguageCode(name: string): string | undefined {
+  const lang = LANGUAGES.find(
+    (language) => language.name.toLowerCase() === name.toLowerCase()
+  );
+  if (!lang) {
+    return undefined;
+  } else {
+    return lang.code;
+  }
+}
+
+export function getRemainingLanguages(
+  chosenLanguageCodes: string[] | undefined
+): string[] {
+  const languagesNames = LANGUAGES.map((language) => language.name);
+
+  if (!chosenLanguageCodes || chosenLanguageCodes.length === 0) {
+    return languagesNames;
+  }
+  return LANGUAGES.filter(
+    (language) => !chosenLanguageCodes.includes(language.code)
+  ).map((language) => language.name);
+}

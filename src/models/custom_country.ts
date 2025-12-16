@@ -4,9 +4,7 @@ import { PlaceToVisit } from './place';
 export interface CustomCountry {
   id: number;
   name: string;
-  code: string;
-  timezones: string;
-  currencies: string;
+  currencies: string[];
   languages: string[];
   capital: string;
   population: number;
@@ -21,15 +19,13 @@ export interface CustomCountry {
 }
 
 export interface CustomCountryFormValues {
-  code: Validable<string | null>;
-  timezones: Validable<string | null>;
-  currencies: Validable<string | null>;
-  languages: Validable<string[] | null>;
-  capital: Validable<string | null>;
-  population: Validable<number | null>;
-  region: Validable<string | null>;
-  subregion: Validable<string | null>;
-  visum_regulations: Validable<string | null>;
-  best_time_to_visit: Validable<string | null>;
-  general_information: Validable<string | null>;
+  currencies: Validable<string[] | undefined>;
+  languages: Validable<string[] | undefined>;
+  capital: Validable<string | undefined>;
+  population: Validable<number | undefined>;
+  region: Validable<string | undefined>;
+  subregion: Validable<string | undefined>;
+  visum_regulations: Validable<string | undefined>;
+  best_time_to_visit: Validable<string | undefined>;
+  general_information: Validable<string | undefined>;
 }

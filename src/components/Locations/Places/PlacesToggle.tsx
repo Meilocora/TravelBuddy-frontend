@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   activeContainer: {
-    borderColor: GlobalStyles.colors.amberAccent,
+    borderColor: GlobalStyles.colors.greenAccent,
   },
   text: {
     fontSize: 16,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   activeText: {
-    color: GlobalStyles.colors.amberAccent,
+    color: GlobalStyles.colors.greenAccent,
   },
 });
 

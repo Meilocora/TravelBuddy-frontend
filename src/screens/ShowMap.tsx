@@ -53,6 +53,7 @@ import MediumMarker from '../components/Maps/MediumMarker';
 import { DELTA, EDGE_PADDING } from '../constants/maps';
 import { Medium } from '../models/media';
 import MediaModal from '../components/UI/MediaModal';
+import { UserContext } from '../store/user-context';
 
 interface ShowMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ShowMap'>;
@@ -63,6 +64,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
   navigation,
   route,
 }): ReactElement => {
+  const userCtx = useContext(UserContext);
   const customCountryCtx = useContext(CustomCountryContext);
   const mediumCtx = useContext(MediumContext);
 
@@ -76,8 +78,9 @@ const ShowMap: React.FC<ShowMapProps> = ({
   const [isVisited, setIsVisited] = useState(true);
   const [showMedia, setShowMedia] = useState(false);
   const [region, setRegion] = useState<Region>({
-    latitude: location?.data.latitude || 0,
-    longitude: location?.data.longitude || 0,
+    latitude: location?.data.latitude || userCtx.currentLocation?.latitude || 0,
+    longitude:
+      location?.data.longitude || userCtx.currentLocation?.longitude || 0,
     latitudeDelta: DELTA,
     longitudeDelta: DELTA,
   });
@@ -130,7 +133,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
 
   useEffect(() => {
     async function calculateRegion() {
-      if (shownLocations && !location) {
+      if (shownLocations.length > 0 && !location) {
         setRegion(await getRegionForLocations(shownLocations));
       }
     }
@@ -191,7 +194,6 @@ const ShowMap: React.FC<ShowMapProps> = ({
     }
   }
 
-  // ---------- „Nah heranzoomen“: 1 Punkt = enge Region, >1 Punkt = Bounding-Box ----------
   const fitToItems = useCallback(
     (pts: LatLng[], isInitial: boolean = false) => {
       if (!mapRef.current || pts.length === 0) return;
