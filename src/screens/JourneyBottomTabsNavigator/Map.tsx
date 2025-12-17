@@ -567,9 +567,9 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
           userInterfaceStyle='light'
           customMapStyle={lightMapStyle}
           // Clustering-Feintuning: je nach Dichte kannst du radius/extents anpassen
-          radius={70}
+          radius={50}
           extent={512}
-          maxZoom={20}
+          maxZoom={17}
           spiralEnabled
           renderCluster={renderCluster}
           clusteringEnabled={!routePoints || routePoints.length === 0}

@@ -7,8 +7,8 @@ import { Icons, MediumLocation } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
 import IconButton from '../UI/IconButton';
 
-const HEIGHT = 52;
-const WIDTH = 52;
+const HEIGHT = 80;
+const WIDTH = 80;
 
 interface MediumMarkerProps {
   mediumLocation: MediumLocation;

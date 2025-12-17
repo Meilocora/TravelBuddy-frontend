@@ -297,9 +297,9 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
         // Clustering: adjust radius/ extends here
-        radius={70}
+        radius={50}
         extent={512}
-        maxZoom={20}
+        maxZoom={17}
         spiralEnabled
         renderCluster={renderCluster}
       >

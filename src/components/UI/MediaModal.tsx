@@ -50,8 +50,12 @@ const MediaModal: React.FC<MediuaModalProps> = ({
     return [];
   }, [media, medium]);
 
-  const currentMedium: Medium | undefined =
+  let currentMedium: Medium | undefined =
     allMedia.length > 0 ? allMedia[currentIndex] : undefined;
+
+  function handleImageIndexChange(newIndex: number) {
+    setCurrentIndex(newIndex);
+  }
 
   useEffect(() => {
     if (!isFocused && visible) {
@@ -161,10 +165,10 @@ const MediaModal: React.FC<MediuaModalProps> = ({
       />
       <ImageViewing
         images={viewerImages}
-        imageIndex={currentIndex}
+        imageIndex={initialIndex}
         visible={visible}
         onRequestClose={onClose}
-        onImageIndexChange={setCurrentIndex}
+        onImageIndexChange={handleImageIndexChange}
         swipeToCloseEnabled
         doubleTapToZoomEnabled
         backgroundColor='#000000F0'
@@ -238,9 +242,11 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                       />
                     )}
                   </View>
-                  <Text style={styles.counter}>
-                    {currentIndex + 1} / {allMedia.length}
-                  </Text>
+                  {allMedia.length > 1 && (
+                    <Text style={styles.counter}>
+                      {currentIndex + 1} / {allMedia.length}
+                    </Text>
+                  )}
                 </View>
               )
             : undefined
@@ -266,7 +272,6 @@ const styles = StyleSheet.create({
   closeIcon: {
     position: 'absolute',
     right: 0,
-    // top: 0,
   },
   headerRight: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   runOnJS,
   SlideInDown,
@@ -64,24 +64,26 @@ export const ErrorOverlay: React.FC<ErrorOverlayProps> = ({
 
   return (
     <View style={styles.container}>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[styles.innerContainer, animatedStyle]}
-          entering={SlideInDown}
-          exiting={SlideOutDown}
-        >
+      <Animated.View
+        style={[styles.innerContainer, animatedStyle]}
+        entering={SlideInDown}
+        exiting={SlideOutDown}
+      >
+        <GestureDetector gesture={panGesture}>
           <Text style={[styles.text, styles.title]}>{title}</Text>
+        </GestureDetector>
+        <ScrollView style={styles.scroll}>
           <Text style={styles.text}>{message}</Text>
-          <Button
-            mode={ButtonMode.default}
-            onPress={onClose}
-            colorScheme={ColorScheme.error}
-            style={styles.button}
-          >
-            {buttonText}
-          </Button>
-        </Animated.View>
-      </GestureDetector>
+        </ScrollView>
+        <Button
+          mode={ButtonMode.default}
+          onPress={onClose}
+          colorScheme={ColorScheme.error}
+          style={styles.button}
+        >
+          {buttonText}
+        </Button>
+      </Animated.View>
     </View>
   );
 };
@@ -97,14 +99,21 @@ const styles = StyleSheet.create({
     zIndex: 1,
     marginHorizontal: 'auto',
     width: '100%',
+    maxHeight: '50%',
     backgroundColor: 'rgba(252, 196, 228, 1)',
-    borderColor: GlobalStyles.colors.error200,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
+  },
+  scroll: {
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderColor: GlobalStyles.colors.error500,
+    width: '80%',
+    marginHorizontal: 'auto',
   },
   text: {
     fontSize: 18,

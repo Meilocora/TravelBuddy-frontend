@@ -67,7 +67,7 @@ const ExpoDateTimePicker: React.FC<ExpoDateTimePickerProps> = ({
         isVisible={openDateTimePicker}
         mode='datetime'
         date={initialDate}
-        minimumDate={minimumDate || new Date()}
+        minimumDate={minimumDate}
         maximumDate={maximumDate}
         is24Hour
         onCancel={() => setOpenDateTimePicker(false)}

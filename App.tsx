@@ -65,7 +65,6 @@ import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 2 \\
 // TODO: Animationen einfügen
-// TODO: Error Farben überprüfen
 // TODO: Videos + durations zu Statistiken hinzufügen
 // TODO: Checks für ValidationLog erweitern
 // TODO: Chatbot, that interacts with the app?! => that can make journeys

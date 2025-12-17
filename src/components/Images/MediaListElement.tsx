@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react';
 import { StyleSheet, Image, Pressable } from 'react-native';
 
 import { Medium } from '../../models/media';
-import ImageModal from '../UI/MediaModal';
+import MediaModal from '../UI/MediaModal';
 import IconButton from '../UI/IconButton';
 import { Icons } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
@@ -34,7 +34,7 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
 
   return (
     <>
-      <ImageModal
+      <MediaModal
         onClose={() => setShowModal(false)}
         visible={showModal}
         medium={medium}
