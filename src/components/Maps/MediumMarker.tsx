@@ -64,12 +64,17 @@ const MediumMarker: React.FC<MediumMarkerProps> = ({
           cachePolicy='memory-disk'
         />
         {mediumType === 'video' && (
-          <IconButton
-            icon={Icons.play}
-            onPress={() => {}}
-            color={GlobalStyles.colors.graySoftSemi}
-            style={styles.playIcon}
-          />
+          <View style={styles.iconContainer}>
+            <View style={styles.iconWrapper}>
+              <IconButton
+                icon={Icons.play}
+                onPress={() => {}}
+                color={GlobalStyles.colors.graySoftSemi}
+                containerStyle={styles.playIcon}
+                size={16}
+              />
+            </View>
+          </View>
         )}
         <View
           style={[
@@ -113,8 +118,23 @@ const styles = StyleSheet.create({
   ringFav: {
     borderColor: GlobalStyles.colors.favorite,
   },
-  playIcon: {
+  iconContainer: {
     position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+  },
+  iconWrapper: {
+    padding: 0,
+    margin: 6,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 6,
+  },
+  playIcon: {
+    margin: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 2,
   },
 });
 

@@ -199,7 +199,9 @@ export async function downloadUserMedium({
     }
 
     // 2. Generate filename if not provided
-    const finalFilename = filename || `${medium.timestamp}_travelbuddy.jpg`;
+    const extension = medium.mediumType === 'video' ? 'mp4' : 'jpg';
+    const finalFilename =
+      filename || `${medium.timestamp}_travelbuddy.${extension}`;
     const fileUri = `${FileSystem.documentDirectory}${finalFilename}`;
 
     // 3. Download the image

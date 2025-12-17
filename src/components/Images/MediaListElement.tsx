@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react';
-import { StyleSheet, Image, Pressable } from 'react-native';
+import { StyleSheet, Image, Pressable, View } from 'react-native';
 
 import { Medium } from '../../models/media';
 import MediaModal from '../UI/MediaModal';
@@ -45,13 +45,17 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
       <Pressable style={styles.container} onPress={() => setShowModal(true)}>
         <Image source={{ uri: url }} resizeMode='cover' style={styles.image} />
         {medium.mediumType === 'video' && (
-          <IconButton
-            icon={Icons.play}
-            onPress={() => setShowModal(true)}
-            color={GlobalStyles.colors.graySoftSemi}
-            style={styles.playIcon}
-            size={34}
-          />
+          <View style={styles.iconContainer}>
+            <View style={styles.iconWrapper}>
+              <IconButton
+                icon={Icons.play}
+                onPress={() => setShowModal(true)}
+                color={GlobalStyles.colors.graySoft}
+                containerStyle={styles.playIcon}
+                size={22}
+              />
+            </View>
+          </View>
         )}
       </Pressable>
       {medium.favorite && (
@@ -80,12 +84,23 @@ const styles = StyleSheet.create({
     top: -5,
     right: -10,
   },
-  playIcon: {
+  iconContainer: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+  },
+  iconWrapper: {
+    padding: 0,
+    margin: 10,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 10,
+  },
+  playIcon: {
+    margin: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 4,
   },
 });
 
