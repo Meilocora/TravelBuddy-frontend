@@ -63,17 +63,20 @@ const CustomCurrencyForm: React.FC<CustomCurrencyFormProps> = ({
     setIsSubmitting(true);
 
     // Set all errors to empty array to prevent stacking of errors
-    for (const key in inputs) {
-      inputs[key as keyof CustomCurrencyFormValues].errors = [];
+    const updatedInputs = { ...inputs };
+    for (const key in updatedInputs) {
+      updatedInputs[key as keyof CustomCurrencyFormValues].errors = [];
     }
-
-    inputs.conversionRate.value = 1 / inputs.conversionRate.value;
+    updatedInputs.conversionRate = {
+      ...updatedInputs.conversionRate,
+      value: 1 / updatedInputs.conversionRate.value,
+    };
 
     let response: ManageCurrencyProps;
     if (isEditing) {
-      response = await updateCurrency(inputs, editCurrencyId!);
+      response = await updateCurrency(updatedInputs, editCurrencyId!);
     } else if (!isEditing) {
-      response = await addCurrency(inputs);
+      response = await addCurrency(updatedInputs);
     }
 
     const { error, status, currencyFormValues } = response!;
@@ -136,7 +139,7 @@ const CustomCurrencyForm: React.FC<CustomCurrencyFormProps> = ({
         <View style={styles.formRow}>
           <Input
             label='Conversion Rate (to 1€)'
-            maxLength={5}
+            maxLength={6}
             invalid={!inputs.conversionRate.isValid}
             errors={inputs.conversionRate.errors}
             mandatory

@@ -60,11 +60,12 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// TODO: Animationen einfügen
+// TODO: ManageCurrency => Mehr Nachkommastellen erlauben
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route
 
 // PRIO 2 \\
-// TODO: Animationen einfügen
 // TODO: Videos + durations zu Statistiken hinzufügen
 // TODO: Checks für ValidationLog erweitern
 // TODO: Chatbot, that interacts with the app?! => that can make journeys

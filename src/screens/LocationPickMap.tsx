@@ -66,7 +66,6 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 }): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
   const stagesCtx = useContext(StagesContext);
-  const userCtx = useContext(UserContext);
 
   const mapRef = useRef<MapView>(null);
 
@@ -217,8 +216,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   function handleSelectPlace() {
     route.params.onPickLocation({
       title: title,
-      lat: region.latitude,
-      lng: region.longitude,
+      lat: selectedCoord!.latitude,
+      lng: selectedCoord!.longitude,
     });
     navigation.goBack();
   }
