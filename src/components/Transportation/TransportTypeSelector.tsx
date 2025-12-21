@@ -10,7 +10,6 @@ import {
 import OutsidePressHandler from 'react-native-outside-press';
 
 import ListItem from '../UI/search/ListItem';
-import { generateRandomString } from '../../utils';
 import Button from '../UI/Button';
 import { ButtonMode, ColorScheme, TransportationType } from '../../models';
 import Input from '../UI/form/Input';
@@ -85,7 +84,7 @@ const TransportTypeSelector: React.FC<TransportTypeSelectorProps> = ({
               <ScrollView style={styles.list} nestedScrollEnabled>
                 {Object.values(TransportationType).map((item: string) => (
                   <ListItem
-                    key={generateRandomString()}
+                    key={item}
                     onPress={handlePressListElement.bind(item)}
                     containerStyles={
                       item === transportType

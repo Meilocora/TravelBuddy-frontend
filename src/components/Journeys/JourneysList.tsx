@@ -47,6 +47,7 @@ const JourneysList: React.FC<JourneysListProps> = ({
       )}
       <FlatList
         data={shownJourneys}
+        keyExtractor={(item) => item.id.toString()}
         refreshControl={refreshControl}
         renderItem={({ item, index }) => (
           <Animated.View

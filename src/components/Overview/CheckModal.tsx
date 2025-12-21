@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { StyleSheet, View, Text, Pressable, Modal } from 'react-native';
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 
-import { CheckLog, generateRandomString } from '../../utils';
+import { CheckLog } from '../../utils';
 import { GlobalStyles } from '../../constants/styles';
 import Button from '../UI/Button';
 import { ColorScheme } from '../../models';
@@ -45,7 +45,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
             <Animated.ScrollView scrollEnabled nestedScrollEnabled>
               {checkLogs.map((item, index) => (
                 <Pressable
-                  key={generateRandomString()}
+                  key={item.subtitle}
                   style={({ pressed }) => pressed && styles.pressed}
                   android_ripple={{ color: GlobalStyles.colors.grayMedium }}
                   onPress={() => onTapItem(item)}

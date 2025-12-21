@@ -54,7 +54,6 @@ import { StagesContext } from '../../store/stages-context';
 import MapLocationElement from '../../components/Maps/MapLocationElement/MapLocationElement';
 import RoutePlanner from '../../components/Maps/RoutePlanner/RoutePlanner';
 import { UserContext } from '../../store/user-context';
-import { generateRandomString } from '../../utils';
 import IconButton from '../../components/UI/IconButton';
 import MapSettings from '../../components/Maps/MapSettings';
 import { CustomCountryContext } from '../../store/custom-country-context';
@@ -618,7 +617,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             const isActive = pressedLocation && location === pressedLocation;
             return (
               <MapsMarker
-                key={generateRandomString()}
+                key={`${location.data.name}_${location.data.latitude}_${location.data.longitude}`}
                 location={location}
                 active={isActive}
                 onPressMarker={handlePressMarker}

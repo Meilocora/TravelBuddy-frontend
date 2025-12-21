@@ -8,7 +8,6 @@ import {
   formatAmount,
   formatDateString,
   formatDurationToDays,
-  generateRandomString,
   validateIsOver,
 } from '../../utils';
 import CustomProgressBar from '../UI/CustomProgressBar';
@@ -151,7 +150,7 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
                   country={country}
                   currentCountry={country.name === currentCountry}
                   isLast={index === journey.countries.length - 1}
-                  key={generateRandomString()}
+                  key={`${country.id}+${journey.id}`}
                 />
               ))}
             </View>

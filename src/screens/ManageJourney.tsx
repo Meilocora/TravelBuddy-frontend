@@ -13,11 +13,7 @@ import {
 import JourneyForm from '../components/Journeys/ManageJourney/JourneyForm';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
-import {
-  formatCountrynamesToString,
-  formatDateString,
-  generateRandomString,
-} from '../utils';
+import { formatCountrynamesToString, formatDateString } from '../utils';
 import { deleteJourney } from '../utils/http';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../components/UI/Modal';
@@ -185,7 +181,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown}>
         <JourneyForm
-          key={isEditing ? String(editedJourneyId) : generateRandomString()}
+          key={isEditing ? String(editedJourneyId) : 'New'}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}

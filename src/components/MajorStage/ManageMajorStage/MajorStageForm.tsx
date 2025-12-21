@@ -16,7 +16,6 @@ import {
   addDaysToDateString,
   formatAmount,
   formatDate,
-  generateRandomString,
   parseDate,
 } from '../../../utils';
 import Modal from '../../UI/Modal';
@@ -336,9 +335,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           </View>
           <View style={styles.formRow}>
             <CountrySelector
-              key={
-                isEditing ? String(editMajorStageId) : generateRandomString()
-              }
+              key={isEditing ? String(editMajorStageId) : 'New'}
               onChangeCountry={handleChangeCountry}
               errors={inputs.country.errors}
               invalid={false}

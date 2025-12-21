@@ -24,7 +24,6 @@ import { deleteSpending } from '../../../utils/http/spending';
 import SpendingForm from '../../../components/MinorStage/ManageSpending/SpendingForm';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
-import { generateRandomString } from '../../../utils';
 import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageSpendingProps {
@@ -143,7 +142,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <SpendingForm
-          key={isEditing ? String(spendingId) : generateRandomString()}
+          key={isEditing ? String(spendingId) : 'New'}
           minorStageId={minorStageId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}

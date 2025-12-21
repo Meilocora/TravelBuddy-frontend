@@ -21,7 +21,6 @@ import {
   MapType,
 } from '../../../models';
 import { GlobalStyles } from '../../../constants/styles';
-import { generateRandomString } from '../../../utils';
 import ActivityIcon from '../../../../assets/activity.svg';
 import AccommodationIcon from '../../../../assets/accommodation.svg';
 import PlaceToVisitIcon from '../../../../assets/placeToVisit.svg';
@@ -197,7 +196,7 @@ const MapLocationList: React.FC<MapLocationListProps> = ({
             <ScrollView>
               {filteredLocations.map((location) => (
                 <MapLocationListElement
-                  key={generateRandomString()}
+                  key={location.data.latitude}
                   location={location}
                   onPress={handlePressListElement}
                   selected={selectedLocation === location.data.name}

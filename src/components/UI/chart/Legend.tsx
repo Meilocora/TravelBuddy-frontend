@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 
 import { ChartData } from '../../../../classes/SpendingsList';
 import { GlobalStyles } from '../../../constants/styles';
-import { generateRandomString } from '../../../utils';
 
 interface LegendProps {
   data: ChartData[];
@@ -30,7 +29,7 @@ const Legend: React.FC<LegendProps> = ({ data }): ReactElement => {
       <View style={styles.container}>
         {data.map((dataPoint) => {
           return (
-            <View style={styles.legendElement} key={generateRandomString()}>
+            <View style={styles.legendElement} key={dataPoint.color}>
               {renderDot(dataPoint.color)}
               <View style={styles.textWrapper}>
                 <Text style={styles.text} numberOfLines={1}>

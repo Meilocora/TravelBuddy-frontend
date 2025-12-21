@@ -21,6 +21,8 @@ const CustomLinkInput: React.FC<CustomLinkInputProps> = ({
 }): ReactElement => {
   const [hasClipboardContent, setHasClipboardContent] = useState(false);
 
+  console.log('Render Clipoard');
+
   const checkClipboard = useCallback(async () => {
     const text = await Clipboard.getStringAsync();
     setHasClipboardContent(!!text);

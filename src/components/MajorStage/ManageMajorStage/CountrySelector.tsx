@@ -13,7 +13,6 @@ import { GlobalStyles } from '../../../constants/styles';
 import { ButtonMode, ColorScheme } from '../../../models';
 import ListItem from '../../UI/search/ListItem';
 import Input from '../../UI/form/Input';
-import { generateRandomString } from '../../../utils';
 import Button from '../../UI/Button';
 import { useFocusEffect } from '@react-navigation/native';
 import OutsidePressHandler from 'react-native-outside-press';
@@ -123,7 +122,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               {selectableCountries.length > 0 &&
                 selectableCountries.map((item) => (
                   <ListItem
-                    key={generateRandomString()}
+                    key={item}
                     onPress={handlePressListElement.bind(item)}
                   >
                     {item}
@@ -134,7 +133,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                   <Text style={styles.separatorText}>Journeys countries</Text>
                   {chosenCountries.map((item) => (
                     <ListItem
-                      key={generateRandomString()}
+                      key={item}
                       onPress={() => {}}
                       containerStyles={styles.chosenListElement}
                       textStyles={styles.chosenText}

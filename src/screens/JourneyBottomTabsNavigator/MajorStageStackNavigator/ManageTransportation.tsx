@@ -26,7 +26,6 @@ import ComplementaryGradient from '../../../components/UI/LinearGradients/Comple
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
-import { generateRandomString } from '../../../utils';
 import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageTransportationProps {
@@ -195,7 +194,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       <View style={styles.root}>
         <Animated.ScrollView entering={FadeInDown}>
           <TransportationForm
-            key={isEditing ? String(transportationId) : generateRandomString()}
+            key={isEditing ? String(transportationId) : 'New'}
             onCancel={cancelHandler}
             onSubmit={confirmHandler}
             submitButtonLabel={isEditing ? 'Update' : 'Add'}

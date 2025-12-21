@@ -19,7 +19,7 @@ import {
   MajorStageStackParamList,
   FormLimits,
 } from '../../../models';
-import { formatDateString, generateRandomString } from '../../../utils';
+import { formatDateString } from '../../../utils';
 import Modal from '../../../components/UI/Modal';
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { GlobalStyles } from '../../../constants/styles';
@@ -175,7 +175,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <MajorStageForm
-          key={isEditing ? String(editedMajorStageId) : generateRandomString()}
+          key={isEditing ? String(editedMajorStageId) : 'New'}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
           submitButtonLabel={isEditing ? 'Update' : 'Add'}

@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import OutsidePressHandler from 'react-native-outside-press';
 
-import { generateRandomString } from '../../../utils';
 import ListItem from '../../UI/search/ListItem';
 import Button from '../../UI/Button';
 import { ButtonMode, ColorScheme, SpendingCategory } from '../../../models';
@@ -67,7 +66,7 @@ const SpendingCategorySelector: React.FC<SpendingCategorySelectorProps> = ({
             <ScrollView style={styles.list}>
               {Object.values(SpendingCategory).map((item: string) => (
                 <ListItem
-                  key={generateRandomString()}
+                  key={item}
                   onPress={handlePressListElement.bind(item)}
                   containerStyles={
                     item === spendingCategory ? styles.chosenType : {}

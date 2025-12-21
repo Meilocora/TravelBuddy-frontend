@@ -17,10 +17,7 @@ import {
 import { PlaceContext } from '../store/place-context';
 import PlaceForm from '../components/Locations/Places/PlaceForm';
 import MainGradient from '../components/UI/LinearGradients/MainGradient';
-import { CustomCountryContext } from '../store/custom-country-context';
-import { StagesContext } from '../store/stages-context';
 import HeaderTitle from '../components/UI/HeaderTitle';
-import { generateRandomString } from '../utils';
 import { GlobalStyles } from '../constants/styles';
 import { useAppData } from '../hooks/useAppData';
 
@@ -42,9 +39,11 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const placesCtx = useContext(PlaceContext);
-  const stagesCtx = useContext(StagesContext);
   const { triggerRefresh } = useAppData();
 
+  console.log('Manage Screen render');
+
+  // TODO: This needed?
   const majorStageId = route.params?.majorStageId;
   const placeId = route.params?.placeId;
   const initialLat = route.params.lat;
@@ -125,7 +124,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
     <View style={styles.root}>
       <MainGradient />
       <PlaceForm
-        key={isEditing ? String(placeId) : generateRandomString()}
+        key={isEditing ? String(placeId) : 'New'}
         onCancel={() => navigation.goBack()}
         onSubmit={confirmHandler}
         onDelete={deleteHandler}

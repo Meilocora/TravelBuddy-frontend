@@ -10,7 +10,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
-import { generateRandomString } from '../../../utils';
 import InfoText from '../../UI/InfoText';
 import { GlobalStyles } from '../../../constants/styles';
 import ListItem from '../../UI/search/ListItem';
@@ -151,10 +150,7 @@ const CountriesSelection = ({
       <>
         <ScrollView style={styles.list} nestedScrollEnabled>
           {fetchedData.map((item) => (
-            <ListItem
-              key={generateRandomString()}
-              onPress={handlePressListElement.bind(item)}
-            >
+            <ListItem key={item} onPress={handlePressListElement.bind(item)}>
               {item}
             </ListItem>
           ))}

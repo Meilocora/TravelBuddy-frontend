@@ -44,14 +44,12 @@ import {
 } from '../utils/location';
 import { CustomCountryContext } from '../store/custom-country-context';
 import MapsMarker from '../components/Maps/MapsMarker';
-import { generateRandomString } from '../utils';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import { StagesContext } from '../store/stages-context';
 import { usePersistedState } from '../hooks/usePersistedState';
 import MapSettings from '../components/Maps/MapSettings';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
-import { UserContext } from '../store/user-context';
 import IconButton from '../components/UI/IconButton';
 import { DELTA } from '../constants/maps';
 
@@ -386,7 +384,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             return (
               <MapsMarker
                 location={formatPlaceToLocation(place)}
-                key={generateRandomString()}
+                key={`${place.name}_${place.latitude}_${place.longitude}`}
                 onPressMarker={handlePressMarker}
                 active={isActive}
               />
@@ -396,7 +394,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
           journeysLocations.map((loc) => (
             <MapsMarker
               location={loc}
-              key={generateRandomString()}
+              key={`${loc.data.name}_${loc.data.latitude}_${loc.data.longitude}`}
               active={loc.done}
               onPressMarker={handlePressMarker}
             />

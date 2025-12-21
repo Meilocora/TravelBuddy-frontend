@@ -11,7 +11,6 @@ import {
 import Animated, { FadeInUp, FadeOut } from 'react-native-reanimated';
 
 import { GlobalStyles } from '../../../constants/styles';
-import { generateRandomString } from '../../../utils';
 
 interface InputProps {
   label: string;
@@ -22,7 +21,7 @@ interface InputProps {
   errors?: string[];
   isEditing?: boolean;
   mandatory?: boolean;
-  customInputStyles?: ViewStyle;
+  customInputStyles?: TextStyle;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -99,7 +98,7 @@ const Input: React.FC<InputProps> = ({
         errors.map((error, index) => (
           <Animated.Text
             style={styles.invalidInfo}
-            key={generateRandomString()}
+            key={error}
             entering={FadeInUp.duration(500).delay(index * 200)}
             exiting={FadeOut.duration(50)}
           >

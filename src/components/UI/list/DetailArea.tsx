@@ -3,7 +3,6 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { View } from 'react-native';
 
 import ElementDetail from './ElementDetail';
-import { generateRandomString } from '../../../utils/generator';
 import { Icons } from '../../../models';
 
 export interface ElementDetailInfo {
@@ -30,7 +29,7 @@ const DetailArea: React.FC<DetailProps> = ({
     <View style={[styles.detailsContainer, areaStyle]}>
       {elementDetailInfo.map((info, index) => (
         <ElementDetail
-          key={generateRandomString()}
+          key={index}
           title={info.title}
           icon={info.icon}
           value={info.value}

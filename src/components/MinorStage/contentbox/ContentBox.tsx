@@ -5,7 +5,6 @@ import { MinorStage } from '../../../models';
 import ContentHeader from './ContentHeader';
 import { GlobalStyles } from '../../../constants/styles';
 import MainContent from './MainContent';
-import { generateRandomString } from '../../../utils/generator';
 import { validateIsOver } from '../../../utils';
 import { StagesContext } from '../../../store/stages-context';
 
@@ -42,7 +41,7 @@ const ContentBox: React.FC<ContenBoxProps> = ({
             <ContentHeader
               onPress={handleOnPressHeader}
               title={header}
-              key={generateRandomString()}
+              key={header}
               headerStyle={
                 stagesCtx.activeHeader.minorStageId === minorStage.id &&
                 stagesCtx.activeHeader.header === header.toLowerCase()

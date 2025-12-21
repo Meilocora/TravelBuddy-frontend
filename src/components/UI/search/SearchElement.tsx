@@ -13,7 +13,6 @@ import OutsidePressHandler from 'react-native-outside-press';
 import Input from '../form/Input';
 import Button from '../Button';
 import { ColorScheme } from '../../../models';
-import { generateRandomString } from '../../../utils';
 import InfoText from '../InfoText';
 import { GlobalStyles } from '../../../constants/styles';
 import ListItem from './ListItem';
@@ -125,9 +124,9 @@ const SearchElement = <T, U>({
         style={styles.list}
         contentContainerStyle={{ paddingBottom: 10, paddingTop: 5 }}
         data={fetchedData}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <ListItem
-            key={generateRandomString()}
+            key={index}
             onPress={() => handlePressListElement(item as string)}
           >
             {item as string}

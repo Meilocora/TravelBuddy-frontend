@@ -24,7 +24,6 @@ import ActivityForm from '../../../components/MinorStage/ManageActivity/Activity
 import { deleteActivity } from '../../../utils/http';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
-import { generateRandomString } from '../../../utils';
 import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageActivityProps {
@@ -148,7 +147,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown} nestedScrollEnabled={true}>
         <ActivityForm
-          key={isEditing ? String(activityId) : generateRandomString()}
+          key={isEditing ? String(activityId) : 'New'}
           minorStageId={minorStageId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}

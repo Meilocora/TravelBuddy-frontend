@@ -5,10 +5,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Region } from 'react-native-maps';
 import OutsidePressHandler from 'react-native-outside-press';
 
-import { generateRandomString } from '../../../utils';
 import InfoText from '../../UI/InfoText';
 import { GlobalStyles } from '../../../constants/styles';
-import ListItem from '../../UI/search/ListItem';
 import Button from '../../UI/Button';
 import {
   ButtonMode,
@@ -20,7 +18,6 @@ import {
 } from '../../../models';
 import { FetchPlacesProps } from '../../../utils/http';
 import IconButton from '../../UI/IconButton';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CustomCountryContext } from '../../../store/custom-country-context';
 import {
   formatPlaceToLocation,

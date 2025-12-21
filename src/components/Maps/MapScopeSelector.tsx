@@ -11,7 +11,6 @@ import {
 import OutsidePressHandler from 'react-native-outside-press';
 
 import ListItem from '../UI/search/ListItem';
-import { generateRandomString } from '../../utils';
 import Button from '../UI/Button';
 import {
   ButtonMode,
@@ -197,7 +196,7 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
                     <ScrollView style={styles.list}>
                       {selectableMajorStages.map((item: StageData) => (
                         <ListItem
-                          key={generateRandomString()}
+                          key={item.id}
                           onPress={handlePressListElement.bind(item.name)}
                           textStyles={styles.listItemText}
                           containerStyles={styles.listItemContainer}
@@ -242,7 +241,7 @@ const MapScopeSelector: React.FC<MapScopeSelectorProps> = ({
                         <ScrollView style={styles.list}>
                           {selectableMinorStages.map((item: StageData) => (
                             <ListItem
-                              key={generateRandomString()}
+                              key={item.id}
                               onPress={handlePressListElement.bind(item.name)}
                               textStyles={styles.listItemText}
                               containerStyles={styles.listItemContainer}

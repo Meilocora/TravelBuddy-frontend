@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { ButtonMode, ColorScheme, MinorStage, Spending } from '../../../models';
 import Button from '../../UI/Button';
 import { GlobalStyles } from '../../../constants/styles';
-import { formatAmount, generateRandomString } from '../../../utils';
+import { formatAmount } from '../../../utils';
 
 interface SpendingListElementProps {
   spendings: Spending[];
@@ -17,22 +17,13 @@ const SpendingListElement: React.FC<SpendingListElementProps> = ({
   return (
     <View style={listElementStyles.container}>
       <View style={[listElementStyles.row, listElementStyles.headRow]}>
-        <View
-          style={[listElementStyles.rowElement, { width: '40%' }]}
-          key={generateRandomString()}
-        >
+        <View style={[listElementStyles.rowElement, { width: '40%' }]}>
           <Text style={listElementStyles.headerText}>Name</Text>
         </View>
-        <View
-          style={[listElementStyles.rowElement, { width: '35%' }]}
-          key={generateRandomString()}
-        >
+        <View style={[listElementStyles.rowElement, { width: '35%' }]}>
           <Text style={listElementStyles.headerText}>Category</Text>
         </View>
-        <View
-          style={[listElementStyles.rowElement, { width: '25%' }]}
-          key={generateRandomString()}
-        >
+        <View style={[listElementStyles.rowElement, { width: '25%' }]}>
           <Text style={listElementStyles.headerText}>Amount</Text>
         </View>
       </View>

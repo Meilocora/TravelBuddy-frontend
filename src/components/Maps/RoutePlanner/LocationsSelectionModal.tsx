@@ -14,7 +14,6 @@ import {
   Location,
   LocationType,
 } from '../../../models';
-import { generateRandomString } from '../../../utils';
 import { ReactElement, useState } from 'react';
 import { GlobalStyles } from '../../../constants/styles';
 import MapLocationListElement from '../MapLocationList/MapLocationListElement';
@@ -148,7 +147,7 @@ const LocationsSelectionModal: React.FC<LocationsSelectionModalProps> = ({
                 location={loc}
                 onPress={() => handleAddElement(loc.data.name)}
                 selected={false}
-                key={generateRandomString()}
+                key={loc.data.latitude}
               />
             ))}
           </ScrollView>
