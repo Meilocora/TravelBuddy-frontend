@@ -97,12 +97,16 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasLocation, setHasLocation] = useState(route.params.hasLocation);
-  const [region, setRegion] = useState<Region>({
-    latitude: initialLocation.lat,
-    longitude: initialLocation.lng,
-    latitudeDelta: DELTA,
-    longitudeDelta: DELTA,
-  });
+  const [region, setRegion] = useState<Region | undefined>(
+    initialLocation.lat
+      ? {
+          latitude: initialLocation.lat!,
+          longitude: initialLocation.lng!,
+          latitudeDelta: DELTA,
+          longitudeDelta: DELTA,
+        }
+      : undefined
+  );
   const [title, setTitle] = useState<string | undefined>(
     route.params.initialTitle
   );
@@ -140,13 +144,16 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   useEffect(() => {
     async function calculateAverageRegion() {
       // Only calculate average region on initial load
-      if (!placesToVisit || placesToVisit.length === 0 || !isInitialLoad)
+      if (!placesToVisit || placesToVisit.length === 0 || !isInitialLoad) {
         return;
+      }
 
       const locationsToVisit = placesToVisit.map(formatPlaceToLocation);
       const newRegion = await getRegionForLocations(locationsToVisit);
 
-      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 250); // Move Camera
+
+      // setRegion(newRegion);
       setIsInitialLoad(false); // Mark initial load as complete
     }
 

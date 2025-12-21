@@ -60,9 +60,6 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
-// ManageCurrency => Mehr Nachkommastellen erlauben
-// rerender durch stabile keys verhindern
-
 // TODO: Animationen einfügen
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route

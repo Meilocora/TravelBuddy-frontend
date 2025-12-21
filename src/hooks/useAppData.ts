@@ -9,7 +9,9 @@ import { UserContext } from '../store/user-context';
 import { getCurrentLocation, useLocationPermissions } from '../utils/location';
 import { MediumContext } from '../store/medium-context';
 
-export function useAppData() {
+export function useAppData(options?: { autoFetch?: boolean }) {
+  const autoFetch = options?.autoFetch ?? false;
+
   const [isFetching, setIsFetching] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [refresh, setRefresh] = useState(0);
@@ -24,6 +26,9 @@ export function useAppData() {
   const mediumCtx = useContext(MediumContext);
 
   useEffect(() => {
+    // Prevent automatic fetch on initial render if autoFetch is false
+    if (!autoFetch && refresh === 0) return;
+
     async function getData() {
       setIsFetching(true);
       setErrors([]);
@@ -64,7 +69,7 @@ export function useAppData() {
     }
 
     getData();
-  }, [refresh]);
+  }, [refresh, autoFetch]);
 
   const triggerRefresh = () => {
     setRefresh((prev) => prev + 1);

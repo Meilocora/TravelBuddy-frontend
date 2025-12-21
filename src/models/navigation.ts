@@ -63,8 +63,8 @@ export type StackParamList = {
   };
   LocationPickMap: {
     initialTitle: string | undefined;
-    initialLat: number;
-    initialLng: number;
+    initialLat?: number;
+    initialLng?: number;
     onPickLocation: (location: MapLocation) => void;
     onResetLocation?: () => void;
     hasLocation: boolean;

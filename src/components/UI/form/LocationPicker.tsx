@@ -18,6 +18,7 @@ import {
 
 interface LocationPickerProps {
   pickedLocation?: MapLocation;
+  isMediumLocation?: boolean; // Only for mediumLocation use the currentLocation as alternative. In All Maps an average Location will be calculated on LocationPickMap!
   onPickLocation: (location: MapLocation) => void;
   onPressMarker: (location: MapLocation) => void;
   iconColor?: string;
@@ -28,6 +29,7 @@ interface LocationPickerProps {
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
   pickedLocation,
+  isMediumLocation = false,
   onPickLocation,
   onPressMarker,
   iconColor,
@@ -63,15 +65,15 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       return;
     }
 
-    let latitude: number;
-    let longitude: number;
-    if (!pickedLocation) {
+    let latitude: number | undefined;
+    let longitude: number | undefined;
+    if (!pickedLocation && isMediumLocation) {
       const location = await getCurrentLocation();
       latitude = location.latitude!;
       longitude = location.longitude!;
     } else {
-      latitude = pickedLocation.lat!;
-      longitude = pickedLocation.lng!;
+      latitude = pickedLocation?.lat;
+      longitude = pickedLocation?.lng;
     }
 
     navigation.navigate('LocationPickMap', {

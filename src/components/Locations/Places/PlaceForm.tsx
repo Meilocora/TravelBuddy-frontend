@@ -181,8 +181,6 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
     setIsDeleting(false);
   }
 
-  console.log('Render PlaceForm ', new Date());
-
   return (
     <>
       <LinkImageModal

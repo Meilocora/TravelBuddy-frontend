@@ -41,8 +41,6 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
   const placesCtx = useContext(PlaceContext);
   const { triggerRefresh } = useAppData();
 
-  console.log('Manage Screen render');
-
   // TODO: This needed?
   const majorStageId = route.params?.majorStageId;
   const placeId = route.params?.placeId;

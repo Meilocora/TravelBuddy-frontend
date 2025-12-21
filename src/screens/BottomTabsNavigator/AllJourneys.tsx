@@ -27,7 +27,9 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
   route,
 }): ReactElement => {
   const [popupText, setPopupText] = useState<string | null>();
-  const { isFetching, errors, triggerRefresh } = useAppData();
+  const { isFetching, errors, triggerRefresh } = useAppData({
+    autoFetch: true,
+  });
   const stagesCtx = useContext(StagesContext);
 
   const manageJourneyNavigation =

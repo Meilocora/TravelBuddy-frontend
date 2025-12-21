@@ -280,6 +280,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
               />
               <LocationPicker
                 onPickLocation={handlePickLocation}
+                isMediumLocation={true}
                 onPressMarker={handlePickLocation}
                 pickedLocation={
                   inputs.latitude.value && inputs.longitude.value

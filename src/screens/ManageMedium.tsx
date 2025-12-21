@@ -20,9 +20,9 @@ import {
 } from '@react-navigation/native';
 import { MediumContext } from '../store/medium-context';
 import { Medium, MediumValues } from '../models/media';
-import ImageForm from '../components/Images/ManageMedia/MediumForm';
 import { UserContext } from '../store/user-context';
 import { deleteMedium } from '../utils/http';
+import MediumForm from '../components/Images/ManageMedia/MediumForm';
 
 interface ManageMediumProps {
   navigation: NativeStackNavigationProp<StackParamList, 'ManageMedium'>;
@@ -146,7 +146,7 @@ const ManageMedium: React.FC<ManageMediumProps> = ({
       )}
       {error && <ErrorOverlay message={error} onPress={() => setError(null)} />}
       <Animated.ScrollView entering={FadeInDown}>
-        <ImageForm
+        <MediumForm
           key={editedMediumId}
           onCancel={cancelHandler}
           onSubmit={confirmHandler}
