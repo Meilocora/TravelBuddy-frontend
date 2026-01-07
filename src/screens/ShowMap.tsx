@@ -50,7 +50,13 @@ import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMap
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import { MediumContext } from '../store/medium-context';
 import MediumMarker from '../components/Maps/MediumMarker';
-import { DELTA, EDGE_PADDING } from '../constants/maps';
+import {
+  DELTA,
+  EDGE_PADDING,
+  EXTENT,
+  MAXZOOM,
+  RADIUS,
+} from '../constants/maps';
 import { Medium } from '../models/media';
 import MediaModal from '../components/UI/MediaModal';
 import { UserContext } from '../store/user-context';
@@ -273,6 +279,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
         coordinate={c}
         onPress={onPress}
         style={{ zIndex: 50 }}
+        tracksViewChanges={false}
       >
         <View style={styles.cluster}>
           <Text style={styles.clusterText}>{count}</Text>
@@ -363,9 +370,9 @@ const ShowMap: React.FC<ShowMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
         // Clustering-Feintuning: je nach Dichte kannst du radius/extents anpassen
-        radius={50}
-        extent={512}
-        maxZoom={17}
+        radius={RADIUS}
+        extent={EXTENT}
+        maxZoom={MAXZOOM}
         spiralEnabled
         renderCluster={renderCluster}
         clusteringEnabled={!routePoints || routePoints.length === 0}
@@ -398,6 +405,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
               key={`route-point-${index}`}
               coordinate={pt}
               draggable
+              tracksViewChanges={false}
               pinColor='blue'
               onDragEnd={(e) => {
                 const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -417,6 +425,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
               latitude: location.data.latitude,
               longitude: location.data.longitude,
             }}
+            tracksViewChanges={false}
           />
         )}
         {shownLocations &&

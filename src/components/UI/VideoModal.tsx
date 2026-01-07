@@ -19,10 +19,10 @@ const VideoModal: React.FC<VideoModalProps> = ({
   shouldPlay = false,
 }) => {
   const videoRef = useRef<Video | null>(null);
-  const [rotation, setRotation] = useState(0);
+  const [isRotated, setIsRotated] = useState(false);
 
   const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360);
+    setIsRotated((prev) => !prev);
   };
 
   if (!visible) return null;
@@ -43,7 +43,12 @@ const VideoModal: React.FC<VideoModalProps> = ({
             size={32}
           />
         </View>
-        <View style={styles.rotateButton}>
+        <View
+          style={[
+            styles.rotateButton,
+            isRotated && { transform: [{ scaleX: -1 }] },
+          ]}
+        >
           <IconButton
             icon={Icons.refresh}
             onPress={handleRotate}
@@ -56,7 +61,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
             ref={videoRef}
             style={[
               styles.video,
-              { transform: [{ rotate: `${rotation}deg` }] },
+              { transform: [{ rotateZ: `${isRotated ? 90 : 0}deg` }] },
             ]}
             source={{ uri }}
             useNativeControls
@@ -89,7 +94,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   playerContainer: {
-    width: '100%',
+    width: '130%',
     paddingHorizontal: 10,
   },
   video: {

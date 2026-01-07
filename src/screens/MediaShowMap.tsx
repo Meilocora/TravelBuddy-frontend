@@ -41,7 +41,13 @@ import { Medium } from '../models/media';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
-import { DELTA, EDGE_PADDING } from '../constants/maps';
+import {
+  DELTA,
+  EDGE_PADDING,
+  EXTENT,
+  MAXZOOM,
+  RADIUS,
+} from '../constants/maps';
 import MediumMarker from '../components/Maps/MediumMarker';
 import MediaModal from '../components/UI/MediaModal';
 
@@ -236,6 +242,7 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
         coordinate={c}
         onPress={onPress}
         style={{ zIndex: 50 }}
+        tracksViewChanges={false}
       >
         <View style={styles.cluster}>
           <Text style={styles.clusterText}>{count}</Text>
@@ -297,9 +304,9 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
         userInterfaceStyle='light'
         customMapStyle={lightMapStyle}
         // Clustering: adjust radius/ extends here
-        radius={50}
-        extent={512}
-        maxZoom={17}
+        radius={RADIUS}
+        extent={EXTENT}
+        maxZoom={MAXZOOM}
         spiralEnabled
         renderCluster={renderCluster}
       >
@@ -330,6 +337,7 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
             <Marker
               key={`route-point-${index}`}
               coordinate={pt}
+              tracksViewChanges={false}
               draggable
               pinColor='blue'
               onDragEnd={(e) => {

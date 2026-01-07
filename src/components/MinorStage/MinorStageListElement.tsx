@@ -211,20 +211,22 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
                 />
               </>
             )}
-            {!isOpen && minorStage.accommodation.place && (
+            {!isOpen && (
               <View style={styles.roughDetailsContainer}>
-                <View style={styles.roughDetailsRow}>
-                  <IconButton
-                    icon={Icons.place}
-                    onPress={() => {}}
-                    color={GlobalStyles.colors.grayMedium}
-                    size={18}
-                    containerStyle={styles.icon}
-                  />
-                  <Text style={styles.text} numberOfLines={2}>
-                    {minorStage.accommodation.place}
-                  </Text>
-                </View>
+                {minorStage.accommodation.place && (
+                  <View style={styles.roughDetailsRow}>
+                    <IconButton
+                      icon={Icons.place}
+                      onPress={() => {}}
+                      color={GlobalStyles.colors.grayMedium}
+                      size={18}
+                      containerStyle={styles.icon}
+                    />
+                    <Text style={styles.text} numberOfLines={2}>
+                      {minorStage.accommodation.place}
+                    </Text>
+                  </View>
+                )}
                 {minorStage.transportation && IconComponent && (
                   <View style={styles.roughDetailsRow}>
                     <IconComponent

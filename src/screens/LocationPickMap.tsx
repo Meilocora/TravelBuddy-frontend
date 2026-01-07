@@ -373,7 +373,11 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             />
           ))}
         {!minorStageId && (selectedCoord || initialCoord) && (
-          <Marker title={title} coordinate={(selectedCoord || initialCoord)!} />
+          <Marker
+            title={title}
+            coordinate={(selectedCoord || initialCoord)!}
+            tracksViewChanges={false}
+          />
         )}
         {placesToVisit &&
           placesToVisit.map((place) => {

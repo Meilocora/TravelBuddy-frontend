@@ -153,7 +153,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
     // Launch Camera
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
-      quality: 0.8,
+      quality: 0.6,
       exif: true,
     });
 
@@ -197,7 +197,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ['videos'],
       videoMaxDuration: 60, // z.B. max. 60 seconds
-      quality: 1,
+      quality: 0.6,
     });
 
     if (result.canceled) return;

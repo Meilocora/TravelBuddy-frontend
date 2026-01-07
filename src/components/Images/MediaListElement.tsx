@@ -1,5 +1,11 @@
 import { ReactElement, useState } from 'react';
-import { StyleSheet, Image, Pressable, View } from 'react-native';
+import {
+  StyleSheet,
+  Image,
+  Pressable,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 
 import { Medium } from '../../models/media';
 import MediaModal from '../UI/MediaModal';
@@ -21,6 +27,7 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
   onDelete,
 }): ReactElement => {
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   function handleDelete() {
     setShowModal(false);
@@ -43,7 +50,21 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
         onDelete={onDelete && handleDelete}
       />
       <Pressable style={styles.container} onPress={() => setShowModal(true)}>
-        <Image source={{ uri: url }} resizeMode='cover' style={styles.image} />
+        <Image
+          source={{ uri: url }}
+          resizeMode='cover'
+          style={styles.image}
+          onLoadStart={() => setIsLoading(true)}
+          onLoad={() => setIsLoading(false)}
+        />
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size='large'
+              color={GlobalStyles.colors.greenAccent}
+            />
+          </View>
+        )}
         {medium.mediumType === 'video' && (
           <View style={styles.iconContainer}>
             <View style={styles.iconWrapper}>
@@ -78,6 +99,14 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
   icon: {
     position: 'absolute',

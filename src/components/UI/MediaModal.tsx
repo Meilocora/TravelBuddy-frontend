@@ -1,9 +1,17 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import ImageViewing from 'react-native-image-viewing';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LatLng } from 'react-native-maps';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 import { GlobalStyles } from '../../constants/styles';
 import IconButton from './IconButton';
@@ -36,8 +44,18 @@ const MediaModal: React.FC<MediuaModalProps> = ({
   const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
+  const { height: screenHeight } = useWindowDimensions();
+
   // intern Index of currently displayed Image
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  // Cache for rotated URIs
+  const [rotatedCache, setRotatedCache] = useState<Record<string, string>>({});
+
+  const [isRotatedShown, setIsRotatedShown] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [isRotating, setIsRotating] = useState(false);
 
   // Video-Player-State
   const [videoVisible, setVideoVisible] = useState(false);
@@ -70,13 +88,54 @@ const MediaModal: React.FC<MediuaModalProps> = ({
       allMedia.map((m) => {
         const isVideo = m.mediumType === 'video';
         const thumb = (m as any).thumbnailUrl as string | undefined;
-        return { uri: isVideo && thumb ? thumb : m.url };
+
+        const rotatedUri =
+          m.mediumType === 'image' && isRotatedShown[m.id]
+            ? rotatedCache[m.id]
+            : undefined;
+
+        const uri = isVideo && thumb ? thumb : rotatedUri ?? m.url;
+        return { uri };
       }),
-    [allMedia]
+    [allMedia, rotatedCache, isRotatedShown]
   );
 
   if (!visible || allMedia.length === 0) {
     return null;
+  }
+
+  async function toggleRotate(m: Medium) {
+    if (m.mediumType !== 'image') return;
+
+    const id = m.id;
+
+    // Wenn aktuell rotiert angezeigt: einfach zurückschalten (KEIN neues manipulateAsync)
+    if (isRotatedShown[id]) {
+      setIsRotatedShown((prev) => ({ ...prev, [id]: false }));
+      return;
+    }
+
+    // Wenn wir schon eine rotierte Version haben: nur anzeigen
+    const cached = rotatedCache[id];
+    if (cached) {
+      setIsRotatedShown((prev) => ({ ...prev, [id]: true }));
+      return;
+    }
+
+    // Sonst: einmalig rotierte Version erzeugen + anzeigen
+    setIsRotating(true);
+    try {
+      const result = await ImageManipulator.manipulateAsync(
+        m.url,
+        [{ rotate: 90 }, { resize: { width: 2048 } }],
+        { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      setRotatedCache((prev) => ({ ...prev, [id]: result.uri }));
+      setIsRotatedShown((prev) => ({ ...prev, [id]: true }));
+    } finally {
+      setIsRotating(false);
+    }
   }
 
   async function handleDownload() {
@@ -174,22 +233,71 @@ const MediaModal: React.FC<MediuaModalProps> = ({
         backgroundColor='#000000F0'
         presentationStyle='fullScreen'
         animationType='none'
-        HeaderComponent={() => (
-          <View style={styles.header}>
-            <Text style={styles.timestamp}>{currentMedium?.timestamp}</Text>
-            <IconButton
-              icon={Icons.close}
-              onPress={onClose}
-              color={GlobalStyles.colors.graySoft}
-              size={30}
-              style={styles.closeIcon}
-            />
-          </View>
-        )}
+        HeaderComponent={
+          currentMedium
+            ? () => (
+                <View style={styles.header}>
+                  {currentMedium &&
+                  currentMedium.mediumType === 'image' &&
+                  !isRotating ? (
+                    <IconButton
+                      icon={Icons.refresh}
+                      onPress={() => toggleRotate(currentMedium)}
+                      style={
+                        isRotatedShown[currentMedium.id]
+                          ? styles.rotateBackIcon
+                          : styles.rotateIcon
+                      }
+                      color={GlobalStyles.colors.graySoft}
+                    />
+                  ) : (
+                    currentMedium &&
+                    currentMedium.mediumType === 'image' &&
+                    isRotating && (
+                      <View style={styles.loaderWrap}>
+                        <ActivityIndicator
+                          color={GlobalStyles.colors.graySoft}
+                          size={24}
+                        />
+                      </View>
+                    )
+                  )}
+                  <Text style={styles.timestamp}>
+                    {currentMedium?.timestamp}
+                  </Text>
+                  <IconButton
+                    icon={Icons.close}
+                    onPress={onClose}
+                    color={GlobalStyles.colors.graySoft}
+                    size={30}
+                    style={styles.closeIcon}
+                  />
+                </View>
+              )
+            : undefined
+        }
         FooterComponent={
           currentMedium
             ? () => (
                 <View style={styles.footer}>
+                  {currentMedium.mediumType === 'video' && (
+                    <View
+                      style={[
+                        styles.iconWrapper,
+                        {
+                          top: -screenHeight / 2 + 45,
+                        },
+                      ]}
+                    >
+                      <IconButton
+                        icon={Icons.play}
+                        onPress={handlePlayVideo}
+                        style={styles.playIcon}
+                        size={60}
+                        color={GlobalStyles.colors.graySoft}
+                      />
+                    </View>
+                  )}
                   {!!currentMedium.description && (
                     <Text style={styles.description}>
                       {currentMedium.description}
@@ -208,14 +316,6 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                         onPress={handleCalcRouteInternal}
                         color={GlobalStyles.colors.graySoft}
                         size={28}
-                      />
-                    )}
-                    {currentMedium.mediumType === 'video' && (
-                      <IconButton
-                        icon={Icons.play}
-                        onPress={handlePlayVideo}
-                        color={GlobalStyles.colors.graySoft}
-                        size={30}
                       />
                     )}
                     {currentMedium.latitude != null &&
@@ -258,12 +358,27 @@ const MediaModal: React.FC<MediuaModalProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 20,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  rotateIcon: {
+    position: 'absolute',
+    left: 0,
+  },
+  rotateBackIcon: {
+    position: 'absolute',
+    left: 0,
+    transform: [{ scaleX: -1 }],
+  },
+  loaderWrap: {
+    position: 'absolute',
+    left: 0,
+    marginHorizontal: 8,
+    padding: 6,
   },
   timestamp: {
     color: GlobalStyles.colors.graySoft,
@@ -284,7 +399,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingBottom: 10,
     paddingTop: 8,
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
@@ -304,6 +419,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     fontSize: 12,
+  },
+  iconWrapper: {
+    padding: 0,
+    margin: 10,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 30,
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -40 }],
+  },
+  playIcon: {
+    margin: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 4,
   },
 });
 
