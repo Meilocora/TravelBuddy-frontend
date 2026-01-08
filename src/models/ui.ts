@@ -63,6 +63,7 @@ export enum Icons {
   bookFilled = 'book',
   videocam = 'videocam',
   refresh = 'refresh',
+  circle = 'ellipse-outline',
 }
 
 export enum ButtonMode {

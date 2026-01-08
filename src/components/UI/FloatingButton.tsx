@@ -1,25 +1,31 @@
 import { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+
 import IconButton from './IconButton';
 import { Icons } from '../../models';
 import { GlobalStyles } from '../../constants/styles';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import { Medium } from '../../models/media';
 
 interface FloatingButtonProps {
-  onPress: () => void;
+  onPress: (media?: Medium[]) => void;
+  icon: Icons;
+  color?: string;
 }
 
 const FloatingButton: React.FC<FloatingButtonProps> = ({
   onPress,
+  icon,
+  color,
 }): ReactElement => {
   return (
     <Animated.View style={styles.outerContainer} entering={FadeInUp}>
-      <View style={styles.innerContainer}>
+      <View style={[styles.innerContainer, color && { borderColor: color }]}>
         <IconButton
-          icon={Icons.add}
+          icon={icon}
           onPress={onPress}
           size={32}
-          color={GlobalStyles.colors.greenDark}
+          color={color ?? GlobalStyles.colors.greenDark}
         />
       </View>
     </Animated.View>

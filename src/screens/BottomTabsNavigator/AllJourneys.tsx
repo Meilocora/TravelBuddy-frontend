@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native';
 
 import JourneysList from '../../components/Journeys/JourneysList';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
-import { BottomTabsParamList, StackParamList } from '../../models';
+import { BottomTabsParamList, Icons, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
 import { StagesContext } from '../../store/stages-context';
@@ -99,7 +99,7 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
       <CurrentElementList />
       {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
       {content}
-      <FloatingButton onPress={handleAddJourney} />
+      <FloatingButton onPress={handleAddJourney} icon={Icons.add} />
     </View>
   );
 };

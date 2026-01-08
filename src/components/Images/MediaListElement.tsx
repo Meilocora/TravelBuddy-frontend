@@ -18,6 +18,9 @@ interface MediaListElementProps {
   index: number;
   media?: Medium[];
   onDelete?: (medium: Medium) => void;
+  selected?: boolean;
+  anySelected?: boolean;
+  selectMedium: (medium: Medium) => void;
 }
 
 const MediaListElement: React.FC<MediaListElementProps> = ({
@@ -25,6 +28,9 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
   index,
   media,
   onDelete,
+  selected = false,
+  anySelected = false,
+  selectMedium,
 }): ReactElement => {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +38,14 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
   function handleDelete() {
     setShowModal(false);
     onDelete!(medium);
+  }
+
+  function handlePress() {
+    if (anySelected) {
+      selectMedium(medium);
+    } else {
+      setShowModal(true);
+    }
   }
 
   let url = medium.url;
@@ -49,7 +63,11 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
         initialIndex={index}
         onDelete={onDelete && handleDelete}
       />
-      <Pressable style={styles.container} onPress={() => setShowModal(true)}>
+      <Pressable
+        style={[styles.container, selected && styles.selectedContainer]}
+        onPress={handlePress}
+        onLongPress={() => selectMedium(medium)}
+      >
         <Image
           source={{ uri: url }}
           resizeMode='cover'
@@ -85,6 +103,16 @@ const MediaListElement: React.FC<MediaListElementProps> = ({
           onPress={() => {}}
           color={GlobalStyles.colors.favorite}
           style={styles.icon}
+          size={30}
+        />
+      )}
+      {selected && (
+        <IconButton
+          icon={Icons.checkmarkOutline}
+          onPress={() => {}}
+          color={GlobalStyles.colors.grayDark}
+          style={styles.selectIcon}
+          size={30}
         />
       )}
     </>
@@ -95,6 +123,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     aspectRatio: 1, // Quadratisch
+  },
+  selectedContainer: {
+    opacity: 0.65,
+    borderWidth: 1.5,
+    borderColor: GlobalStyles.colors.grayDark,
   },
   image: {
     width: '100%',
@@ -130,6 +163,11 @@ const styles = StyleSheet.create({
     margin: 0,
     paddingHorizontal: 0,
     paddingVertical: 4,
+  },
+  selectIcon: {
+    position: 'absolute',
+    top: -5,
+    left: -10,
   },
 });
 

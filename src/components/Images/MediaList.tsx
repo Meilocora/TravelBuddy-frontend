@@ -18,10 +18,14 @@ import { GlobalStyles } from '../../constants/styles';
 import { parseDateAndTime } from '../../utils';
 import MediaListFilters from './MediaListFilters';
 import MediaListElement from './MediaListElement';
+import SelectedMediaInfo from './SelectedMediaInfo';
 
 interface MediaListProps {
   refreshControl?: React.ReactElement<RefreshControlProps>;
   onDelete: (medium: Medium) => void;
+  handleDeleteMedia: (media: Medium[]) => void;
+  hasSelectedMedia: boolean;
+  toggleSelectedMedia: () => void;
 }
 
 // Eine Zeile in der Galerie: bis zu 3 Bilder
@@ -35,6 +39,9 @@ interface MediaMonthSection {
 const MediaList: React.FC<MediaListProps> = ({
   refreshControl,
   onDelete,
+  handleDeleteMedia,
+  hasSelectedMedia,
+  toggleSelectedMedia,
 }): ReactElement => {
   const [showFilters, setShowFilters] = useState(false);
   const [sortDate, setSortDate] = useState<'asc' | 'desc'>('asc');
@@ -47,6 +54,8 @@ const MediaList: React.FC<MediaListProps> = ({
   const [filterTimespan, setFilterTimespan] = useState<
     'all' | 'one_year' | 'custom'
   >('all'); // TODO: aktuell noch ungenutzt
+
+  const [selectedMedia, setSelectedMedia] = useState<Medium[]>();
 
   const mediumCtx = useContext(MediumContext);
   const placeCtx = useContext(PlaceContext);
@@ -135,8 +144,49 @@ const MediaList: React.FC<MediaListProps> = ({
     return result;
   }, [media]);
 
+  const allMediaSelected = media.length === selectedMedia?.length;
+
+  function selectMedium(medium: Medium) {
+    setSelectedMedia((prevValues) => {
+      const current = prevValues ?? [];
+      const isSelected = current.some((m) => m.id === medium.id);
+      if (isSelected) {
+        const remainingSelectedMedia = current.filter(
+          (m) => m.id !== medium.id
+        );
+        if (remainingSelectedMedia.length === 0) {
+          toggleSelectedMedia();
+        }
+        return remainingSelectedMedia;
+      } else {
+        if (current.length === 0) {
+          toggleSelectedMedia();
+        }
+        return [...current, medium];
+      }
+    });
+  }
+
+  function selectAllMedia() {
+    if (allMediaSelected) {
+      setSelectedMedia(undefined);
+      toggleSelectedMedia();
+    } else {
+      setSelectedMedia([...media]);
+      if (selectedMedia?.length === 0) {
+        toggleSelectedMedia();
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
+      <SelectedMediaInfo
+        onCancel={() => setSelectedMedia(undefined)}
+        selectedMedia={selectedMedia}
+        allMediaSelected={allMediaSelected}
+        selectAllMedia={selectAllMedia}
+      />
       {/* Buttons: Sort, Filter, Fav */}
       <View style={styles.buttonContainer}>
         <IconButton
@@ -210,6 +260,10 @@ const MediaList: React.FC<MediaListProps> = ({
               {row.map((m, colIndex) => {
                 const globalIndex = globalIndexMap.get(m.id) ?? 0;
                 const animationIndex = rowIndex * 3 + colIndex;
+                const isSelected = selectedMedia?.some(
+                  (medium) => medium.id === m.id
+                );
+                const anySelected = selectedMedia && selectedMedia.length > 0;
                 return (
                   <Animated.View
                     key={m.id.toString()}
@@ -224,6 +278,9 @@ const MediaList: React.FC<MediaListProps> = ({
                       index={globalIndex}
                       media={media.length > 1 ? media : undefined}
                       onDelete={onDelete}
+                      anySelected={anySelected}
+                      selectMedium={selectMedium}
+                      selected={isSelected}
                     />
                   </Animated.View>
                 );

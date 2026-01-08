@@ -44,6 +44,7 @@ const Gallery: React.FC<GalleryProps> = ({
   const [deletingMedium, setDeletingMedium] = useState<Medium | undefined>(
     undefined
   );
+  const [selectedMedia, setSelectedMedia] = useState(false);
 
   const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
@@ -60,6 +61,10 @@ const Gallery: React.FC<GalleryProps> = ({
     mediumNavigation.navigate('ManageMedium', {
       mediumId: undefined,
     });
+  }
+
+  function handleDeleteMedia(media?: Medium[]) {
+    // Integrate Deleting multiple Media in firebase and backend
   }
 
   async function deleteMediumHandler() {
@@ -124,6 +129,9 @@ const Gallery: React.FC<GalleryProps> = ({
     content = (
       <MediaList
         onDelete={deleteHandler}
+        handleDeleteMedia={handleAddMedium}
+        hasSelectedMedia={selectedMedia}
+        toggleSelectedMedia={() => setSelectedMedia((prevValue) => !prevValue)}
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -149,7 +157,15 @@ const Gallery: React.FC<GalleryProps> = ({
       )}
       <CurrentElementList />
       {content}
-      <FloatingButton onPress={handleAddMedium} />
+      {selectedMedia ? (
+        <FloatingButton
+          onPress={handleDeleteMedia}
+          icon={Icons.delete}
+          color={GlobalStyles.colors.error200}
+        />
+      ) : (
+        <FloatingButton onPress={handleAddMedium} icon={Icons.add} />
+      )}
       {popupText && <Popup content={popupText} onClose={handleClosePopup} />}
     </View>
   );
