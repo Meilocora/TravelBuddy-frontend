@@ -8,6 +8,7 @@ interface MediumContextType {
   fetchMedia: () => Promise<void | string>;
   findMedium: (mediumId: number) => Medium | undefined;
   deleteMedium: (mediumId: number) => void;
+  deleteMedia: (mediumIds: number[]) => void;
   hasMedia: (
     mode: 'MinorStage' | 'MinorStages' | 'PlaceToVisit' | 'CustomCountry',
     singleId?: number,
@@ -20,6 +21,7 @@ export const MediumContext = createContext<MediumContextType>({
   fetchMedia: async () => {},
   findMedium: () => undefined,
   deleteMedium: () => undefined,
+  deleteMedia: () => undefined,
   hasMedia: () => false,
 });
 
@@ -47,6 +49,12 @@ export default function MediumContextProvider({
   function deleteMedium(mediumId: number) {
     setMedia((currentMedia) =>
       currentMedia.filter((medium) => medium.id !== mediumId)
+    );
+  }
+
+  function deleteMedia(mediumIds: number[]) {
+    setMedia((currentMedia) =>
+      currentMedia.filter((medium) => !mediumIds.includes(medium.id))
     );
   }
 
@@ -84,6 +92,7 @@ export default function MediumContextProvider({
     fetchMedia,
     findMedium,
     deleteMedium,
+    deleteMedia,
     hasMedia,
   };
 

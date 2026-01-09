@@ -60,7 +60,9 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
-// TODO: MediaList => let user select multiple Media via onLongPress to delete them
+//  MediaList => let user select multiple Media via onLongPress to delete them
+
+// TODO: AllJourneys (und Major- MinorStages) => Infotext, wenn nur alte Journey vorhanden sind
 // TODO: Solve Warning:
 //  WARN  [2026-01-07T18:24:08.933Z]  @firebase/auth: Auth (12.6.0):
 // You are initializing Firebase Auth for React Native without providing

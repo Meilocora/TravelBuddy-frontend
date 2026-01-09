@@ -25,7 +25,7 @@ import { UserContext } from '../../store/user-context';
 import Modal from '../../components/UI/Modal';
 import { Medium } from '../../models/media';
 import { MediumContext } from '../../store/medium-context';
-import { deleteMedium } from '../../utils/http';
+import { deleteMedia, deleteMedium } from '../../utils/http';
 import MediaList from '../../components/Images/MediaList';
 
 interface GalleryProps {
@@ -44,7 +44,10 @@ const Gallery: React.FC<GalleryProps> = ({
   const [deletingMedium, setDeletingMedium] = useState<Medium | undefined>(
     undefined
   );
-  const [selectedMedia, setSelectedMedia] = useState(false);
+  const [deletingMedia, setDeletingMedia] = useState<Medium[] | undefined>(
+    undefined
+  );
+  const [selectionResetKey, setSelectionResetKey] = useState(0);
 
   const mediumCtx = useContext(MediumContext);
   const userCtx = useContext(UserContext);
@@ -63,8 +66,28 @@ const Gallery: React.FC<GalleryProps> = ({
     });
   }
 
-  function handleDeleteMedia(media?: Medium[]) {
-    // Integrate Deleting multiple Media in firebase and backend
+  async function deleteMediaHandler() {
+    setDeletePending(true);
+    try {
+      const { error, status } = await deleteMedia(
+        deletingMedia!,
+        userCtx.userId!
+      );
+      if (!error && status === 200) {
+        const deleteMediaIds = deletingMedia!.map((m) => m.id);
+        mediumCtx.deleteMedia(deleteMediaIds);
+        mediumCtx.fetchMedia();
+        setSelectionResetKey((k) => k + 1);
+      } else {
+        setError(error!);
+        return;
+      }
+    } catch (error) {
+      setError('Could not delete media!');
+    }
+    setDeletingMedia(undefined);
+    setIsDeleting(false);
+    setDeletePending(false);
   }
 
   async function deleteMediumHandler() {
@@ -129,9 +152,8 @@ const Gallery: React.FC<GalleryProps> = ({
     content = (
       <MediaList
         onDelete={deleteHandler}
-        handleDeleteMedia={handleAddMedium}
-        hasSelectedMedia={selectedMedia}
-        toggleSelectedMedia={() => setSelectedMedia((prevValue) => !prevValue)}
+        setDeletingMedia={setDeletingMedia}
+        selectionResetKey={selectionResetKey}
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -146,7 +168,7 @@ const Gallery: React.FC<GalleryProps> = ({
 
   return (
     <View style={styles.root}>
-      {isDeleting && (
+      {isDeleting && deletingMedium ? (
         <Modal
           title='Are you sure?'
           content={`The ${deletingMedium?.mediumType} will be deleted from this app permanently!`}
@@ -154,12 +176,23 @@ const Gallery: React.FC<GalleryProps> = ({
           onCancel={closeModalHandler}
           confirmText={deletePending ? 'Deleting...' : 'Delete'}
         />
+      ) : (
+        isDeleting &&
+        deletingMedia && (
+          <Modal
+            title='Are you sure?'
+            content={`The ${deletingMedia.length} media will be deleted from this app permanently!`}
+            onConfirm={deleteMediaHandler}
+            onCancel={closeModalHandler}
+            confirmText={deletePending ? 'Deleting...' : 'Delete'}
+          />
+        )
       )}
       <CurrentElementList />
       {content}
-      {selectedMedia ? (
+      {deletingMedia && deletingMedia.length > 0 ? (
         <FloatingButton
-          onPress={handleDeleteMedia}
+          onPress={() => setIsDeleting(true)}
           icon={Icons.delete}
           color={GlobalStyles.colors.error200}
         />

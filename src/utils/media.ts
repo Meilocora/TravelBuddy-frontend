@@ -92,6 +92,46 @@ export async function deleteUserImage({
   }
 }
 
+export type DeleteUserImagesParams = {
+  deleteData: {
+    folderName: 'images' | 'videos' | 'video-thumbnails';
+    imageUrl: string;
+  }[];
+  userId: number;
+};
+
+export async function deleteUserImages({
+  deleteData,
+  userId,
+}: DeleteUserImagesParams): Promise<void> {
+  try {
+    // Authenticate user with Firebase
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('Not authenticated with Firebase');
+    }
+    // Extract the paths from the Firebase Storage URL
+    for (const data of deleteData) {
+      const { folderName, imageUrl } = data;
+      const decodedUrl = decodeURIComponent(
+        `${folderName}/${userId}/${imageUrl}`
+      );
+      const pathMatch = decodedUrl.match(/\/o\/(.+?)\?/);
+
+      if (!pathMatch || !pathMatch[1]) {
+        throw new Error('Invalid Firebase Storage URL');
+      }
+
+      const pathInBucket = pathMatch[1];
+      const storageRef = ref(storage, pathInBucket);
+      await deleteObject(storageRef);
+    }
+  } catch (error) {
+    console.error('Error deleting image from Firebase Storage:', error);
+    throw error;
+  }
+}
+
 export async function createVideoThumbnail(videoUri: string, userId: number) {
   const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(
     videoUri,

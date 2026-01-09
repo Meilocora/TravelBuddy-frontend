@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useMemo, useState } from 'react';
+import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import {
   RefreshControlProps,
   SectionList,
@@ -23,9 +23,8 @@ import SelectedMediaInfo from './SelectedMediaInfo';
 interface MediaListProps {
   refreshControl?: React.ReactElement<RefreshControlProps>;
   onDelete: (medium: Medium) => void;
-  handleDeleteMedia: (media: Medium[]) => void;
-  hasSelectedMedia: boolean;
-  toggleSelectedMedia: () => void;
+  setDeletingMedia: (value: React.SetStateAction<Medium[] | undefined>) => void;
+  selectionResetKey?: number;
 }
 
 // Eine Zeile in der Galerie: bis zu 3 Bilder
@@ -39,9 +38,8 @@ interface MediaMonthSection {
 const MediaList: React.FC<MediaListProps> = ({
   refreshControl,
   onDelete,
-  handleDeleteMedia,
-  hasSelectedMedia,
-  toggleSelectedMedia,
+  setDeletingMedia,
+  selectionResetKey,
 }): ReactElement => {
   const [showFilters, setShowFilters] = useState(false);
   const [sortDate, setSortDate] = useState<'asc' | 'desc'>('asc');
@@ -63,6 +61,11 @@ const MediaList: React.FC<MediaListProps> = ({
   function handleTapSort() {
     setSortDate((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   }
+
+  useEffect(() => {
+    setSelectedMedia(undefined);
+    setDeletingMedia(undefined);
+  }, [selectionResetKey]);
 
   // -------- 1) Filter & Sort wie bisher --------
   let media = [...mediumCtx.media];
@@ -146,36 +149,25 @@ const MediaList: React.FC<MediaListProps> = ({
 
   const allMediaSelected = media.length === selectedMedia?.length;
 
+  const toggleItemInArray = (arr: Medium[] | undefined, item: Medium) => {
+    const current = arr ?? [];
+    return current.some((m) => m.id === item.id)
+      ? current.filter((m) => m.id !== item.id)
+      : [...current, item];
+  };
+
   function selectMedium(medium: Medium) {
-    setSelectedMedia((prevValues) => {
-      const current = prevValues ?? [];
-      const isSelected = current.some((m) => m.id === medium.id);
-      if (isSelected) {
-        const remainingSelectedMedia = current.filter(
-          (m) => m.id !== medium.id
-        );
-        if (remainingSelectedMedia.length === 0) {
-          toggleSelectedMedia();
-        }
-        return remainingSelectedMedia;
-      } else {
-        if (current.length === 0) {
-          toggleSelectedMedia();
-        }
-        return [...current, medium];
-      }
-    });
+    setSelectedMedia((prev) => toggleItemInArray(prev, medium));
+    setDeletingMedia((prev) => toggleItemInArray(prev, medium));
   }
 
   function selectAllMedia() {
     if (allMediaSelected) {
       setSelectedMedia(undefined);
-      toggleSelectedMedia();
+      setDeletingMedia(undefined);
     } else {
       setSelectedMedia([...media]);
-      if (selectedMedia?.length === 0) {
-        toggleSelectedMedia();
-      }
+      setDeletingMedia([...media]);
     }
   }
 

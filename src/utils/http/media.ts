@@ -3,7 +3,12 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import api from './api';
 
-import { createVideoThumbnail, deleteUserImage, uploadMedium } from '../media';
+import {
+  createVideoThumbnail,
+  deleteUserImage,
+  deleteUserImages,
+  uploadMedium,
+} from '../media';
 import { Medium, MediumFormValues } from '../../models/media';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -43,6 +48,7 @@ interface ManageMediumProps {
   userId?: number;
   medium?: Medium;
   mediumId?: number;
+  madiaIds?: number[];
   status: number;
   error?: string;
 }
@@ -165,6 +171,65 @@ export const deleteMedium = async (
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.delete(
       `${prefix}/delete-medium/${medium.id}`
+    );
+
+    // Error from backend
+    if (response.data.error) {
+      return { status: response.data.status, error: response.data.error };
+    }
+
+    return { status: response.data.status };
+  } catch (error) {
+    // Error from frontend
+    return {
+      status: 500,
+      error: 'Could not delete medium! Backend request failed.',
+    };
+  }
+};
+
+export const deleteMedia = async (
+  media: Medium[],
+  userId: number
+): Promise<ManageMediumProps> => {
+  const deleteData = [];
+  for (const medium of media) {
+    if (medium.mediumType === 'video' && medium.thumbnailUrl) {
+      deleteData.push({
+        folderName: 'videos' as const,
+        imageUrl: medium.url,
+      });
+      deleteData.push({
+        folderName: 'video-thumbnails' as const,
+        imageUrl: medium.thumbnailUrl,
+      });
+    } else {
+      deleteData.push({
+        folderName: 'images' as const,
+        imageUrl: medium.url,
+      });
+    }
+  }
+  // 1. Delete media from Firebase Storage
+  try {
+    await deleteUserImages({
+      deleteData: deleteData,
+      userId: userId,
+    });
+  } catch (error) {
+    // Error from firebase upload
+    return {
+      status: 500,
+      error: 'Could not delete medium! Firebase deletion failed.',
+    };
+  }
+
+  // 2. Delete media in backend
+  const mediaIds = media.map((m) => m.id);
+  try {
+    const response: AxiosResponse<ManageMediumProps> = await api.delete(
+      `${prefix}/delete-media`,
+      { data: { ids: mediaIds } }
     );
 
     // Error from backend
