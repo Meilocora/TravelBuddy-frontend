@@ -1,6 +1,9 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  initializeAuth,
+  getReactNativePersistence,
   getAuth,
   signInAnonymously,
   onAuthStateChanged,
@@ -21,7 +24,7 @@ let app: FirebaseApp;
 let storage: FirebaseStorage;
 let auth: Auth;
 
-// Verhindert, dass die App mehrfach initialisiert wird (wichtig bei Hot Reload)
+// App nur einmal initialisieren (Hot Reload)
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
@@ -29,6 +32,15 @@ if (!getApps().length) {
 }
 
 storage = getStorage(app);
-auth = getAuth(app);
+
+// Auth mit RN-Persistence initialisieren
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
+} catch (e: any) {
+  // Bei Fast Refresh / Hot Reload ist Auth ggf. schon initialisiert
+  auth = getAuth(app);
+}
 
 export { app, storage, auth, signInAnonymously, onAuthStateChanged };

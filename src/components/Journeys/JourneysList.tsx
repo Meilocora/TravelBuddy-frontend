@@ -9,6 +9,7 @@ import IconButton from '../UI/IconButton';
 import FilterSettings from '../UI/FilterSettings';
 import { StagesContext } from '../../store/stages-context';
 import { GlobalStyles } from '../../constants/styles';
+import InfoText from '../UI/InfoText';
 
 interface JourneysListProps {
   refreshControl?: React.ReactElement<RefreshControlProps>;
@@ -45,22 +46,28 @@ const JourneysList: React.FC<JourneysListProps> = ({
       {openModal && (
         <FilterSettings filter={filter} setFilter={handleSetFilter} />
       )}
-      <FlatList
-        data={shownJourneys}
-        keyExtractor={(item) => item.id.toString()}
-        refreshControl={refreshControl}
-        renderItem={({ item, index }) => (
-          <Animated.View
-            entering={FadeInDown.delay(index * 200).duration(1000)}
-            exiting={FadeOutDown}
-          >
-            <JourneyListElement journey={item} />
-            {index === shownJourneys.length - 1 && (
-              <View style={{ height: 75 }}></View>
-            )}
-          </Animated.View>
-        )}
-      />
+      {shownJourneys.length > 0 ? (
+        <FlatList
+          data={shownJourneys}
+          keyExtractor={(item) => item.id.toString()}
+          refreshControl={refreshControl}
+          renderItem={({ item, index }) => (
+            <Animated.View
+              entering={FadeInDown.delay(index * 200).duration(1000)}
+              exiting={FadeOutDown}
+            >
+              <JourneyListElement journey={item} />
+              {index === shownJourneys.length - 1 && (
+                <View style={{ height: 75 }}></View>
+              )}
+            </Animated.View>
+          )}
+        />
+      ) : stagesCtx.journeys.length > 0 ? (
+        <InfoText content='There are only completed journeys. Change filter settings above to see them.' />
+      ) : (
+        <InfoText content='There are no journeys yet. Tap on the "+" Button to create one.' />
+      )}
     </View>
   );
 };

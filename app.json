@@ -61,6 +61,14 @@
           "photosPermission": "The app needs access to your photos to upload images.",
           "cameraPermission": "The app needs access to your camera to take photos."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow TravelBuddy to access your camera",
+          "microphonePermission": "Allow TravelBuddy to access your microphone",
+          "recordAudioAndroid": true
+        }
       ]
     ]
   }

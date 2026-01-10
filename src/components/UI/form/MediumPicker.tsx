@@ -2,12 +2,13 @@ import { ReactElement, useContext, useRef, useState } from 'react';
 import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import { ResizeMode, Video } from 'expo-av';
 
 import IconButton from '../IconButton';
 import { Icons } from '../../../models';
 import { UserContext } from '../../../store/user-context';
 import { GlobalStyles } from '../../../constants/styles';
-import { ResizeMode, Video } from 'expo-av';
+import InAppCameraModal, { CameraCapture } from '../../Images/InAppCameraModal';
 
 interface CustomMediumPickerProps {
   defaultValue: string;
@@ -45,6 +46,42 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
 
   const { width } = useWindowDimensions();
   const imageSize = width * 0.95;
+
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
+
+  function openPhotoCamera() {
+    setCameraMode('photo');
+    setCameraVisible(true);
+  }
+  function openVideoCamera() {
+    setCameraMode('video');
+    setCameraVisible(true);
+  }
+
+  function handleCaptured(capture: CameraCapture) {
+    let lat: number | undefined;
+    let lng: number | undefined;
+
+    if (
+      userCtx.currentLocation &&
+      typeof userCtx.currentLocation.latitude === 'number' &&
+      typeof userCtx.currentLocation.longitude === 'number'
+    ) {
+      lat = userCtx.currentLocation.latitude;
+      lng = userCtx.currentLocation.longitude;
+    }
+
+    if (capture.type === 'image') {
+      setMediumType('image');
+      setUrl(capture.uri);
+      addMedium(capture.uri, 'image', undefined, lat, lng);
+    } else {
+      setMediumType('video');
+      setUrl(capture.uri);
+      addMedium(capture.uri, 'video', capture.duration, lat, lng);
+    }
+  }
 
   async function handlePickMedium() {
     // Request permissions
@@ -141,91 +178,6 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
     }
   }
 
-  async function handleTakePhoto() {
-    // Request camera permissions
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (status !== 'granted') {
-      alert('Sorry, we need camera permissions to make this work!');
-      return null;
-    }
-
-    // Launch Camera
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
-      quality: 0.6,
-      exif: true,
-    });
-
-    if (result.canceled) {
-      return null;
-    }
-
-    const url = result.assets[0].uri;
-    const exif = result.assets[0].exif;
-
-    let lat: number | undefined;
-    let lng: number | undefined;
-
-    if (exif?.GPSLatitude != null && exif?.GPSLongitude != null) {
-      lat = exif.GPSLatitude;
-      lng = exif.GPSLongitude;
-    } else if (
-      userCtx.currentLocation &&
-      typeof userCtx.currentLocation.latitude === 'number' &&
-      typeof userCtx.currentLocation.longitude === 'number'
-    ) {
-      lat = userCtx.currentLocation.latitude;
-      lng = userCtx.currentLocation.longitude;
-    }
-
-    setMediumType('image');
-    addMedium(url, 'image', undefined, lat, lng);
-    setUrl(url);
-  }
-
-  async function handleRecordVideo() {
-    // Request camera permissions
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (status !== 'granted') {
-      alert('Sorry, we need camera permissions to make this work!');
-      return null;
-    }
-
-    // Launch Camera
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['videos'],
-      videoMaxDuration: 60, // z.B. max. 60 seconds
-      quality: 0.6,
-    });
-
-    if (result.canceled) return;
-
-    const url = result.assets[0].uri;
-    const exif = result.assets[0].exif;
-    const duration = result.assets[0].duration;
-
-    let lat: number | undefined;
-    let lng: number | undefined;
-
-    if (exif?.GPSLatitude != null && exif?.GPSLongitude != null) {
-      lat = exif.GPSLatitude;
-      lng = exif.GPSLongitude;
-    } else if (
-      userCtx.currentLocation &&
-      typeof userCtx.currentLocation.latitude === 'number' &&
-      typeof userCtx.currentLocation.longitude === 'number'
-    ) {
-      lat = userCtx.currentLocation.latitude;
-      lng = userCtx.currentLocation.longitude;
-    }
-
-    setMediumType('video');
-    addMedium(url, 'video', duration ? duration : undefined, lat, lng);
-    setUrl(url);
-  }
-
   function handlePressFavorite() {
     setIsFav((prevValue) => !prevValue);
     setFavorite();
@@ -233,6 +185,13 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
 
   return (
     <View style={styles.container}>
+      <InAppCameraModal
+        visible={cameraVisible}
+        mode={cameraMode}
+        onClose={() => setCameraVisible(false)}
+        onCaptured={handleCaptured}
+      />
+
       <View
         style={[styles.imageContainer, { width: imageSize, height: imageSize }]}
       >
@@ -284,7 +243,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
           />
           <IconButton
             icon={Icons.cameraOutline}
-            onPress={handleTakePhoto}
+            onPress={openPhotoCamera}
             color={
               url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
             }
@@ -292,7 +251,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
           />
           <IconButton
             icon={Icons.videocam}
-            onPress={handleRecordVideo}
+            onPress={openVideoCamera}
             color={
               url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
             }

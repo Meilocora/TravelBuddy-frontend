@@ -9,7 +9,6 @@ import JourneysList from '../../components/Journeys/JourneysList';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { BottomTabsParamList, Icons, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
-import InfoText from '../../components/UI/InfoText';
 import { StagesContext } from '../../store/stages-context';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { GlobalStyles } from '../../constants/styles';
@@ -67,8 +66,6 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
         />
       </Animated.View>
     );
-  } else if (stagesCtx.journeys.length === 0 && errors.length === 0) {
-    content = <InfoText content='No Journeys found!' />;
   } else {
     content = (
       <JourneysList
