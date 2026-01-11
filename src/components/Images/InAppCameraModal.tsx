@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Slider from '@react-native-community/slider';
 
 type CameraMode = 'photo' | 'video';
 type FlashMode = 'off' | 'on' | 'auto';
@@ -78,6 +79,7 @@ const InAppCameraModal: React.FC<Props> = ({
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<FlashMode>('off');
   const [torch, setTorch] = useState(false);
+  const [zoom, setZoom] = useState(0);
 
   const [isBusy, setIsBusy] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -89,8 +91,13 @@ const InAppCameraModal: React.FC<Props> = ({
       setIsBusy(false);
       setIsRecording(false);
       setRecordSeconds(0);
+      setZoom(0);
     }
   }, [visible]);
+
+  useEffect(() => {
+    setIsReady(false);
+  }, [mode, facing, visible]);
 
   // Recording timer
   useEffect(() => {
@@ -98,6 +105,10 @@ const InAppCameraModal: React.FC<Props> = ({
     const id = setInterval(() => setRecordSeconds((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [isRecording]);
+
+  function clamp01(v: number) {
+    return Math.max(0, Math.min(1, v));
+  }
 
   const canRenderCamera = visible && isFocused;
 
@@ -167,6 +178,8 @@ const InAppCameraModal: React.FC<Props> = ({
     setIsRecording(true);
     setCanStop(false);
     setRecordSeconds(0);
+
+    stopTimeoutRef.current = setTimeout(() => setCanStop(true), 800);
 
     recordPromiseRef.current = (cameraRef.current as any)
       .recordAsync?.({ quality: '720p', maxDuration: 60 })
@@ -251,12 +264,50 @@ const InAppCameraModal: React.FC<Props> = ({
             enableTorch={torch}
             mode={mode === 'video' ? 'video' : 'picture'}
             onCameraReady={() => setIsReady(true)}
+            zoom={zoom}
             // active ist praktisch, falls du Modal nicht unmountest
             active={visible}
           />
         ) : (
           <View style={[styles.camera, styles.cameraPlaceholder]} />
         )}
+
+        <View style={styles.zoomRail} pointerEvents='box-none'>
+          <TouchableOpacity
+            style={styles.zoomBtn}
+            onPress={() => setZoom((z) => clamp01(z + 0.06))}
+            disabled={isBusy}
+          >
+            <Ionicons name='add' size={18} color='white' />
+          </TouchableOpacity>
+
+          <View style={styles.zoomSliderWrap}>
+            <Slider
+              value={zoom}
+              onValueChange={(v) => setZoom(clamp01(v))}
+              minimumValue={0}
+              maximumValue={1}
+              step={0.01}
+              disabled={isBusy}
+              minimumTrackTintColor='white'
+              maximumTrackTintColor='rgba(255,255,255,0.35)'
+              thumbTintColor='white'
+              style={styles.zoomSlider}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.zoomBtn}
+            onPress={() => setZoom((z) => clamp01(z - 0.06))}
+            disabled={isBusy}
+          >
+            <Ionicons name='remove' size={18} color='white' />
+          </TouchableOpacity>
+
+          <View style={styles.zoomChip}>
+            <Text style={styles.zoomChipText}>{Math.round(zoom * 100)}%</Text>
+          </View>
+        </View>
 
         {/* Top controls */}
         <SafeAreaView style={styles.topBar}>
@@ -385,6 +436,57 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     backgroundColor: 'rgba(0,0,0,0.45)',
   },
+
+  zoomRail: {
+    position: 'absolute',
+    right: 12,
+    top: 120,
+    // damit es nicht mit BottomBar kollidiert:
+    bottom: 160,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.28)',
+    gap: 10,
+  },
+
+  zoomBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  zoomSliderWrap: {
+    width: 44, // rail-breite
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Slider wird horizontal gerendert -> wir drehen ihn
+  zoomSlider: {
+    width: 220, // das wird nach Rotation zur Höhe
+    height: 44,
+    transform: [{ rotate: '-90deg' }],
+  },
+
+  zoomChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+  },
+
+  zoomChipText: {
+    color: 'white',
+    fontWeight: '700',
+  },
+
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
