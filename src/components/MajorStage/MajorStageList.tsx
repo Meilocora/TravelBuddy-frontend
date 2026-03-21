@@ -9,7 +9,6 @@ import {
   Icons,
   Journey,
   MajorStage,
-  StageFilter,
   StagesPositionDict,
 } from '../../models';
 import { validateIsOver } from '../../utils';
@@ -31,19 +30,25 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   majorStages,
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
+
+  const journeyIsOver = validateIsOver(journey.scheduled_end_time);
+
+  const [filter, setFilter] = useState<'current' | 'all'>(
+    journeyIsOver ? 'all' : 'current',
+  );
+
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   const { triggerRefresh } = useAppData();
 
   const shownMajorStages = majorStages.filter((majorStage) => {
-    if (filter === StageFilter.current) {
+    if (filter === 'current') {
       return !validateIsOver(majorStage.scheduled_end_time); // Only include major stages that haven't ended
     }
     return true; // Include all major stages for other filters
   });
 
-  function handleSetFilter(filter: StageFilter) {
+  function handleSetFilter(filter: 'current' | 'all') {
     setFilter(filter);
     setOpenModal(false);
   }

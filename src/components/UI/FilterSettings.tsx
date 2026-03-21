@@ -1,12 +1,12 @@
 import { ReactElement } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { ColorScheme, StageFilter } from '../../models';
+import { ColorScheme } from '../../models';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 
 interface FilterSettingsProps {
-  filter: StageFilter;
-  setFilter: (filter: StageFilter) => void;
+  filter: 'current' | 'all';
+  setFilter: (filter: 'current' | 'all') => void;
   colorScheme?: ColorScheme;
 }
 
@@ -31,18 +31,18 @@ const FilterSettings: React.FC<FilterSettingsProps> = ({
       <Pressable
         style={[
           styles.button,
-          filter === StageFilter.current ? { backgroundColor: bg } : undefined,
+          filter === 'current' ? { backgroundColor: bg } : undefined,
         ]}
-        onPress={() => setFilter(StageFilter.current)}
+        onPress={() => setFilter('current')}
       >
         <Text style={styles.buttonText}>Current Stages</Text>
       </Pressable>
       <Pressable
         style={[
           styles.button,
-          filter === StageFilter.all ? { backgroundColor: bg } : undefined,
+          filter === 'all' ? { backgroundColor: bg } : undefined,
         ]}
-        onPress={() => setFilter(StageFilter.all)}
+        onPress={() => setFilter('all')}
       >
         <Text style={styles.buttonText}>All Stages</Text>
       </Pressable>

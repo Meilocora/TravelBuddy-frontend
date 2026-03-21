@@ -8,7 +8,6 @@ import {
   Icons,
   MajorStage,
   MinorStage,
-  StageFilter,
   StagesPositionDict,
 } from '../../models';
 import { swapMinorStages, validateIsOver, validateOrders } from '../../utils';
@@ -19,6 +18,7 @@ import Animated, { FadeInRight } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 import ErrorOverlay from '../UI/ErrorOverlay';
 import { useAppData } from '../../hooks/useAppData';
+import { usePersistedState } from '../../hooks/usePersistedState';
 
 interface MinorStageListProps {
   majorStage: MajorStage;
@@ -30,19 +30,25 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   minorStages,
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<StageFilter>(StageFilter.current);
+
+  const journeyIsOver = validateIsOver(majorStage.scheduled_end_time);
+
+  const [filter, setFilter] = useState<'current' | 'all'>(
+    journeyIsOver ? 'all' : 'current',
+  );
+
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   const { triggerRefresh } = useAppData();
 
   const shownMinorStages = minorStages.filter((minorStage) => {
-    if (filter === StageFilter.current) {
+    if (filter === 'current') {
       return !validateIsOver(minorStage.scheduled_end_time); // Only include major stages that haven't ended
     }
     return true; // Include all major stages for other filters
   });
 
-  function handleSetFilter(filter: StageFilter) {
+  function handleSetFilter(filter: 'current' | 'all') {
     setFilter(filter);
     setOpenModal(false);
   }

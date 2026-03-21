@@ -50,7 +50,7 @@ const MinorStageSelector: React.FC<MinorStageSelectorProps> = ({
               label='Minor Stage'
               errors={errors}
               textInputConfig={{
-                value: minorStage?.title,
+                value: minorStage ? minorStage.title : '',
                 readOnly: true,
                 textAlign: 'left',
               }}

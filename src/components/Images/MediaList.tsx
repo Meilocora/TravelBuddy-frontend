@@ -42,7 +42,7 @@ const MediaList: React.FC<MediaListProps> = ({
   selectionResetKey,
 }): ReactElement => {
   const [showFilters, setShowFilters] = useState(false);
-  const [sortDate, setSortDate] = useState<'asc' | 'desc'>('asc');
+  const [sortDate, setSortDate] = useState<'asc' | 'desc'>('desc');
   const [filterFav, setFilterFav] = useState(false);
   const [filterPlace, setFilterPlace] = useState<number | undefined>();
   const [filterCountry, setFilterCountry] = useState<number | undefined>();
@@ -94,7 +94,7 @@ const MediaList: React.FC<MediaListProps> = ({
     const places = placeCtx.getPlacesByCountry(filterCountry);
     const placeIds = places.map((p) => p.id);
     media = media.filter(
-      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId)
+      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId),
     );
   }
 
@@ -171,10 +171,15 @@ const MediaList: React.FC<MediaListProps> = ({
     }
   }
 
+  function cancelSelection() {
+    setDeletingMedia(undefined);
+    setSelectedMedia(undefined);
+  }
+
   return (
     <View style={styles.container}>
       <SelectedMediaInfo
-        onCancel={() => setSelectedMedia(undefined)}
+        onCancel={cancelSelection}
         selectedMedia={selectedMedia}
         allMediaSelected={allMediaSelected}
         selectAllMedia={selectAllMedia}
@@ -253,14 +258,14 @@ const MediaList: React.FC<MediaListProps> = ({
                 const globalIndex = globalIndexMap.get(m.id) ?? 0;
                 const animationIndex = rowIndex * 3 + colIndex;
                 const isSelected = selectedMedia?.some(
-                  (medium) => medium.id === m.id
+                  (medium) => medium.id === m.id,
                 );
                 const anySelected = selectedMedia && selectedMedia.length > 0;
                 return (
                   <Animated.View
                     key={m.id.toString()}
                     entering={FadeInDown.delay(animationIndex * 50).duration(
-                      500
+                      500,
                     )}
                     exiting={FadeOutDown}
                     style={styles.itemContainer}

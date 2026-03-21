@@ -117,11 +117,6 @@ export interface Validable<T> {
   errors: string[];
 }
 
-export enum StageFilter {
-  'current',
-  'all',
-}
-
 export interface StagesPositionDict {
   id: number;
   position: number;

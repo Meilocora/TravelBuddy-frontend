@@ -60,6 +60,11 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// TODO: ImageMap => Nachdem Bild angeschaut nicht wieder heraus zoomen
+//  => Außerdem sollen alle Medien sicher geladen werden
+// TODO: Maps => Allgem. lieber einen Button zum wieder herauszoomen
+// TODO: Error beim spendings eintragen, wenn Budget überschritten wird (Backend error?!)
+
 // TODO: Animationen einfügen
 // TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
 // TODO: Chatbot should get stages data as input and suggest improvements of the route

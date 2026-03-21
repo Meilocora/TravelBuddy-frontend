@@ -49,7 +49,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
   const [mediumCoords, setMediumCoords] = useState<LatLng | undefined>(
     defaultValues?.latitude && defaultValues?.longitude
       ? { latitude: defaultValues.latitude, longitude: defaultValues.longitude }
-      : undefined
+      : undefined,
   );
 
   const userCtx = useContext(UserContext);
@@ -106,8 +106,9 @@ const MediumForm: React.FC<MediumFormProps> = ({
 
   useEffect(() => {
     if (!inputs.timestamp.value) return;
+    if (inputs.minorStageId?.value !== undefined) return;
     const currentMinorStage = stagesCtx.findMinorStageByDate(
-      parseDateAndTime(inputs.timestamp.value)
+      parseDateAndTime(inputs.timestamp.value),
     );
     setInputs((prevValues) => ({
       ...prevValues,
@@ -121,7 +122,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean | number | undefined
+    enteredValue: string | boolean | number | undefined,
   ): void {
     setInputs((currInputs) => {
       return {
@@ -186,7 +187,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
     duration?: number,
     lat?: number,
     lng?: number,
-    timestamp?: Date
+    timestamp?: Date,
   ) {
     setInputs((currInputs) => {
       return {

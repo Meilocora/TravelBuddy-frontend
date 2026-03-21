@@ -3,15 +3,18 @@ import {
   ActivityIndicator,
   Modal,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import Slider from '@react-native-community/slider';
 
 type CameraMode = 'photo' | 'video';
@@ -70,6 +73,8 @@ const InAppCameraModal: React.FC<Props> = ({
 }) => {
   const isFocused = useIsFocused();
   const cameraRef = useRef<CameraView | null>(null);
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -85,6 +90,15 @@ const InAppCameraModal: React.FC<Props> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
 
+  // Hide status bar
+  useEffect(() => {
+    StatusBar.setHidden(true, 'none');
+
+    return () => {
+      StatusBar.setHidden(false, 'none');
+    };
+  }, []);
+
   // Reset state when reopened
   useEffect(() => {
     if (visible) {
@@ -93,6 +107,22 @@ const InAppCameraModal: React.FC<Props> = ({
       setRecordSeconds(0);
       setZoom(0);
     }
+  }, [visible]);
+
+  // Handle screen orientation
+  useEffect(() => {
+    const unlockOrientation = async () => {
+      if (visible) {
+        // Allow all orientations when camera modal is open
+        await ScreenOrientation.unlockAsync();
+      } else {
+        // Lock to portrait when modal is closed
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT,
+        );
+      }
+    };
+    unlockOrientation();
   }, [visible]);
 
   useEffect(() => {
@@ -127,7 +157,7 @@ const InAppCameraModal: React.FC<Props> = ({
 
   function cycleFlash() {
     setFlash((prev) =>
-      prev === 'off' ? 'on' : prev === 'on' ? 'auto' : 'off'
+      prev === 'off' ? 'on' : prev === 'on' ? 'auto' : 'off',
     );
   }
 
@@ -272,48 +302,32 @@ const InAppCameraModal: React.FC<Props> = ({
           <View style={[styles.camera, styles.cameraPlaceholder]} />
         )}
 
-        <View style={styles.zoomRail} pointerEvents='box-none'>
-          <TouchableOpacity
-            style={styles.zoomBtn}
-            onPress={() => setZoom((z) => clamp01(z + 0.06))}
-            disabled={isBusy}
-          >
-            <Ionicons name='add' size={18} color='white' />
-          </TouchableOpacity>
-
-          <View style={styles.zoomSliderWrap}>
-            <Slider
-              value={zoom}
-              onValueChange={(v) => setZoom(clamp01(v))}
-              minimumValue={0}
-              maximumValue={1}
-              step={0.01}
-              disabled={isBusy}
-              minimumTrackTintColor='white'
-              maximumTrackTintColor='rgba(255,255,255,0.35)'
-              thumbTintColor='white'
-              style={styles.zoomSlider}
-            />
+        {!isLandscape && (
+          <View style={styles.zoomRail} pointerEvents='box-none'>
+            <View style={styles.zoomSliderWrap}>
+              <Slider
+                value={zoom}
+                onValueChange={(v) => setZoom(clamp01(v))}
+                minimumValue={0}
+                maximumValue={1}
+                step={0.01}
+                disabled={isBusy}
+                minimumTrackTintColor='white'
+                maximumTrackTintColor='rgba(255,255,255,0.35)'
+                thumbTintColor='white'
+                style={styles.zoomSlider}
+              />
+            </View>
           </View>
-
-          <TouchableOpacity
-            style={styles.zoomBtn}
-            onPress={() => setZoom((z) => clamp01(z - 0.06))}
-            disabled={isBusy}
-          >
-            <Ionicons name='remove' size={18} color='white' />
-          </TouchableOpacity>
-
-          <View style={styles.zoomChip}>
-            <Text style={styles.zoomChipText}>{Math.round(zoom * 100)}%</Text>
-          </View>
-        </View>
+        )}
 
         {/* Top controls */}
-        <SafeAreaView style={styles.topBar}>
+        <SafeAreaView
+          style={[styles.topBar, isLandscape && styles.topBarLandscape]}
+        >
           <CircleIconButton icon='close' onPress={onClose} disabled={isBusy} />
 
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={[{ flexDirection: 'row', gap: 10 }]}>
             <CircleIconButton
               icon={flashIcon}
               onPress={cycleFlash}
@@ -343,15 +357,23 @@ const InAppCameraModal: React.FC<Props> = ({
         )}
 
         {/* Bottom controls */}
-        <SafeAreaView style={styles.bottomBar}>
+        <SafeAreaView
+          style={[styles.bottomBar, isLandscape && styles.bottomBarLandscape]}
+        >
           {/* Controls row */}
-          <View style={styles.controlsRow}>
+          <View
+            style={[
+              styles.controlsRow,
+              isLandscape && styles.controlsRowLandscape,
+            ]}
+          >
             {/* Shutter */}
             <TouchableOpacity
               onPress={onShutterPress}
               disabled={isBusy}
               style={[
                 styles.shutterOuter,
+                isLandscape && styles.shutterOuterLandscape,
                 mode === 'video' ? styles.shutterOuterVideo : null,
               ]}
             >
@@ -392,6 +414,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  topBarLandscape: {
+    top: 0,
+    width: '100%',
+    height: 'auto',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 14,
   },
 
   circleBtn: {
@@ -436,17 +467,24 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     backgroundColor: 'rgba(0,0,0,0.45)',
   },
+  bottomBarLandscape: {
+    position: 'absolute',
+    height: '100%',
+    backgroundColor: 'transparent',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
 
   zoomRail: {
     position: 'absolute',
-    right: 12,
-    top: 120,
+    right: 8,
+    top: 180,
     // damit es nicht mit BottomBar kollidiert:
-    bottom: 160,
+    bottom: 220,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
     borderRadius: 18,
     backgroundColor: 'rgba(0,0,0,0.28)',
     gap: 10,
@@ -470,27 +508,19 @@ const styles = StyleSheet.create({
 
   // Slider wird horizontal gerendert -> wir drehen ihn
   zoomSlider: {
-    width: 220, // das wird nach Rotation zur Höhe
+    width: 260, // das wird nach Rotation zur Höhe
     height: 44,
     transform: [{ rotate: '-90deg' }],
-  },
-
-  zoomChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-  },
-
-  zoomChipText: {
-    color: 'white',
-    fontWeight: '700',
   },
 
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  controlsRowLandscape: {
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
 
   shutterOuter: {
@@ -502,6 +532,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 'auto',
+  },
+  shutterOuterLandscape: {
+    marginHorizontal: 'auto',
+    marginTop: 8,
   },
   shutterOuterVideo: {
     borderColor: 'rgba(255,255,255,0.9)',

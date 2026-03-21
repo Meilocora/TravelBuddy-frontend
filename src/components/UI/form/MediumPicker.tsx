@@ -21,7 +21,7 @@ interface CustomMediumPickerProps {
     duration?: number,
     lat?: number,
     lng?: number,
-    timestamp?: Date
+    timestamp?: Date,
   ) => void;
   editing: boolean;
 }
@@ -38,7 +38,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
 
   const [url, setUrl] = useState<string | undefined>(defaultValue);
   const [mediumType, setMediumType] = useState<'video' | 'image' | undefined>(
-    defaultMediumType
+    defaultMediumType,
   );
   const [isFav, setIsFav] = useState(favorite);
 
@@ -97,6 +97,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
       mediaTypes: ['images', 'videos'],
       quality: 0.9,
       exif: true,
+      allowsMultipleSelection: true,
     });
 
     if (result.canceled) {
@@ -113,7 +114,12 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
     let timestamp: Date | undefined;
 
     if (type === 'image') {
-      if (exif?.GPSLatitude != null && exif?.GPSLongitude != null) {
+      if (
+        exif?.GPSLatitude != null &&
+        exif?.GPSLongitude != null &&
+        exif?.GPSLatitude !== 0 &&
+        exif?.GPSLongitude !== 0
+      ) {
         lat = exif.GPSLatitude;
         lng = exif.GPSLongitude;
       }
@@ -123,7 +129,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
         // Format: "YYYY:MM:DD HH:MM:SS"
         const dateStr = exif.DateTimeOriginal.replace(
           /^(\d{4}):(\d{2}):(\d{2})/,
-          '$1-$2-$3'
+          '$1-$2-$3',
         );
         timestamp = new Date(dateStr);
       }
@@ -135,7 +141,12 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
       const asset = result.assets[0];
       const duration = asset.duration;
 
-      if (exif?.GPSLatitude != null && exif?.GPSLongitude != null) {
+      if (
+        exif?.GPSLatitude != null &&
+        exif?.GPSLongitude != null &&
+        exif?.GPSLatitude !== 0 &&
+        exif?.GPSLongitude !== 0
+      ) {
         lat = exif.GPSLatitude;
         lng = exif.GPSLongitude;
       }
@@ -145,7 +156,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
         // Format: "YYYY:MM:DD HH:MM:SS"
         const dateStr = exif.DateTimeOriginal.replace(
           /^(\d{4}):(\d{2}):(\d{2})/,
-          '$1-$2-$3'
+          '$1-$2-$3',
         );
         timestamp = new Date(dateStr);
       }
@@ -173,7 +184,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
         duration ? duration : undefined,
         lat,
         lng,
-        timestamp
+        timestamp,
       );
     }
   }
@@ -239,6 +250,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             color={
               url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
             }
+            containerStyle={url ? styles.iconContainer : undefined}
             size={32}
           />
           <IconButton
@@ -247,6 +259,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             color={
               url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
             }
+            containerStyle={url ? styles.iconContainer : undefined}
             size={32}
           />
           <IconButton
@@ -255,6 +268,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             color={
               url ? GlobalStyles.colors.graySoft : GlobalStyles.colors.grayDark
             }
+            containerStyle={url ? styles.iconContainer : undefined}
             size={32}
           />
         </View>
@@ -279,6 +293,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  iconContainer: {
+    backgroundColor: GlobalStyles.colors.grayDark,
+    borderRadius: 15,
+    padding: 4,
+  },
+  activeIcon: {
+    color: 'red',
+  },
   icon: {
     position: 'absolute',
     zIndex: 2,
@@ -287,7 +309,7 @@ const styles = StyleSheet.create({
   },
   buttonsRow: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 4,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
