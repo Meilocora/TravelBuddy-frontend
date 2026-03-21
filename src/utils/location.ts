@@ -90,7 +90,7 @@ export async function getCurrentLocation(): Promise<{
 }
 
 export async function getRegionForLocations(
-  locations: Location[]
+  locations: Location[],
 ): Promise<Region> {
   if (locations.length === 0) {
     // Default region if no locations are available
@@ -126,7 +126,7 @@ export async function getRegionForLocations(
 }
 
 export async function getRegionForMediumLocations(
-  locations: MediumLocation[]
+  locations: MediumLocation[],
 ): Promise<Region> {
   if (locations.length === 0) {
     // Default region if no locations are available
@@ -148,10 +148,22 @@ export async function getRegionForMediumLocations(
   const minLng = Math.min(...longitudes);
   const maxLng = Math.max(...longitudes);
 
-  const latitude = (minLat + maxLat) / 2;
-  const longitude = (minLng + maxLng) / 2;
-  const latitudeDelta = (maxLat - minLat) * 1.2; // Add padding (20%)
-  const longitudeDelta = (maxLng - minLng) * 1.2; // Add padding (20%)
+  let latitude = (minLat + maxLat) / 2;
+  let longitude = (minLng + maxLng) / 2;
+  let latitudeDelta = (maxLat - minLat) * 1.2; // Add padding (20%)
+  let longitudeDelta = (maxLng - minLng) * 1.2; // Add padding (20%)
+
+  if (latitudeDelta > 80 || longitudeDelta > 80) {
+    const { verifyPermissions } = useLocationPermissions();
+    const location = await getCurrentLocation();
+
+    return {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 10,
+      longitudeDelta: 10,
+    };
+  }
 
   return {
     latitude,
@@ -163,7 +175,7 @@ export async function getRegionForMediumLocations(
 
 export function getMapLocationsFromJourney(
   journey: Journey,
-  showPastLocations: boolean
+  showPastLocations: boolean,
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -299,7 +311,7 @@ export function getMapLocationsFromJourney(
 
   if (!showPastLocations) {
     const filteredLocations = locations.filter(
-      (location) => location.done === false
+      (location) => location.done === false,
     );
     return filteredLocations || undefined;
   }
@@ -309,7 +321,7 @@ export function getMapLocationsFromJourney(
 
 export function getMapLocationsFromMajorStage(
   majorStage: MajorStage,
-  showPastLocations: boolean
+  showPastLocations: boolean,
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -437,7 +449,7 @@ export function getMapLocationsFromMajorStage(
 
   if (!showPastLocations) {
     const filteredLocations = locations.filter(
-      (location) => location.done === false
+      (location) => location.done === false,
     );
     return filteredLocations || undefined;
   }
@@ -448,7 +460,7 @@ export function getMapLocationsFromMajorStage(
 export function getMapLocationsFromMinorStage(
   minorStage: MinorStage,
   majorStage: MajorStage,
-  showPastLocations: boolean
+  showPastLocations: boolean,
 ): Location[] | undefined {
   const locations: Location[] = [];
   const currentDate = new Date();
@@ -537,7 +549,7 @@ export function getMapLocationsFromMinorStage(
 
   if (!showPastLocations) {
     const filteredLocations = locations.filter(
-      (location) => location.done === false
+      (location) => location.done === false,
     );
     return filteredLocations || undefined;
   }
@@ -547,11 +559,11 @@ export function getMapLocationsFromMinorStage(
 
 export function addColor(
   locations: Location[],
-  stageType: MapScopeType
+  stageType: MapScopeType,
 ): Location[] {
   if (stageType === 'Journey') {
     const uniqueMajorStageNames = Array.from(
-      new Set(locations.map((location) => location.belonging))
+      new Set(locations.map((location) => location.belonging)),
     );
 
     if (uniqueMajorStageNames.length > 1) {
@@ -563,7 +575,7 @@ export function addColor(
           acc[stageName] = colors[index];
           return acc;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
 
       // Assign colors to locations based on their belonging
@@ -583,9 +595,9 @@ export function addColor(
     const uniqueMinorStageNames = Array.from(
       new Set(
         locations.map((location) =>
-          location.minorStageName ? location.minorStageName : undefined
-        )
-      )
+          location.minorStageName ? location.minorStageName : undefined,
+        ),
+      ),
     ).filter((name) => name !== undefined);
     if (uniqueMinorStageNames.length > 1) {
       const colors = generateColorsSet(uniqueMinorStageNames.length);
@@ -596,7 +608,7 @@ export function addColor(
           acc[stageName] = colors[index];
           return acc;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
 
       // Assign colors to locations based on their belonging
@@ -626,7 +638,7 @@ export function getRemainingCountriesPlacesLocations(
   countryIds: number[],
   assignedLocations: Location[] | undefined,
   findCountriesPlaces: (countryId: number) => PlaceToVisit[] | undefined,
-  showAllPlaces: boolean
+  showAllPlaces: boolean,
 ): Location[] {
   if (!showAllPlaces) {
     return [];
@@ -644,7 +656,7 @@ export function getRemainingCountriesPlacesLocations(
           location.data.name === place.name &&
           location.locationType === LocationType.placeToVisit &&
           location.data.latitude === place.latitude &&
-          location.data.longitude === place.longitude
+          location.data.longitude === place.longitude,
       );
 
       if (!isAlreadyAssigned) {
@@ -676,7 +688,7 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
 }
 
 export function formatMediumToLocation(
-  medium: Medium
+  medium: Medium,
 ): MediumLocation | undefined {
   if (!medium.latitude || !medium.longitude) {
     return undefined;
@@ -693,17 +705,17 @@ export function formatMediumToLocation(
 }
 
 export function getRouteLocationsNamesFromLocations(
-  locations: Location[]
+  locations: Location[],
 ): string[] {
   const filteredLocations = locations.filter(
-    (location) => location.locationType === LocationType.accommodation
+    (location) => location.locationType === LocationType.accommodation,
   );
   return filteredLocations.map((location) => location.data.name);
 }
 
 export function compareRouteLocations(
   locs1: string[],
-  locs2: string[]
+  locs2: string[],
 ): boolean {
   if (locs1.length !== locs2.length) return false;
 
@@ -719,7 +731,7 @@ export function calculateDistance(
   lat1: number,
   lon1: number,
   lat2: number,
-  lon2: number
+  lon2: number,
 ): number {
   const R = 6371000; // Erdradius in Metern
   const φ1 = (lat1 * Math.PI) / 180;

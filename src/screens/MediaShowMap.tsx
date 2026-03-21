@@ -87,7 +87,7 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
 
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
-    'standard'
+    'standard',
   );
 
   const GOOGLE_API_KEY =
@@ -153,80 +153,80 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
       lng: lng,
     });
   }
+  // ////// Following was commented out to prevent user from starting on the max zoomed out world map
+  // const fitToItems = useCallback(
+  //   (pts: LatLng[], isInitial: boolean = false) => {
+  //     if (!mapRef.current || pts.length === 0) return;
 
-  const fitToItems = useCallback(
-    (pts: LatLng[], isInitial: boolean = false) => {
-      if (!mapRef.current || pts.length === 0) return;
+  //     if (mediumLocation && isInitial && !hasInitialZoom) {
+  //       setTimeout(() => {
+  //         if (!mapRef.current) return;
+  //         const tight: Region = {
+  //           latitude: mediumLocation.latitude,
+  //           longitude: mediumLocation.longitude,
+  //           latitudeDelta: DELTA,
+  //           longitudeDelta: DELTA,
+  //         };
+  //         mapRef.current.animateToRegion(tight, 250);
+  //         setHasInitialZoom(true);
+  //       }, 1000);
+  //       return;
+  //     }
 
-      if (mediumLocation && isInitial && !hasInitialZoom) {
-        setTimeout(() => {
-          if (!mapRef.current) return;
-          const tight: Region = {
-            latitude: mediumLocation.latitude,
-            longitude: mediumLocation.longitude,
-            latitudeDelta: DELTA,
-            longitudeDelta: DELTA,
-          };
-          mapRef.current.animateToRegion(tight, 250);
-          setHasInitialZoom(true);
-        }, 1000);
-        return;
-      }
+  //     if (pts.length === 1) {
+  //       const c = pts[0];
+  //       const tight: Region = {
+  //         latitude: c.latitude,
+  //         longitude: c.longitude,
+  //         latitudeDelta: DELTA,
+  //         longitudeDelta: DELTA,
+  //       };
+  //       mapRef.current.animateToRegion(tight, 250);
+  //     } else {
+  //       // Bounding-Box über alle Punkte
+  //       (mapRef.current as any).fitToCoordinates(pts, {
+  //         edgePadding: EDGE_PADDING,
+  //         animated: true,
+  //       });
+  //     }
+  //   },
+  //   [],
+  // );
 
-      if (pts.length === 1) {
-        const c = pts[0];
-        const tight: Region = {
-          latitude: c.latitude,
-          longitude: c.longitude,
-          latitudeDelta: DELTA,
-          longitudeDelta: DELTA,
-        };
-        mapRef.current.animateToRegion(tight, 250);
-      } else {
-        // Bounding-Box über alle Punkte
-        (mapRef.current as any).fitToCoordinates(pts, {
-          edgePadding: EDGE_PADDING,
-          animated: true,
-        });
-      }
-    },
-    []
-  );
+  // const coords: LatLng[] = useMemo(
+  //   () =>
+  //     shownLocations.map((l) => ({
+  //       latitude: l.latitude,
+  //       longitude: l.longitude,
+  //     })),
+  //   [shownLocations],
+  // );
 
-  const coords: LatLng[] = useMemo(
-    () =>
-      shownLocations.map((l) => ({
-        latitude: l.latitude,
-        longitude: l.longitude,
-      })),
-    [shownLocations]
-  );
+  // useEffect(() => {
+  //   // nichts zu tun, wenn weder coords noch routePoints da sind
+  //   if (coords.length === 0 && !routePoints) return;
 
-  useEffect(() => {
-    // nichts zu tun, wenn weder coords noch routePoints da sind
-    if (coords.length === 0 && !routePoints) return;
+  //   let allCoords = [];
 
-    let allCoords = [];
+  //   if (routePoints && routePoints.length >= 2) {
+  //     // Case 1: min. 2 routePoints -> only focus on them
+  //     allCoords = [...routePoints];
+  //   } else {
+  //     // Case 2: less than 2 routePoints -> adjust screen to all locations
+  //     allCoords = [...coords];
 
-    if (routePoints && routePoints.length >= 2) {
-      // Case 1: min. 2 routePoints -> only focus on them
-      allCoords = [...routePoints];
-    } else {
-      // Case 2: less than 2 routePoints -> adjust screen to all locations
-      allCoords = [...coords];
+  //     if (mediumLocation) {
+  //       allCoords.push({
+  //         latitude: mediumLocation.latitude,
+  //         longitude: mediumLocation.longitude,
+  //       });
+  //     }
+  //   }
 
-      if (mediumLocation) {
-        allCoords.push({
-          latitude: mediumLocation.latitude,
-          longitude: mediumLocation.longitude,
-        });
-      }
-    }
+  //   if (allCoords.length === 0) return;
 
-    if (allCoords.length === 0) return;
-
-    fitToItems(allCoords, !hasInitialZoom);
-  }, [coords, routePoints, mediumLocation, fitToItems, hasInitialZoom]);
+  //   fitToItems(allCoords, !hasInitialZoom);
+  // }, [coords, routePoints, mediumLocation, fitToItems, hasInitialZoom]);
 
   const renderCluster = useCallback((cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -263,7 +263,7 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
     const newPoint = { latitude: lat, longitude: lng };
 
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+      prevPoints ? [...prevPoints, newPoint] : [newPoint],
     );
   }
 

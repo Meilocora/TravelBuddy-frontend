@@ -60,9 +60,11 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// TODO: Add MajorStage => Form ist vorausgefüllt...
+// TODO: Datepicker --> Soll direkt auslösen, wenn ein Datum ausgewählt wurde
 // TODO: ImageMap => Nachdem Bild angeschaut nicht wieder heraus zoomen
-//  => Außerdem sollen alle Medien sicher geladen werden
-// TODO: Maps => Allgem. lieber einen Button zum wieder herauszoomen
+// TODO: Maps => Zus. Buttons zum heraus- und hereinzoomen?
+
 // TODO: Error beim spendings eintragen, wenn Budget überschritten wird (Backend error?!)
 
 // TODO: Animationen einfügen
