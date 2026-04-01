@@ -19,6 +19,7 @@ import Popup from '../../components/UI/Popup';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import IconButton from '../../components/UI/IconButton';
+import { GlobalStyles } from '../../constants/styles';
 
 interface LocationsProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'Locations'>;
@@ -56,6 +57,19 @@ const Locations: React.FC<LocationsProps> = ({
     navigation.setOptions({
       headerLeft: () => (
         <IconButton icon={Icons.earth} onPress={handlePressEarth} size={32} />
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <IconButton icon={Icons.currency} onPress={() => {}} size={24} />
+          <IconButton
+            color={GlobalStyles.colors.grayDark}
+            size={24}
+            icon={Icons.person}
+            onPress={() => {
+              navigation.navigate('UserProfile');
+            }}
+          />
+        </View>
       ),
     });
   }, [navigation]);

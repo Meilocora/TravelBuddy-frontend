@@ -30,7 +30,7 @@ const ExpoDatePicker: React.FC<ExpoDatePickerProps> = ({
 
   const initialDate = useMemo(
     () => (value ? parseDate(value) : new Date()),
-    [value]
+    [value],
   );
 
   function onConfirm(picked: Date) {

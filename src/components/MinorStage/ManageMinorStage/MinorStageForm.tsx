@@ -72,33 +72,33 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
   if (defaultValues?.position) {
     positions = Array.from(
       { length: minorStages?.length ?? 0 }, // if no stages -> length = 1
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   } else {
     positions = Array.from(
       { length: (minorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   }
   const initialPosition = isEditing
-    ? defaultValues?.position ?? 1
+    ? (defaultValues?.position ?? 1)
     : positions[positions.length - 1];
 
   const minStartDate = majorStage!.scheduled_start_time;
   const priorMinorStage = minorStages?.find(
-    (stage) => stage.position === initialPosition - 1
+    (stage) => stage.position === initialPosition - 1,
   );
 
   const initialStartTimeValue = defaultValues
     ? defaultValues.scheduled_start_time
     : priorMinorStage
-    ? addDaysToDateString(priorMinorStage.scheduled_end_time)
-    : null;
+      ? addDaysToDateString(priorMinorStage.scheduled_end_time)
+      : null;
   const initialEndTimeValue = defaultValues
     ? defaultValues.scheduled_end_time
     : priorMinorStage
-    ? addDaysToDateString(priorMinorStage.scheduled_end_time)
-    : null;
+      ? addDaysToDateString(priorMinorStage.scheduled_end_time)
+      : null;
 
   const maxEndDate = majorStage!.scheduled_end_time;
 
@@ -168,6 +168,77 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     },
   });
 
+  useEffect(() => {
+    setInputs({
+      title: { value: defaultValues?.title || '', isValid: true, errors: [] },
+      scheduled_start_time: {
+        value: initialStartTimeValue,
+        isValid: true,
+        errors: [],
+      },
+      scheduled_end_time: {
+        value: initialEndTimeValue,
+        isValid: true,
+        errors: [],
+      },
+      budget: {
+        value: defaultValues?.budget || 0,
+        isValid: true,
+        errors: [],
+      },
+      spent_money: {
+        value: defaultValues?.spent_money || 0,
+        isValid: true,
+        errors: [],
+      },
+      accommodation_place: {
+        value: defaultValues?.accommodation_place || '',
+        isValid: true,
+        errors: [],
+      },
+      accommodation_costs: {
+        value: 0,
+        isValid: true,
+        errors: [],
+      },
+      unconvertedAmount: {
+        value: defaultValues?.accommodation_costs.toString() || '',
+        isValid: true,
+        errors: [],
+      },
+      accommodation_booked: {
+        value: defaultValues?.accommodation_booked || false,
+        isValid: true,
+        errors: [],
+      },
+      accommodation_latitude: {
+        value: defaultValues?.accommodation_latitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      accommodation_longitude: {
+        value: defaultValues?.accommodation_longitude || undefined,
+        isValid: true,
+        errors: [],
+      },
+      accommodation_link: {
+        value: defaultValues?.accommodation_link || '',
+        isValid: true,
+        errors: [],
+      },
+      position: {
+        value: initialPosition,
+        isValid: true,
+        errors: [],
+      },
+    });
+  }, [
+    defaultValues,
+    initialStartTimeValue,
+    initialEndTimeValue,
+    initialPosition,
+  ]);
+
   const [maxAvailableMoneyAccommodation, setMaxAvailableMoneyAccommodation] =
     useState(Math.max(0, inputs.budget.value));
   useEffect(() => {
@@ -187,7 +258,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean | number
+    enteredValue: string | boolean | number,
   ) {
     setInputs((currInputs) => {
       return {
@@ -243,7 +314,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       response = await updateMinorStage(
         majorStageId,
         inputs,
-        editMinorStageId!
+        editMinorStageId!,
       );
     } else if (!isEditing) {
       response = await createMinorStage(majorStageId, inputs);
@@ -271,7 +342,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   function handleChangeDate(
     inputIdentifier: string,
-    selectedDate: Date | undefined
+    selectedDate: Date | undefined,
   ) {
     if (selectedDate === undefined) {
       return;
@@ -392,7 +463,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
                 value: inputs.accommodation_place.value,
                 onChangeText: inputChangedHandler.bind(
                   this,
-                  'accommodation_place'
+                  'accommodation_place',
                 ),
               }}
             />
@@ -427,7 +498,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               input={inputs.accommodation_link}
               onChangeText={inputChangedHandler.bind(
                 this,
-                'accommodation_link'
+                'accommodation_link',
               )}
               setShowImage={() => setShowImage(true)}
             />
@@ -437,7 +508,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               onPress={() =>
                 inputChangedHandler(
                   'accommodation_booked',
-                  !inputs.accommodation_booked.value
+                  !inputs.accommodation_booked.value,
                 )
               }
             />

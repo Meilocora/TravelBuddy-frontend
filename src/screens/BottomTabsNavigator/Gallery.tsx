@@ -42,10 +42,10 @@ const Gallery: React.FC<GalleryProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
   const [deletingMedium, setDeletingMedium] = useState<Medium | undefined>(
-    undefined
+    undefined,
   );
   const [deletingMedia, setDeletingMedia] = useState<Medium[] | undefined>(
-    undefined
+    undefined,
   );
   const [selectionResetKey, setSelectionResetKey] = useState(0);
 
@@ -71,7 +71,7 @@ const Gallery: React.FC<GalleryProps> = ({
     try {
       const { error, status } = await deleteMedia(
         deletingMedia!,
-        userCtx.userId!
+        userCtx.userId!,
       );
       if (!error && status === 200) {
         const deleteMediaIds = deletingMedia!.map((m) => m.id);
@@ -95,7 +95,7 @@ const Gallery: React.FC<GalleryProps> = ({
     try {
       const { error, status } = await deleteMedium(
         deletingMedium!,
-        userCtx.userId!
+        userCtx.userId!,
       );
       if (!error && status === 200) {
         mediumCtx.deleteMedium(deletingMedium!.id);
@@ -136,6 +136,19 @@ const Gallery: React.FC<GalleryProps> = ({
     navigation.setOptions({
       headerLeft: () => (
         <IconButton icon={Icons.earth} onPress={handlePressEarth} size={32} />
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <IconButton icon={Icons.currency} onPress={() => {}} size={24} />
+          <IconButton
+            color={GlobalStyles.colors.grayDark}
+            size={24}
+            icon={Icons.person}
+            onPress={() => {
+              navigation.navigate('UserProfile');
+            }}
+          />
+        </View>
       ),
     });
   }, [navigation]);

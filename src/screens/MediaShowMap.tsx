@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -41,13 +40,7 @@ import { Medium } from '../models/media';
 import MapSettings from '../components/Maps/MapSettings';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
-import {
-  DELTA,
-  EDGE_PADDING,
-  EXTENT,
-  MAXZOOM,
-  RADIUS,
-} from '../constants/maps';
+import { DELTA, EXTENT, MAXZOOM, RADIUS } from '../constants/maps';
 import MediumMarker from '../components/Maps/MediumMarker';
 import MediaModal from '../components/UI/MediaModal';
 
@@ -66,6 +59,15 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
   const mapRef = useRef<MapView>(null);
 
   const mediumLocation = route.params.mediumLocation;
+
+  const currentRegionRef = useRef<Region>({
+    latitude:
+      mediumLocation?.latitude || userCtx.currentLocation?.latitude || 0,
+    longitude:
+      mediumLocation?.longitude || userCtx.currentLocation?.longitude || 0,
+    latitudeDelta: DELTA,
+    longitudeDelta: DELTA,
+  });
 
   const [showSettings, setShowSettings] = useState(false);
   const [isFav, setIsFav] = useState(true);
@@ -153,80 +155,6 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
       lng: lng,
     });
   }
-  // ////// Following was commented out to prevent user from starting on the max zoomed out world map
-  // const fitToItems = useCallback(
-  //   (pts: LatLng[], isInitial: boolean = false) => {
-  //     if (!mapRef.current || pts.length === 0) return;
-
-  //     if (mediumLocation && isInitial && !hasInitialZoom) {
-  //       setTimeout(() => {
-  //         if (!mapRef.current) return;
-  //         const tight: Region = {
-  //           latitude: mediumLocation.latitude,
-  //           longitude: mediumLocation.longitude,
-  //           latitudeDelta: DELTA,
-  //           longitudeDelta: DELTA,
-  //         };
-  //         mapRef.current.animateToRegion(tight, 250);
-  //         setHasInitialZoom(true);
-  //       }, 1000);
-  //       return;
-  //     }
-
-  //     if (pts.length === 1) {
-  //       const c = pts[0];
-  //       const tight: Region = {
-  //         latitude: c.latitude,
-  //         longitude: c.longitude,
-  //         latitudeDelta: DELTA,
-  //         longitudeDelta: DELTA,
-  //       };
-  //       mapRef.current.animateToRegion(tight, 250);
-  //     } else {
-  //       // Bounding-Box über alle Punkte
-  //       (mapRef.current as any).fitToCoordinates(pts, {
-  //         edgePadding: EDGE_PADDING,
-  //         animated: true,
-  //       });
-  //     }
-  //   },
-  //   [],
-  // );
-
-  // const coords: LatLng[] = useMemo(
-  //   () =>
-  //     shownLocations.map((l) => ({
-  //       latitude: l.latitude,
-  //       longitude: l.longitude,
-  //     })),
-  //   [shownLocations],
-  // );
-
-  // useEffect(() => {
-  //   // nichts zu tun, wenn weder coords noch routePoints da sind
-  //   if (coords.length === 0 && !routePoints) return;
-
-  //   let allCoords = [];
-
-  //   if (routePoints && routePoints.length >= 2) {
-  //     // Case 1: min. 2 routePoints -> only focus on them
-  //     allCoords = [...routePoints];
-  //   } else {
-  //     // Case 2: less than 2 routePoints -> adjust screen to all locations
-  //     allCoords = [...coords];
-
-  //     if (mediumLocation) {
-  //       allCoords.push({
-  //         latitude: mediumLocation.latitude,
-  //         longitude: mediumLocation.longitude,
-  //       });
-  //     }
-  //   }
-
-  //   if (allCoords.length === 0) return;
-
-  //   fitToItems(allCoords, !hasInitialZoom);
-  // }, [coords, routePoints, mediumLocation, fitToItems, hasInitialZoom]);
 
   const renderCluster = useCallback((cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -272,6 +200,32 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
     setRouteInfo(null);
   }
 
+  function handleZoomIn() {
+    if (!mapRef.current) return;
+    const r = currentRegionRef.current;
+    mapRef.current.animateToRegion(
+      {
+        ...r,
+        latitudeDelta: r.latitudeDelta / 3,
+        longitudeDelta: r.longitudeDelta / 3,
+      },
+      200,
+    );
+  }
+
+  function handleZoomOut() {
+    if (!mapRef.current) return;
+    const r = currentRegionRef.current;
+    mapRef.current.animateToRegion(
+      {
+        ...r,
+        latitudeDelta: r.latitudeDelta * 3,
+        longitudeDelta: r.longitudeDelta * 3,
+      },
+      200,
+    );
+  }
+
   return (
     <View style={styles.container}>
       {showMediumModal && (
@@ -294,6 +248,9 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
       <ClusteredMapView
         ref={mapRef}
         initialRegion={region}
+        onRegionChangeComplete={(r) => {
+          currentRegionRef.current = r;
+        }}
         onPress={handlePressMap}
         onLongPress={handleLongPress}
         provider={PROVIDER_GOOGLE}
@@ -378,6 +335,22 @@ const MediaShowMap: React.FC<MediaShowMapProps> = ({
             );
           })}
       </ClusteredMapView>
+      <View style={styles.zoomButtons}>
+        <IconButton
+          icon={Icons.zoomIn}
+          size={42}
+          color={GlobalStyles.colors.grayDark}
+          containerStyle={styles.zoomButton}
+          onPress={handleZoomIn}
+        />
+        <IconButton
+          icon={Icons.zoomOut}
+          size={42}
+          color={GlobalStyles.colors.grayDark}
+          containerStyle={styles.zoomButton}
+          onPress={handleZoomOut}
+        />
+      </View>
       {routeInfo?.display && (
         <RouteInfo
           onClose={() => setRouteInfo(null)}
@@ -418,6 +391,23 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.graySoft,
     fontWeight: '700',
     fontSize: 24,
+  },
+  zoomButtons: {
+    position: 'absolute',
+    right: 12,
+    bottom: 80,
+    gap: 4,
+  },
+  zoomButton: {
+    backgroundColor: GlobalStyles.colors.graySoftSemi,
+    borderRadius: 10,
+    padding: 4,
+    margin: 0,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });
 

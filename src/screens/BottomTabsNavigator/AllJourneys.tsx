@@ -1,4 +1,10 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View, RefreshControl } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
@@ -15,6 +21,7 @@ import { GlobalStyles } from '../../constants/styles';
 import Animated from 'react-native-reanimated';
 import { useAppData } from '../../hooks/useAppData';
 import FloatingButton from '../../components/UI/FloatingButton';
+import IconButton from '../../components/UI/IconButton';
 
 interface AllJourneysProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'AllJourneys'>;
@@ -54,6 +61,24 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
   function handleAddJourney() {
     manageJourneyNavigation.navigate('ManageJourney', { journeyId: undefined });
   }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <IconButton icon={Icons.currency} onPress={() => {}} size={24} />
+          <IconButton
+            color={GlobalStyles.colors.grayDark}
+            size={24}
+            icon={Icons.person}
+            onPress={() => {
+              navigation.navigate('UserProfile');
+            }}
+          />
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   let content;
   if (isFetching) {

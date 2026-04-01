@@ -64,33 +64,33 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
   if (defaultValues?.position) {
     positions = Array.from(
       { length: majorStages?.length ?? 0 }, // if no stages -> length = 1
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   } else {
     positions = Array.from(
       { length: (majorStages?.length ?? 0) + 1 }, // if no stages -> length = 1
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   }
   const initialPosition = isEditing
-    ? defaultValues?.position ?? 1
+    ? (defaultValues?.position ?? 1)
     : positions[positions.length - 1];
 
   const minStartDate = journey!.scheduled_start_time;
   const priorMajorStage = majorStages?.find(
-    (stage) => stage.position === initialPosition - 1
+    (stage) => stage.position === initialPosition - 1,
   );
 
   const initialStartTimeValue = defaultValues
     ? defaultValues.scheduled_start_time
     : priorMajorStage
-    ? addDaysToDateString(priorMajorStage.scheduled_end_time)
-    : null;
+      ? addDaysToDateString(priorMajorStage.scheduled_end_time)
+      : null;
   const initialEndTimeValue = defaultValues
     ? defaultValues.scheduled_end_time
     : priorMajorStage
-    ? addDaysToDateString(priorMajorStage.scheduled_end_time)
-    : null;
+      ? addDaysToDateString(priorMajorStage.scheduled_end_time)
+      : null;
 
   const maxEndDate = journey!.scheduled_end_time;
 
@@ -137,9 +137,55 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     },
   });
 
+  useEffect(() => {
+    setInputs({
+      title: { value: defaultValues?.title || '', isValid: true, errors: [] },
+      scheduled_start_time: {
+        value: initialStartTimeValue,
+        isValid: true,
+        errors: [],
+      },
+      scheduled_end_time: {
+        value: initialEndTimeValue,
+        isValid: true,
+        errors: [],
+      },
+      additional_info: {
+        value: defaultValues?.additional_info || '',
+        isValid: true,
+        errors: [],
+      },
+      budget: {
+        value: defaultValues?.budget || 0,
+        isValid: true,
+        errors: [],
+      },
+      spent_money: {
+        value: defaultValues?.spent_money || 0,
+        isValid: true,
+        errors: [],
+      },
+      country: {
+        value: defaultValues?.country || '',
+        isValid: true,
+        errors: [],
+      },
+      position: {
+        value: initialPosition,
+        isValid: true,
+        errors: [],
+      },
+    });
+  }, [
+    defaultValues,
+    initialStartTimeValue,
+    initialEndTimeValue,
+    initialPosition,
+  ]);
+
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | number | boolean
+    enteredValue: string | number | boolean,
   ) {
     setInputs((currInputs) => {
       return {
@@ -199,7 +245,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
 
   function handleChangeDate(
     inputIdentifier: string,
-    selectedDate: Date | undefined
+    selectedDate: Date | undefined,
   ) {
     if (selectedDate === undefined) {
       return;

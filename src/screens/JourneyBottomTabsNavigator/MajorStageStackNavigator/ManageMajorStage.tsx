@@ -1,13 +1,17 @@
 import React, {
   ReactElement,
+  useCallback,
   useContext,
   useLayoutEffect,
-  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -63,23 +67,55 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
 
   const selectedMajorStage = stagesCtx.findMajorStage(editedMajorStageId || 0);
 
-  const defaultValues = useMemo<MajorStageValues | undefined>(() => {
-    if (!selectedMajorStage) return undefined;
-    return {
-      title: selectedMajorStage.title ?? '',
-      scheduled_start_time: selectedMajorStage.scheduled_start_time
-        ? formatDateString(selectedMajorStage.scheduled_start_time)!
-        : null,
-      scheduled_end_time: selectedMajorStage.scheduled_end_time
-        ? formatDateString(selectedMajorStage.scheduled_end_time)!
-        : null,
-      additional_info: selectedMajorStage.additional_info ?? '',
-      budget: selectedMajorStage.costs.budget ?? 0,
-      spent_money: selectedMajorStage.costs.spent_money ?? 0,
-      country: selectedMajorStage.country.name ?? '',
-      position: selectedMajorStage.position ?? null,
-    };
-  }, [selectedMajorStage]);
+  const [defaultValues, setDefaultValues] = useState<MajorStageValues>({
+    title: selectedMajorStage?.title ?? '',
+    scheduled_start_time: selectedMajorStage?.scheduled_start_time
+      ? formatDateString(selectedMajorStage.scheduled_start_time)!
+      : null,
+    scheduled_end_time: selectedMajorStage?.scheduled_end_time
+      ? formatDateString(selectedMajorStage.scheduled_end_time)!
+      : null,
+    additional_info: selectedMajorStage?.additional_info ?? '',
+    budget: selectedMajorStage?.costs.budget ?? 0,
+    spent_money: selectedMajorStage?.costs.spent_money ?? 0,
+    country: selectedMajorStage?.country.name ?? '',
+    position: selectedMajorStage?.position ?? null,
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      // MajorStageValues set, when screen is focused
+      setDefaultValues({
+        title: selectedMajorStage?.title ?? '',
+        scheduled_start_time: selectedMajorStage?.scheduled_start_time
+          ? formatDateString(selectedMajorStage.scheduled_start_time)!
+          : null,
+        scheduled_end_time: selectedMajorStage?.scheduled_end_time
+          ? formatDateString(selectedMajorStage.scheduled_end_time)!
+          : null,
+        additional_info: selectedMajorStage?.additional_info ?? '',
+        budget: selectedMajorStage?.costs.budget ?? 0,
+        spent_money: selectedMajorStage?.costs.spent_money ?? 0,
+        country: selectedMajorStage?.country.name ?? '',
+        position: selectedMajorStage?.position ?? null,
+      });
+
+      return () => {
+        // Clean up function, when screen is unfocused
+        // reset MajorStageValues
+        setDefaultValues({
+          title: '',
+          scheduled_start_time: null,
+          scheduled_end_time: null,
+          additional_info: '',
+          budget: 0,
+          spent_money: 0,
+          country: '',
+          position: null,
+        });
+      };
+    }, [editedMajorStageId]),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

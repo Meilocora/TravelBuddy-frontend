@@ -64,6 +64,8 @@ export enum Icons {
   videocam = 'videocam',
   refresh = 'refresh',
   circle = 'ellipse-outline',
+  zoomIn = 'add-circle',
+  zoomOut = 'remove-circle',
 }
 
 export enum ButtonMode {

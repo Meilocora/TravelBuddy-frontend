@@ -1,6 +1,7 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ReactElement,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -17,7 +18,7 @@ import {
   MinorStage,
   MinorStageValues,
 } from '../../../models';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import ComplementaryGradient from '../../../components/UI/LinearGradients/ComplementaryGradient';
 import { GlobalStyles } from '../../../constants/styles';
 import { deleteMinorStage, formatDateString } from '../../../utils';
@@ -63,8 +64,9 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
   const selectedMinorStage = stagesCtx.findMinorStage(editedMinorStageId || 0);
 
   // Empty, when no default values provided
-  const defaultValues = useMemo<MinorStageValues | undefined>(() => {
-    if (!selectedMinorStage) return undefined;
+  const [defaultValues, setDefaultValues] = useState<
+    MinorStageValues | undefined
+  >(() => {
     return {
       title: selectedMinorStage?.title || '',
       scheduled_start_time: selectedMinorStage?.scheduled_start_time
@@ -83,9 +85,54 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       accommodation_longitude:
         selectedMinorStage?.accommodation.longitude || undefined,
       accommodation_link: selectedMinorStage?.accommodation.link || '',
-      position: selectedMinorStage.position ?? 0,
+      position: selectedMinorStage?.position ?? 0,
     };
-  }, [selectedMinorStage]);
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      // MajorStageValues set, when screen is focused
+      setDefaultValues({
+        title: selectedMinorStage?.title || '',
+        scheduled_start_time: selectedMinorStage?.scheduled_start_time
+          ? formatDateString(selectedMinorStage.scheduled_start_time)!
+          : null,
+        scheduled_end_time: selectedMinorStage?.scheduled_end_time
+          ? formatDateString(selectedMinorStage.scheduled_end_time)!
+          : null,
+        budget: selectedMinorStage?.costs.budget || 0,
+        spent_money: selectedMinorStage?.costs.spent_money || 0,
+        accommodation_place: selectedMinorStage?.accommodation.place || '',
+        accommodation_costs: selectedMinorStage?.accommodation.costs || 0,
+        accommodation_booked: selectedMinorStage?.accommodation.booked || false,
+        accommodation_latitude:
+          selectedMinorStage?.accommodation.latitude || undefined,
+        accommodation_longitude:
+          selectedMinorStage?.accommodation.longitude || undefined,
+        accommodation_link: selectedMinorStage?.accommodation.link || '',
+        position: selectedMinorStage?.position ?? 0,
+      });
+
+      return () => {
+        // Clean up function, when screen is unfocused
+        // reset MajorStageValues
+        setDefaultValues({
+          title: '',
+          scheduled_start_time: null,
+          scheduled_end_time: null,
+          budget: 0,
+          spent_money: 0,
+          accommodation_place: '',
+          accommodation_costs: 0,
+          accommodation_booked: false,
+          accommodation_latitude: undefined,
+          accommodation_longitude: undefined,
+          accommodation_link: '',
+          position: null,
+        });
+      };
+    }, [editedMinorStageId]),
+  );
 
   // Hide tab bar when navigating to this screen
   useEffect(() => {

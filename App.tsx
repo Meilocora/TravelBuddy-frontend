@@ -60,10 +60,8 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
-// TODO: Add MajorStage => Form ist vorausgefüllt...
-// TODO: Datepicker --> Soll direkt auslösen, wenn ein Datum ausgewählt wurde
-// TODO: ImageMap => Nachdem Bild angeschaut nicht wieder heraus zoomen
-// TODO: Maps => Zus. Buttons zum heraus- und hereinzoomen?
+// TODO: Umrechner App beim Userprofil => Modal, wo man Beträge schnell umrechnen kann oder neue Currencies einführen kann bzw. bearbeiten kann
+// Vllt. doch besser als Screen und dann hier den + Profile einbinden?
 
 // TODO: Error beim spendings eintragen, wenn Budget überschritten wird (Backend error?!)
 
@@ -136,16 +134,6 @@ const BottomTabsNavigator = () => {
           tabBarLabelStyle: {
             fontSize: 14,
           },
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              color={tintColor}
-              size={24}
-              icon={Icons.person}
-              onPress={() => {
-                navigation.navigate('UserProfile');
-              }}
-            />
-          ),
         })}
       >
         <BottomTabs.Screen
