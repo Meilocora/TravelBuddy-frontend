@@ -37,9 +37,11 @@ import { GlobalStyles, lightMapStyle } from '../constants/styles';
 import MapsMarker from '../components/Maps/MapsMarker';
 import HeaderTitle from '../components/UI/HeaderTitle';
 import {
+  findDuplicateLocationMarkerKeys,
   formatMediumToLocation,
   formatPlaceToLocation,
   getRegionForLocations,
+  getUniqueLocationMarkerEntries,
 } from '../utils/location';
 import { CustomCountryContext } from '../store/custom-country-context';
 import IconButton from '../components/UI/IconButton';
@@ -51,6 +53,7 @@ import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import { MediumContext } from '../store/medium-context';
 import MediumMarker from '../components/Maps/MediumMarker';
 import {
+  CLOSE_DELTA,
   DELTA,
   EDGE_PADDING,
   EXTENT,
@@ -90,6 +93,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
     latitudeDelta: DELTA,
     longitudeDelta: DELTA,
   });
+
   const [pressedLocation, setPressedLocation] = useState<
     Location | undefined
   >();
@@ -101,7 +105,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
   const [hasInitialZoom, setHasInitialZoom] = useState(false);
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
-    'standard'
+    'standard',
   );
 
   const GOOGLE_API_KEY =
@@ -136,15 +140,6 @@ const ShowMap: React.FC<ShowMapProps> = ({
       mLoc && mediaLocations.push(mLoc);
     }
   }
-
-  useEffect(() => {
-    async function calculateRegion() {
-      if (shownLocations.length > 0 && !location) {
-        setRegion(await getRegionForLocations(shownLocations));
-      }
-    }
-    calculateRegion();
-  }, [route.params]);
 
   let headerstyle = { backgroundColor: GlobalStyles.colors.greenBg };
   if (route.params?.colorScheme === 'complementary') {
@@ -236,7 +231,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
         });
       }
     },
-    [location, hasInitialZoom]
+    [location, hasInitialZoom],
   );
 
   const coords: LatLng[] = useMemo(
@@ -245,16 +240,40 @@ const ShowMap: React.FC<ShowMapProps> = ({
         latitude: l.data.latitude,
         longitude: l.data.longitude,
       })),
-    [shownLocations]
+    [shownLocations],
   );
 
-  // Initial fit screen
-  useEffect(() => {
-    if (hasInitialZoom) return;
-    if (coords.length === 0) return;
+  const markerEntries = useMemo(
+    () => getUniqueLocationMarkerEntries(shownLocations),
+    [shownLocations],
+  );
 
-    fitToItems(coords, true);
-  }, [coords, fitToItems, hasInitialZoom]);
+  useEffect(() => {
+    if (!__DEV__) {
+      return;
+    }
+
+    const duplicates = findDuplicateLocationMarkerKeys(shownLocations);
+
+    if (duplicates.length > 0) {
+      console.warn('[ShowMap] Duplicate marker base keys detected', {
+        duplicates,
+      });
+    }
+  }, [shownLocations]);
+
+  useEffect(() => {
+    async function calculateRegion() {
+      if (shownLocations.length > 0 && !location) {
+        const newRegion = await getRegionForLocations(shownLocations);
+        // setRegion(newRegion);
+        setTimeout(() => {
+          mapRef.current?.animateToRegion(newRegion, 250); // Move Camera
+        }, 100);
+      }
+    }
+    calculateRegion();
+  }, [shownLocations]);
 
   // fit screen, when route is shown
   useEffect(() => {
@@ -297,8 +316,8 @@ const ShowMap: React.FC<ShowMapProps> = ({
       const region: Region = {
         latitude,
         longitude,
-        latitudeDelta: DELTA,
-        longitudeDelta: DELTA,
+        latitudeDelta: CLOSE_DELTA,
+        longitudeDelta: CLOSE_DELTA,
       };
       mapRef.current.animateToRegion(region, 250);
     }
@@ -321,14 +340,14 @@ const ShowMap: React.FC<ShowMapProps> = ({
     const newPoint = { latitude: lat, longitude: lng };
 
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+      prevPoints ? [...prevPoints, newPoint] : [newPoint],
     );
   }
 
   function handleAddRoutePoint(coord: LatLng) {
     if (routePoints?.length === 25) return;
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, coord] : [coord]
+      prevPoints ? [...prevPoints, coord] : [coord],
     );
   }
 
@@ -337,6 +356,11 @@ const ShowMap: React.FC<ShowMapProps> = ({
     setRouteInfo(null);
     fitToItems(coords, true);
   }
+
+  // TODO: Das hier wieder entfernen bzw. ggf. für Map und LocationPickMap verwenden
+  // const locTypes: string[] = [];
+  // markerEntries.forEach((entry) => locTypes.push(entry.location.locationType));
+  // console.log(locTypes);
 
   return (
     <View style={styles.container}>
@@ -428,21 +452,17 @@ const ShowMap: React.FC<ShowMapProps> = ({
             tracksViewChanges={false}
           />
         )}
-        {shownLocations &&
-          shownLocations.map((loc) => {
-            const isActive = pressedLocation && location === pressedLocation;
-            const key = `${loc.belonging ?? 'x'}-${loc.id}-${
-              loc.data.name ?? ''
-            }`;
-            return (
-              <MapsMarker
-                location={loc}
-                key={key}
-                active={isActive}
-                onPressMarker={handlePressMarker}
-              />
-            );
-          })}
+        {markerEntries.map(({ location: loc, key }) => {
+          const isActive = pressedLocation && location === pressedLocation;
+          return (
+            <MapsMarker
+              location={loc}
+              key={key}
+              active={isActive}
+              onPressMarker={handlePressMarker}
+            />
+          );
+        })}
         {mediaLocations &&
           mediaLocations.map((loc) => {
             return (
@@ -474,6 +494,7 @@ const ShowMap: React.FC<ShowMapProps> = ({
       {pressedLocation && (
         <MapLocationElement
           location={pressedLocation}
+          unsetPressedLocation={() => setPressedLocation(undefined)}
           onClose={handleCloseMapLocationElement}
           addRoutePoint={handleAddRoutePoint}
         />

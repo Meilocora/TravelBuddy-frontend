@@ -41,15 +41,15 @@ interface StagesContextType {
   findMinorStagesMajorStage: (minorStageId: number) => MajorStage | undefined;
   findActivity: (
     minorStageName: string,
-    activityId: number
+    activityId: number,
   ) => { minorStageId: number; activity: Activity | undefined } | undefined;
   findPlaceToVisit: (
     minorStageName: string,
-    placeId: number
+    placeId: number,
   ) => { minorStageId: number; place: PlaceToVisit | undefined } | undefined;
   findTransportation: (
     majorStageName: string,
-    minorStageName?: string
+    minorStageName?: string,
   ) =>
     | {
         minorStageId: number | undefined;
@@ -64,20 +64,21 @@ interface StagesContextType {
   shownCurrentElements: CurrentShownElements;
   setShownCurrentElementsHandler: (
     indicator: Indicators,
-    bool: boolean
+    bool: boolean,
   ) => void;
   findNextJourney: () => undefined | Journey;
   findCurrentMinorStage: () => undefined | MinorStage;
   findNextTransportation: () => undefined | Transportation;
   findTransportationsStage: (
-    transportationId: number
+    transportationId: number,
   ) => undefined | MajorStage | MinorStage;
   findAssignedPlaces: (
     countryId: number,
-    minorStageId: number
+    minorStageId: number,
   ) => undefined | PlaceToVisit[];
   findAllMinorStages: () => undefined | MinorStage[];
   findMinorStageByDate: (timestamp: Date) => MinorStage | undefined;
+  togglePlaceInMinorStage: (minorStageId: number, placeId: number) => void;
 }
 
 export const StagesContext = createContext<StagesContextType>({
@@ -109,6 +110,7 @@ export const StagesContext = createContext<StagesContextType>({
   findAssignedPlaces: (countryId, minorStageId) => undefined,
   findAllMinorStages: () => undefined,
   findMinorStageByDate: () => undefined,
+  togglePlaceInMinorStage: () => {},
 });
 
 export default function StagesContextProvider({
@@ -141,7 +143,7 @@ export default function StagesContextProvider({
           ...prev,
           nextJourney: false,
         }));
-      }, 1000)
+      }, 1000),
     );
     timers.push(
       setTimeout(() => {
@@ -149,7 +151,7 @@ export default function StagesContextProvider({
           ...prev,
           nextTransportation: false,
         }));
-      }, 1200)
+      }, 1200),
     );
     timers.push(
       setTimeout(() => {
@@ -157,7 +159,7 @@ export default function StagesContextProvider({
           ...prev,
           currentAccommodation: false,
         }));
-      }, 1400)
+      }, 1400),
     );
     timers.push(
       setTimeout(() => {
@@ -165,7 +167,7 @@ export default function StagesContextProvider({
           ...prev,
           currentMinorStage: false,
         }));
-      }, 1600)
+      }, 1600),
     );
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -217,7 +219,7 @@ export default function StagesContextProvider({
         const journey = journeys[key];
 
         const majorStage = journey.majorStages?.find(
-          (majorStage) => majorStage.id === majorStageId
+          (majorStage) => majorStage.id === majorStageId,
         );
         if (majorStage) {
           return majorStage;
@@ -236,7 +238,7 @@ export default function StagesContextProvider({
     for (const journey of journeys) {
       for (const majorStage of journey.majorStages || []) {
         const minorStage = majorStage.minorStages?.find(
-          (minorStage) => minorStage.id === minorStageId
+          (minorStage) => minorStage.id === minorStageId,
         );
         if (minorStage) {
           return minorStage;
@@ -257,7 +259,7 @@ export default function StagesContextProvider({
         const journey = journeys[key];
 
         const majorStage = journey.majorStages?.find(
-          (majorStage) => majorStage.id === majorStageId
+          (majorStage) => majorStage.id === majorStageId,
         );
         if (majorStage) {
           return journey;
@@ -276,7 +278,7 @@ export default function StagesContextProvider({
     for (const journey of journeys) {
       for (const majorStage of journey.majorStages || []) {
         const minorStage = majorStage.minorStages?.find(
-          (minorStage) => minorStage.id === minorStageId
+          (minorStage) => minorStage.id === minorStageId,
         );
         if (minorStage) {
           return majorStage;
@@ -291,11 +293,11 @@ export default function StagesContextProvider({
     for (const journey of journeys) {
       for (const majorStage of journey.majorStages || []) {
         const minorStage = majorStage.minorStages?.find(
-          (minorStage) => minorStage.title === minorStageName
+          (minorStage) => minorStage.title === minorStageName,
         );
         if (minorStage) {
           const activity = minorStage.activities!.find(
-            (activity) => activity.id === activityId
+            (activity) => activity.id === activityId,
           );
           return { minorStageId: minorStage.id, activity };
         }
@@ -307,11 +309,11 @@ export default function StagesContextProvider({
     for (const journey of journeys) {
       for (const majorStage of journey.majorStages || []) {
         const minorStage = majorStage.minorStages?.find(
-          (minorStage) => minorStage.title === minorStageName
+          (minorStage) => minorStage.title === minorStageName,
         );
         if (minorStage) {
           const place = minorStage.placesToVisit!.find(
-            (place) => place.id === placeId
+            (place) => place.id === placeId,
           );
           return { minorStageId: minorStage.id, place };
         }
@@ -323,7 +325,7 @@ export default function StagesContextProvider({
     if (!minorStageName) {
       for (const journey of journeys) {
         const majorStage = journey.majorStages?.find(
-          (majorStage) => majorStage.title === majorStageName
+          (majorStage) => majorStage.title === majorStageName,
         );
         if (majorStage) {
           return {
@@ -337,7 +339,7 @@ export default function StagesContextProvider({
       for (const journey of journeys) {
         for (const majorStage of journey.majorStages || []) {
           const minorStage = majorStage.minorStages?.find(
-            (minorStage) => minorStage.title === minorStageName
+            (minorStage) => minorStage.title === minorStageName,
           );
           if (minorStage) {
             return {
@@ -388,8 +390,8 @@ export default function StagesContextProvider({
       prevJourneys.map((journey) =>
         journey.id === journeyId
           ? { ...journey, currentJourney: true }
-          : { ...journey, currentJourney: false }
-      )
+          : { ...journey, currentJourney: false },
+      ),
     );
   }
 
@@ -400,9 +402,9 @@ export default function StagesContextProvider({
         majorStages: journey.majorStages?.map((majorStage) =>
           majorStage.id === majorStageId
             ? { ...majorStage, currentMajorStage: true }
-            : { ...majorStage, currentMajorStage: false }
+            : { ...majorStage, currentMajorStage: false },
         ),
-      }))
+      })),
     );
   }
 
@@ -415,16 +417,16 @@ export default function StagesContextProvider({
           minorStages: majorStage.minorStages?.map((minorStage) =>
             minorStage.id === minorStageId
               ? { ...minorStage, currentMinorStage: true }
-              : { ...minorStage, currentMinorStage: false }
+              : { ...minorStage, currentMinorStage: false },
           ),
         })),
-      }))
+      })),
     );
   }
 
   function setShownCurrentElementsHandler(
     indicator: Indicators,
-    bool: boolean
+    bool: boolean,
   ) {
     setShownCurrentElements((prevValues) => {
       return {
@@ -489,7 +491,7 @@ export default function StagesContextProvider({
     }
     const sortedTransportations = transportations.sort(
       (a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
     );
 
     for (const transportation of sortedTransportations) {
@@ -501,7 +503,7 @@ export default function StagesContextProvider({
   }
 
   function findTransportationsStage(
-    transportationId: number
+    transportationId: number,
   ): MinorStage | MajorStage | undefined {
     for (const journey of journeys) {
       for (const majorStage of journey.majorStages || []) {
@@ -526,7 +528,7 @@ export default function StagesContextProvider({
 
   function findAssignedPlaces(
     countryId: number,
-    minorStageId: number
+    minorStageId: number,
   ): undefined | PlaceToVisit[] {
     const majorStage = findMinorStagesMajorStage(minorStageId);
     const journey = findMajorStagesJourney(majorStage!.id);
@@ -585,6 +587,73 @@ export default function StagesContextProvider({
     }
   }
 
+  function togglePlaceInMinorStage(minorStageId: number, placeId: number) {
+    setJourneys((prevJourneys) => {
+      let placeToToggle: PlaceToVisit | undefined;
+
+      for (const journey of prevJourneys) {
+        for (const majorStage of journey.majorStages || []) {
+          if (!placeToToggle) {
+            const countryPlace = majorStage.country.placesToVisit?.find(
+              (place) => place.id === placeId,
+            );
+            if (countryPlace) {
+              placeToToggle = countryPlace;
+            }
+          }
+
+          for (const minorStage of majorStage.minorStages || []) {
+            const foundPlace = minorStage.placesToVisit?.find(
+              (place) => place.id === placeId,
+            );
+
+            if (foundPlace) {
+              placeToToggle = foundPlace;
+              break;
+            }
+          }
+          if (placeToToggle) break;
+        }
+        if (placeToToggle) break;
+      }
+
+      return prevJourneys.map((journey) => ({
+        ...journey,
+        majorStages: journey.majorStages?.map((majorStage) => ({
+          ...majorStage,
+          minorStages: majorStage.minorStages?.map((minorStage) => {
+            if (minorStage.id !== minorStageId) {
+              return minorStage;
+            }
+
+            const currentPlaces = minorStage.placesToVisit || [];
+            const alreadyAssigned = currentPlaces.some(
+              (place) => place.id === placeId,
+            );
+
+            if (alreadyAssigned) {
+              return {
+                ...minorStage,
+                placesToVisit: currentPlaces.filter(
+                  (place) => place.id !== placeId,
+                ),
+              };
+            }
+
+            if (!placeToToggle) {
+              return minorStage;
+            }
+
+            return {
+              ...minorStage,
+              placesToVisit: [...currentPlaces, placeToToggle],
+            };
+          }),
+        })),
+      }));
+    });
+  }
+
   const value = {
     journeys,
     fetchStagesData,
@@ -609,6 +678,7 @@ export default function StagesContextProvider({
     findAssignedPlaces,
     findAllMinorStages,
     findMinorStageByDate,
+    togglePlaceInMinorStage,
   };
 
   return (

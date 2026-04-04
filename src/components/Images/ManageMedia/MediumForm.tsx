@@ -309,13 +309,15 @@ const MediumForm: React.FC<MediumFormProps> = ({
             </View>
           </View>
           <View style={styles.buttonsContainer}>
-            <Button
-              onPress={onCancel}
-              colorScheme={ColorScheme.neutral}
-              mode={ButtonMode.flat}
-            >
-              Cancel
-            </Button>
+            {!isSubmitting && (
+              <Button
+                onPress={onCancel}
+                colorScheme={ColorScheme.neutral}
+                mode={ButtonMode.flat}
+              >
+                Cancel
+              </Button>
+            )}
             <Button
               onPress={validateInputs}
               colorScheme={ColorScheme.neutral}

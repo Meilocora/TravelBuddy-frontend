@@ -11,13 +11,9 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 interface CountryGridTileProps {
   country: CustomCountry;
-  index: number;
 }
 
-const CountryGridTile: React.FC<CountryGridTileProps> = ({
-  country,
-  index,
-}) => {
+const CountryGridTile: React.FC<CountryGridTileProps> = ({ country }) => {
   const navigation = useNavigation<NavigationProp<StackParamList>>();
 
   const languages = getLanguageNames(country.languages, true);
@@ -31,7 +27,7 @@ const CountryGridTile: React.FC<CountryGridTileProps> = ({
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 200).duration(700)}
+      entering={FadeInDown.delay(200).duration(700)}
       exiting={FadeOutDown}
       style={[styles.container, country.visited ? styles.visited : undefined]}
     >
@@ -59,7 +55,7 @@ const CountryGridTile: React.FC<CountryGridTileProps> = ({
             <GridInfoLine icon={Icons.language} value={languages} />
           )}
           {country.currencies && (
-            <GridInfoLine icon={Icons.currency} value={country.currencies} />
+            <GridInfoLine icon={Icons.currency} value={country.currencies[0]} />
           )}
           {population && (
             <GridInfoLine icon={Icons.population} value={population} />

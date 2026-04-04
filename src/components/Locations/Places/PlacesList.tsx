@@ -77,7 +77,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
       if (searchTerm !== '') {
         places = places.filter((place) =>
-          place.name.toLowerCase().includes(searchTerm.toLowerCase())
+          place.name.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       }
 
@@ -172,7 +172,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
             if (isFinished) {
               runOnJS(onCancel)(); // Aufruf im JS-Thread nachdem Animation fertig ist
             }
-          }
+          },
         );
       } else {
         // Zurückfederung nach oben
@@ -253,11 +253,10 @@ const PlacesList: React.FC<PlacesListProps> = ({
             nestedScrollEnabled
             scrollEnabled
           >
-            {countryPlaces.map((place, index) => (
+            {countryPlaces.map((place) => (
               <PlacesListItem
                 key={place.id ? place.id.toString() : place.name}
                 place={place}
-                index={index}
                 onToggleFavorite={handleToggleFavorite}
                 onToggleVisited={handleToggleVisited}
               />

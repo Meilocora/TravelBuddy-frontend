@@ -64,11 +64,13 @@ const MainContent: React.FC<MainContentProps> = ({
   }
 
   async function handleAddPlace(placeId: number) {
+    stagesCtx.togglePlaceInMinorStage(minorStage.id, placeId);
     await addMinorStageToPlace(placeId, minorStage.id);
     triggerRefresh();
   }
 
   async function handleRemovePlace(placeId: number) {
+    stagesCtx.togglePlaceInMinorStage(minorStage.id, placeId);
     await removeMinorStageFromPlace(placeId, minorStage.id);
     triggerRefresh();
   }
@@ -155,7 +157,7 @@ const MainContent: React.FC<MainContentProps> = ({
   let displayedContent: Content | undefined;
   if (minorStage.id === stagesCtx.activeHeader.minorStageId) {
     displayedContent = content.find(
-      (content) => content.title === stagesCtx.activeHeader.header
+      (content) => content.title === stagesCtx.activeHeader.header,
     );
   }
 

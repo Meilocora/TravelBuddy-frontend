@@ -66,7 +66,7 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row' }}>
-          <IconButton icon={Icons.currency} onPress={() => {}} size={24} />
+          {/* <IconButton icon={Icons.currency} onPress={() => {}} size={24} /> */}
           <IconButton
             color={GlobalStyles.colors.grayDark}
             size={24}

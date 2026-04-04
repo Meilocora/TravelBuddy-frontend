@@ -23,7 +23,7 @@ interface FetchMediaProps {
 export const fetchAllMedia = async (): Promise<FetchMediaProps> => {
   try {
     const response: AxiosResponse<FetchMediaProps> = await api.get(
-      `${prefix}/get-media`
+      `${prefix}/get-media`,
     );
 
     // Error from backend
@@ -55,7 +55,7 @@ interface ManageMediumProps {
 
 export const addMedium = async (
   userId: number,
-  mediumFormValues: MediumFormValues
+  mediumFormValues: MediumFormValues,
 ): Promise<ManageMediumProps> => {
   let thumbnailUrl: string | undefined = undefined;
   // 1. Upload to Firebase Storage
@@ -71,7 +71,7 @@ export const addMedium = async (
     if (mediumFormValues.mediumType === 'video') {
       thumbnailUrl = await createVideoThumbnail(
         mediumFormValues.url.value,
-        userId
+        userId,
       );
     }
   } catch (error) {
@@ -87,7 +87,7 @@ export const addMedium = async (
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.post(
       `${prefix}/add-medium`,
-      mediumData
+      mediumData,
     );
 
     // Error from backend
@@ -107,13 +107,13 @@ export const addMedium = async (
 
 export const updateMedium = async (
   mediumFormValues: MediumFormValues,
-  mediumId: number
+  mediumId: number,
 ): Promise<ManageMediumProps> => {
   // Only Update Data in backend
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.post(
       `${prefix}/update-medium/${mediumId}`,
-      mediumFormValues
+      mediumFormValues,
     );
 
     // Error from backend
@@ -133,7 +133,7 @@ export const updateMedium = async (
 
 export const deleteMedium = async (
   medium: Medium,
-  userId: number
+  userId: number,
 ): Promise<ManageMediumProps> => {
   // 1. Delete medium from Firebase Storage
   try {
@@ -170,7 +170,7 @@ export const deleteMedium = async (
   // 3. Delete medium in backend
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.delete(
-      `${prefix}/delete-medium/${medium.id}`
+      `${prefix}/delete-medium/${medium.id}`,
     );
 
     // Error from backend
@@ -188,10 +188,30 @@ export const deleteMedium = async (
   }
 };
 
+// TODO: Somehow this does not work
 export const deleteMedia = async (
   media: Medium[],
-  userId: number
+  userId: number,
 ): Promise<ManageMediumProps> => {
+  // Reuse the verified single-delete flow for each medium.
+  // The bulk delete approach below is kept as commented reference because
+  // the DELETE request with body has been unreliable in this project.
+  for (const medium of media) {
+    const response = await deleteMedium(medium, userId);
+
+    if (response.error || response.status !== 200) {
+      return {
+        status: response.status,
+        error:
+          response.error ||
+          `Could not delete all media. Failed on medium ${medium.id}.`,
+      };
+    }
+  }
+
+  return { status: 200 };
+
+  /*
   const deleteData = [];
   for (const medium of media) {
     if (medium.mediumType === 'video' && medium.thumbnailUrl) {
@@ -229,7 +249,7 @@ export const deleteMedia = async (
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.delete(
       `${prefix}/delete-media`,
-      { data: { ids: mediaIds } }
+      { data: { ids: mediaIds } },
     );
 
     // Error from backend
@@ -245,6 +265,7 @@ export const deleteMedia = async (
       error: 'Could not delete medium! Backend request failed.',
     };
   }
+  */
 };
 
 export type DownloadUserMediumParams = {

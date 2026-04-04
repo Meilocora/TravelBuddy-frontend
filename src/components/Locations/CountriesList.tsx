@@ -17,9 +17,7 @@ const CountriesList: React.FC<CountriesListProps> = ({
       {countries.length > 0 && (
         <FlatList
           data={countries}
-          renderItem={({ item, index }) => (
-            <CountryGridTile country={item} index={index} />
-          )}
+          renderItem={({ item }) => <CountryGridTile country={item} />}
           key='customCountries'
           numColumns={2}
         />

@@ -23,6 +23,7 @@ import { LatLng } from 'react-native-maps';
 
 interface MapLocationElementProps {
   location: Location;
+  unsetPressedLocation: () => void;
   onClose: () => void;
   addRoutePoint?: (coord: LatLng) => void;
 }
@@ -31,6 +32,7 @@ const DISMISS_THRESHOLD = 40;
 
 const MapLocationElement: React.FC<MapLocationElementProps> = ({
   location,
+  unsetPressedLocation,
   onClose,
   addRoutePoint,
 }): ReactElement => {
@@ -40,24 +42,31 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
   let content: ReactElement;
 
   if (location.locationType === LocationType.placeToVisit) {
+    // Case 1: PlaceToVisit nur aus einem CustomCountry
     if (location.placeId) {
       const country = customCountryCtx.findPlacesCountry(location);
       const place = country!.placesToVisit!.find(
-        (place) => place.id === location.placeId
+        (place) => place.id === location.placeId,
       );
       content = (
-        <PlaceContent place={place!} addRoutePoint={handleAddRoutePoint} />
+        <PlaceContent
+          place={place!}
+          addRoutePoint={handleAddRoutePoint}
+          unsetPressedLocation={unsetPressedLocation}
+        />
       );
+      // Case 2: PlaceToVisit aus einer MinorStage
     } else {
       const contextResponse = stagesCtx.findPlaceToVisit(
         location.minorStageName!,
-        location.id!
+        location.id!,
       );
       content = (
         <PlaceContent
           minorStageId={contextResponse?.minorStageId!}
           place={contextResponse?.place!}
           addRoutePoint={handleAddRoutePoint}
+          unsetPressedLocation={unsetPressedLocation}
         />
       );
     }
@@ -73,7 +82,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
   } else if (location.locationType === LocationType.activity) {
     const contextResponse = stagesCtx.findActivity(
       location.minorStageName!,
-      location.id!
+      location.id!,
     );
     content = (
       <ActivityContent
@@ -88,7 +97,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
   ) {
     const contextResponse = stagesCtx.findTransportation(
       location.belonging,
-      location.minorStageName
+      location.minorStageName,
     );
     content = (
       <TransportationContent
@@ -112,7 +121,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
       if (!isDismissing.value && event.translationY > 0) {
         translateY.value = Math.min(
           windowHeight,
-          Math.max(0, event.translationY)
+          Math.max(0, event.translationY),
         );
       }
     })
@@ -131,7 +140,7 @@ const MapLocationElement: React.FC<MapLocationElementProps> = ({
             if (isFinished) {
               runOnJS(onClose)();
             }
-          }
+          },
         );
       } else {
         // Zurückfedern

@@ -42,12 +42,14 @@ import MapScopeSelector, {
 } from '../../components/Maps/MapScopeSelector';
 import {
   addColor,
+  findDuplicateLocationMarkerKeys,
   formatMediumToLocation,
   getMapLocationsFromJourney,
   getMapLocationsFromMajorStage,
   getMapLocationsFromMinorStage,
   getRegionForLocations,
   getRemainingCountriesPlacesLocations,
+  getUniqueLocationMarkerEntries,
 } from '../../utils/location';
 import MapLocationList from '../../components/Maps/MapLocationList/MapLocationList';
 import { StagesContext } from '../../store/stages-context';
@@ -62,6 +64,7 @@ import { usePersistedState } from '../../hooks/usePersistedState';
 import RouteInfo, { RouteInfoType } from '../../components/Maps/RouteInfo';
 import OpenRouteInGoogleMapsButton from '../../components/Maps/OpenRouteInGoogleMapsButton';
 import {
+  CLOSE_DELTA,
   DELTA,
   EDGE_PADDING,
   EXTENT,
@@ -89,11 +92,11 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const [showSettings, setShowSettings] = useState(false);
   const [showPastLocations, setShowPastLocations] = usePersistedState(
     'map_show_past_locations',
-    false
+    false,
   );
   const [showAllPlaces, setShowAllPlaces] = usePersistedState(
     'map_show_all_places',
-    false
+    false,
   );
   const [showMedia, setShowMedia] = useState(false);
   const [directionsMode, setDirectionsMode] =
@@ -101,7 +104,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
 
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
-    'standard'
+    'standard',
   );
   const [region, setRegion] = useState<Region | null>(null);
   const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
@@ -201,7 +204,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
         navigation.setParams({ majorStage: undefined, minorStage: undefined });
       }
     },
-    [navigation, stagesCtx]
+    [navigation, stagesCtx],
   );
 
   // 3) get Locations, thath belong to the Major- or MinorStage depending on RouteParam
@@ -214,7 +217,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     if (route.params?.majorStage) {
       return getMapLocationsFromMajorStage(
         route.params.majorStage,
-        showPastLocations
+        showPastLocations,
       );
     }
     return getMapLocationsFromJourney(journey!, showPastLocations);
@@ -230,7 +233,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   const countryIds = useMemo(() => {
     if (route.params?.minorStage) {
       const parent = stagesCtx.findMinorStagesMajorStage(
-        route.params.minorStage.id
+        route.params.minorStage.id,
       )!;
       return [parent.country.id!];
     }
@@ -249,7 +252,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       countryIds,
       baseLocations,
       customCountryCtx.findCountriesPlaces,
-      showAllPlaces
+      showAllPlaces,
     );
   }, [
     countryIds,
@@ -261,9 +264,28 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   // 6) give baseLocations a color and concat with countries locations
   const shownLocations = useMemo(() => {
     return addColor(baseLocations || [], mapScope.stageType).concat(
-      countryLocations
+      countryLocations,
     );
   }, [baseLocations, countryLocations, mapScope.stageType]);
+
+  const markerEntries = useMemo(
+    () => getUniqueLocationMarkerEntries(shownLocations),
+    [shownLocations],
+  );
+
+  useEffect(() => {
+    if (!__DEV__) {
+      return;
+    }
+
+    const duplicates = findDuplicateLocationMarkerKeys(shownLocations);
+
+    if (duplicates.length > 0) {
+      console.warn('[Journey Map] Duplicate marker base keys detected', {
+        duplicates,
+      });
+    }
+  }, [shownLocations]);
 
   // 7) Calculate initial region
   useEffect(() => {
@@ -275,7 +297,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       const relevant = baseLocations.filter(
         (l) =>
           l.locationType !== 'transportation_departure' &&
-          l.locationType !== 'transportation_arrival'
+          l.locationType !== 'transportation_arrival',
       );
       if (relevant.length === 0) return;
       const next = await getRegionForLocations(relevant);
@@ -289,7 +311,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
   function handleGoBack() {
     if (minorStage) {
       const localMajorStageId = stagesCtx.findMinorStagesMajorStage(
-        minorStage.id
+        minorStage.id,
       )!.id;
       stagesNavigation.navigate('JourneyBottomTabsNavigator', {
         screen: 'MajorStageStackNavigator',
@@ -332,7 +354,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
 
   const handleChangeDirectionsMode = useCallback(
     (m: MapViewDirectionsMode) => setDirectionsMode(m),
-    []
+    [],
   );
 
   function handleHideButtons(identifier: 'locationList' | 'routePlanner') {
@@ -394,7 +416,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             .filter(
               (l) =>
                 l.locationType !== 'transportation_departure' &&
-                l.locationType !== 'transportation_arrival'
+                l.locationType !== 'transportation_arrival',
             )
             .map((l) => ({
               latitude: l.data.latitude,
@@ -404,13 +426,13 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
             .filter(
               (l) =>
                 l.locationType !== 'transportation_departure' &&
-                l.locationType !== 'transportation_arrival'
+                l.locationType !== 'transportation_arrival',
             )
             .map((l) => ({
               latitude: l.data.latitude,
               longitude: l.data.longitude,
             })),
-    [baseLocations, shownLocations]
+    [baseLocations, shownLocations],
   );
 
   useEffect(() => {
@@ -464,8 +486,8 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       const region: Region = {
         latitude,
         longitude,
-        latitudeDelta: DELTA,
-        longitudeDelta: DELTA,
+        latitudeDelta: CLOSE_DELTA,
+        longitudeDelta: CLOSE_DELTA,
       };
       mapRef.current.animateToRegion(region, 250);
     }
@@ -488,14 +510,14 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
     const newPoint = { latitude: lat, longitude: lng };
 
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+      prevPoints ? [...prevPoints, newPoint] : [newPoint],
     );
   }
 
   function handleAddRoutePoint(coord: LatLng) {
     if (routePoints?.length === 25) return;
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, coord] : [coord]
+      prevPoints ? [...prevPoints, coord] : [coord],
     );
   }
 
@@ -621,11 +643,11 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
                 }}
               />
             ))}
-          {shownLocations.map((location) => {
+          {markerEntries.map(({ location, key }) => {
             const isActive = pressedLocation && location === pressedLocation;
             return (
               <MapsMarker
-                key={`${location.data.name}_${location.data.latitude}_${location.data.longitude}`}
+                key={key}
                 location={location}
                 active={isActive}
                 onPressMarker={handlePressMarker}
@@ -665,6 +687,7 @@ const Map: React.FC<MapProps> = ({ navigation, route }): ReactElement => {
       {pressedLocation && (
         <MapLocationElement
           location={pressedLocation}
+          unsetPressedLocation={() => setPressedLocation(undefined)}
           onClose={handleCloseMapLocationElement}
           addRoutePoint={handleAddRoutePoint}
         />

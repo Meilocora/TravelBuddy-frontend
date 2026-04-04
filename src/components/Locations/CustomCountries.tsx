@@ -9,11 +9,13 @@ import CountriesList from './CountriesList';
 import IconButton from '../UI/IconButton';
 import Search from './Search';
 import { GlobalStyles } from '../../constants/styles';
+import { StagesContext } from '../../store/stages-context';
 
 interface CustomCountriesProps {}
 
 const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
   const customCountryCtx = useContext(CustomCountryContext);
+  const stagesCtx = useContext(StagesContext);
 
   const [isAddCountry, setIsAddCountry] = useState(false);
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
@@ -53,9 +55,37 @@ const CustomCountries: React.FC<CustomCountriesProps> = (): ReactElement => {
 
   if (searchTerm !== '') {
     countries = countries.filter((country) =>
-      country.name.toLowerCase().includes(searchTerm.toLowerCase())
+      country.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }
+
+  // ---------- Put current or next visited country on top ---------- \\
+  let approachingCountry: CustomCountry | undefined;
+  const currentJourney = stagesCtx.journeys.find(
+    (journey) => journey.currentJourney,
+  );
+  const nextJourney = stagesCtx.findNextJourney();
+
+  if (typeof currentJourney !== 'undefined') {
+    const currentMinorStage = stagesCtx.findCurrentMinorStage();
+    const currentMajorStage = stagesCtx.findMinorStagesMajorStage(
+      currentMinorStage?.id || 1,
+    );
+    approachingCountry = currentMajorStage?.country;
+  } else if (typeof nextJourney !== 'undefined') {
+    const nextMajorStages = nextJourney.majorStages;
+    approachingCountry =
+      typeof nextMajorStages !== 'undefined'
+        ? nextMajorStages[0].country
+        : undefined;
+  }
+  if (typeof approachingCountry !== 'undefined') {
+    countries = [
+      approachingCountry,
+      ...countries.filter((country) => country !== approachingCountry),
+    ];
+  }
+  // ----------------------------------------------------------------- \\
 
   return (
     <View style={styles.container}>

@@ -39,6 +39,7 @@ import Button from '../components/UI/Button';
 import {
   formatPlaceToLocation,
   getMapLocationsFromJourney,
+  getMapLocationsFromMinorStage,
   getPlaceDetails,
   getRegionForLocations,
 } from '../utils/location';
@@ -51,7 +52,7 @@ import MapSettings from '../components/Maps/MapSettings';
 import RouteInfo, { RouteInfoType } from '../components/Maps/RouteInfo';
 import OpenRouteInGoogleMapsButton from '../components/Maps/OpenRouteInGoogleMapsButton';
 import IconButton from '../components/UI/IconButton';
-import { DELTA } from '../constants/maps';
+import { CLOSE_DELTA, DELTA } from '../constants/maps';
 
 interface LocationPickMapProps {
   navigation: NativeStackNavigationProp<StackParamList, 'LocationPickMap'>;
@@ -77,7 +78,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 
   const [showSettings, setShowSettings] = useState(false);
   const [selectedCoord, setSelectedCoord] = useState<LatLng | null>(
-    route.params.hasLocation ? initialCoord : null
+    route.params.hasLocation ? initialCoord : null,
   );
 
   const noMapTouch = route.params.noMapTouch || false;
@@ -97,18 +98,9 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasLocation, setHasLocation] = useState(route.params.hasLocation);
-  const [region, setRegion] = useState<Region | undefined>(
-    initialLocation.lat
-      ? {
-          latitude: initialLocation.lat!,
-          longitude: initialLocation.lng!,
-          latitudeDelta: DELTA,
-          longitudeDelta: DELTA,
-        }
-      : undefined
-  );
+  const [region, setRegion] = useState<Region | undefined>(undefined);
   const [title, setTitle] = useState<string | undefined>(
-    route.params.initialTitle
+    route.params.initialTitle,
   );
   const [showModal, setShowModal] = useState(false);
   const [routePoints, setRoutePoints] = useState<LatLng[] | undefined>();
@@ -117,7 +109,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
   const [routeInfo, setRouteInfo] = useState<RouteInfoType | null>(null);
   const [mapType, setMapType] = usePersistedState<MapType>(
     'map_type',
-    'standard'
+    'standard',
   );
 
   let placesToVisit: undefined | PlaceToVisit[] = undefined;
@@ -148,12 +140,41 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
         return;
       }
 
+      minorStageLocations: if (minorStageId) {
+        const majorStage = stagesCtx.findMinorStagesMajorStage(minorStageId);
+        const minorStage = stagesCtx.findMinorStage(minorStageId);
+        const regionLocs = getMapLocationsFromMinorStage(
+          minorStage!,
+          majorStage!,
+          false,
+        );
+        if (typeof regionLocs !== 'undefined' && regionLocs.length !== 0) {
+          const minorStagesRegion = await getRegionForLocations(regionLocs);
+
+          mapRef.current?.animateToRegion(minorStagesRegion, 250); // Move Camera
+          setIsInitialLoad(false); // Mark initial load as complete
+          return;
+        } else {
+          break minorStageLocations;
+        }
+      }
+
+      if (initialLocation.lat) {
+        const newRegion = {
+          latitude: initialLocation.lat!,
+          longitude: initialLocation.lng!,
+          latitudeDelta: DELTA,
+          longitudeDelta: DELTA,
+        };
+        mapRef.current?.animateToRegion(newRegion, 250); // Move Camera
+
+        setIsInitialLoad(false); // Mark initial load as complete
+        return;
+      }
+
       const locationsToVisit = placesToVisit.map(formatPlaceToLocation);
       const newRegion = await getRegionForLocations(locationsToVisit);
-
       mapRef.current?.animateToRegion(newRegion, 250); // Move Camera
-
-      // setRegion(newRegion);
       setIsInitialLoad(false); // Mark initial load as complete
     }
 
@@ -199,8 +220,8 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       const nextRegion: Region = {
         latitude: latLng.latitude,
         longitude: latLng.longitude,
-        latitudeDelta: DELTA,
-        longitudeDelta: DELTA,
+        latitudeDelta: CLOSE_DELTA,
+        longitudeDelta: CLOSE_DELTA,
       };
       setSelectedCoord({
         latitude: latLng.latitude,
@@ -209,7 +230,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
       setRegion(nextRegion);
       mapRef.current?.animateToRegion(nextRegion, 250);
       setTitle(
-        place.structuredFormat.mainText.text.substring(0, FormLimits.place)
+        place.structuredFormat.mainText.text.substring(0, FormLimits.place),
       );
       setHasLocation(true);
       setIsInitialLoad(false); // Prevent future auto-calculations
@@ -276,7 +297,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     const newPoint = { latitude: lat, longitude: lng };
 
     setRoutePoints((prevPoints) =>
-      prevPoints ? [...prevPoints, newPoint] : [newPoint]
+      prevPoints ? [...prevPoints, newPoint] : [newPoint],
     );
   }
 
@@ -387,7 +408,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
               const minorStage = stagesCtx.findMinorStage(minorStageId);
               if (minorStage && minorStage.placesToVisit) {
                 isActive = minorStage.placesToVisit.some(
-                  (p) => p.name === place.name
+                  (p) => p.id === place.id,
                 );
               }
             }
@@ -395,7 +416,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
             return (
               <MapsMarker
                 location={formatPlaceToLocation(place)}
-                key={`${place.name}_${place.latitude}_${place.longitude}`}
+                key={`${place.id}_${isActive ? 'active' : 'inactive'}`}
                 onPressMarker={handlePressMarker}
                 active={isActive}
               />

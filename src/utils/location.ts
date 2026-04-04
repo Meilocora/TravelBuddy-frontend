@@ -687,6 +687,71 @@ export function formatPlaceToLocation(placeToVisit: PlaceToVisit): Location {
   };
 }
 
+export function getLocationMarkerBaseKey(location: Location): string {
+  return [
+    location.locationType,
+    location.placeId ?? 'no-place-id',
+    location.id ?? 'no-id',
+    location.belonging ?? 'no-belonging',
+    location.minorStageName ?? 'no-minor-stage',
+    location.transportationType ?? 'no-transport-type',
+    location.data.name,
+    location.data.latitude,
+    location.data.longitude,
+  ].join('|');
+}
+
+export function getUniqueLocationMarkerEntries<T extends Location>(
+  locations: T[],
+): { key: string; location: T }[] {
+  const keyOccurrences = new Map<string, number>();
+
+  return locations.map((location) => {
+    const baseKey = getLocationMarkerBaseKey(location);
+    const occurrence = keyOccurrences.get(baseKey) ?? 0;
+
+    keyOccurrences.set(baseKey, occurrence + 1);
+
+    return {
+      location,
+      key: occurrence === 0 ? baseKey : `${baseKey}#${occurrence}`,
+    };
+  });
+}
+
+export function findDuplicateLocationMarkerKeys(locations: Location[]) {
+  const duplicateGroups = new Map<
+    string,
+    { index: number; location: Location }[]
+  >();
+
+  locations.forEach((location, index) => {
+    const baseKey = getLocationMarkerBaseKey(location);
+    const existingGroup = duplicateGroups.get(baseKey) ?? [];
+
+    existingGroup.push({ index, location });
+    duplicateGroups.set(baseKey, existingGroup);
+  });
+
+  return Array.from(duplicateGroups.entries())
+    .filter(([, group]) => group.length > 1)
+    .map(([key, group]) => ({
+      key,
+      count: group.length,
+      indices: group.map(({ index }) => index),
+      items: group.map(({ location }) => ({
+        locationType: location.locationType,
+        name: location.data.name,
+        latitude: location.data.latitude,
+        longitude: location.data.longitude,
+        id: location.id,
+        placeId: location.placeId,
+        belonging: location.belonging,
+        minorStageName: location.minorStageName,
+      })),
+    }));
+}
+
 export function formatMediumToLocation(
   medium: Medium,
 ): MediumLocation | undefined {

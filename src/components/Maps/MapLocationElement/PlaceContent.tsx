@@ -23,12 +23,14 @@ interface PlaceContentProps {
   place: PlaceToVisit;
   minorStageId?: number;
   addRoutePoint?: (coord: LatLng) => void;
+  unsetPressedLocation: () => void;
 }
 
 const PlaceContent: React.FC<PlaceContentProps> = ({
   place,
   minorStageId,
   addRoutePoint,
+  unsetPressedLocation,
 }): ReactElement => {
   const [showImage, setShowImage] = useState(false);
   const [showMedia, setShowMedia] = useState(false);
@@ -63,6 +65,7 @@ const PlaceContent: React.FC<PlaceContentProps> = ({
   }
 
   function handleEditPlace() {
+    unsetPressedLocation();
     placeNavigation.navigate('ManagePlaceToVisit', {
       placeId: place.id,
       countryId: place.countryId,

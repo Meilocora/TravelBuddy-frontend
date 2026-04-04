@@ -45,12 +45,14 @@ interface MapsMarkerProps {
   location: Location;
   active?: boolean;
   onPressMarker?: (location: Location) => void;
+  onLongPressMarker?: (location: Location) => void;
 }
 
 const MapsMarker: React.FC<MapsMarkerProps> = ({
   location,
   active,
   onPressMarker,
+  onLongPressMarker,
 }): ReactElement => {
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   const { description, locationType, transportationType, data, color, done } =
@@ -77,8 +79,9 @@ const MapsMarker: React.FC<MapsMarkerProps> = ({
   const IconComponent = iconMap[iconKey] || null; // Fallback to null if no icon is found
 
   useEffect(() => {
-    // After a short delay, stop tracking view changes to prevent flicker
-    const timeout = setTimeout(() => setTracksViewChanges(false), 1);
+    // Re-enable view tracking briefly so custom SVG marker colors can refresh.
+    setTracksViewChanges(true);
+    const timeout = setTimeout(() => setTracksViewChanges(false), 120);
     return () => clearTimeout(timeout);
   }, [iconKey, markerColor, done]); // rerun if icon or color changes
 

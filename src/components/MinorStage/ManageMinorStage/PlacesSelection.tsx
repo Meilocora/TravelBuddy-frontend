@@ -53,7 +53,7 @@ const PlacesSelection = ({
   const stagesCtx = useContext(StagesContext);
   const customCountryCtx = useContext(CustomCountryContext);
   const country = customCountryCtx.customCountries.find(
-    (country) => country.name === countryName
+    (country) => country.name === countryName,
   );
 
   let placeLocations: Location[] = [];
@@ -62,8 +62,6 @@ const PlacesSelection = ({
       placeLocations.push(formatPlaceToLocation(place));
     }
   }
-
-  const minorStage = stagesCtx.findMinorStage(minorStageId);
 
   useEffect(() => {
     async function getAverageRegion() {
@@ -83,7 +81,7 @@ const PlacesSelection = ({
       if (places) {
         // const names = places.map((item) => item.name);
         const placesNotChosen = places.filter(
-          (place) => !chosenPlaces.includes(place.name)
+          (place) => !chosenPlaces.includes(place.name),
         );
         setFetchedData(placesNotChosen);
       }
@@ -106,8 +104,9 @@ const PlacesSelection = ({
   }
 
   function handlePressMarker(location: Location) {
-    const partOfStage = minorStage!.placesToVisit?.some(
-      (p) => p.name === location.data.name
+    const currentMinorStage = stagesCtx.findMinorStage(minorStageId);
+    const partOfStage = currentMinorStage?.placesToVisit?.some(
+      (p) => p.id === location.placeId,
     );
     if (partOfStage) {
       onRemoveHandler(location.placeId!);
@@ -127,8 +126,6 @@ const PlacesSelection = ({
     if (averageRegion) {
       navigation.navigate('LocationPickMap', {
         initialTitle: '',
-        initialLat: averageRegion.latitude,
-        initialLng: averageRegion.longitude,
         onPickLocation: (location: MapLocation) => {},
         onAddLocation: (location: Location) => {
           handlePressMarker(location);

@@ -27,7 +27,6 @@ import LocalMediaList from '../../Images/LocalMediaList';
 
 interface PlacesListItemProps {
   place: PlaceToVisit;
-  index?: number;
   onToggleFavorite: (placeId: number) => void;
   onToggleVisited: (placeId: number) => void;
   onRemovePlace?: (placeId: number) => void;
@@ -36,7 +35,6 @@ interface PlacesListItemProps {
 
 const PlacesListItem: React.FC<PlacesListItemProps> = ({
   place,
-  index,
   onToggleFavorite,
   onToggleVisited,
   onRemovePlace,
@@ -117,10 +115,8 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
         visible={showImage}
       />
       <Animated.View
-        entering={
-          index ? FadeInDown.delay(index * 100).duration(500) : undefined
-        }
-        exiting={index ? FadeOutDown : undefined}
+        entering={FadeInDown.delay(100).duration(500)}
+        exiting={FadeOutDown}
         style={styles.container}
       >
         <Pressable onPress={() => setIsOpened(!isOpened)}>

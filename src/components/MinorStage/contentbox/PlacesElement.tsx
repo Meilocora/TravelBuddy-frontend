@@ -47,8 +47,6 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
     triggerRefresh();
   }
 
-  const screenHeight = Dimensions.get('window').height;
-
   return (
     <View style={styles.container}>
       {minorStage.placesToVisit!.length === 0 ? (
