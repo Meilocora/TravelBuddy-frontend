@@ -1,7 +1,31 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Environment variables
 .env
-readme.txt
-node_modules
-.expo
-.idea
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# Debug / logs
+*.log
 .debugging.txt
-App.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+*.apk
+*.aab
+
+# Temporary archives
+*.zip
