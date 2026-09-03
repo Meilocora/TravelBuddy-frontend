@@ -1,0 +1,68 @@
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m  const [hide[1;31mPassword[m, setHide[1;31mPassword[m] = useState(true);
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m    [1;31mpassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m    setHide[1;31mPassword[m((currHide[1;31mPassword[m) => !currHide[1;31mPassword[m);
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m    // trigger rerender of [1;31mpassword[m input to show/hide [1;31mpassword[m
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m        [1;31mpassword[m: { ...currCredentials.[1;31mpassword[m, isValid: true, errors: [] },
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m      [1;31mpassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m          label='[1;31mPassword[m'
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m          invalid={!credentials.[1;31mpassword[m.isValid}
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m          errors={credentials.[1;31mpassword[m.errors}
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m            value: credentials.[1;31mpassword[m.value,
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m            onChangeText: inputChangedHandler.bind(null, '[1;31mpassword[m'),
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m            secureTextEntry: hide[1;31mPassword[m,
+[35msrc/components/Auth/AuthForm.tsx[m[36m:[m          icon={hide[1;31mPassword[m ? Icons.eyeOff : Icons.eyeOn}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  [1;31mPassword[mChangeFormValues,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[mimport { change[1;31mPassword[m, changeUsername } from '../../utils/http';
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  const [hide[1;31mPassword[m, setHide[1;31mPassword[m] = useState(true);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  const [show[1;31mPassword[mForm, setShow[1;31mPassword[mForm] = useState(false);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    [1;31mpassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  const [[1;31mpassword[mInputs, set[1;31mPassword[mInputs] =
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    useState<[1;31mPassword[mChangeFormValues>({
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      new[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      confirm[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      old[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    setShow[1;31mPassword[mForm(false);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  function handlePressEdit[1;31mPassword[m() {
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    setShow[1;31mPassword[mForm(true);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    setShow[1;31mPassword[mForm(false);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    setHide[1;31mPassword[m(true);
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    formType: 'name' | '[1;31mpassword[m',
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    } else if (formType === '[1;31mpassword[m') {
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      set[1;31mPassword[mInputs((currInputs) => ({
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                label='[1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                invalid={!nameInputs.[1;31mpassword[m.isValid}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                errors={nameInputs.[1;31mpassword[m.errors}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  value: nameInputs.[1;31mpassword[m.value,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    '[1;31mpassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  secureTextEntry: hide[1;31mPassword[m,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                icon={hide[1;31mPassword[m ? Icons.eyeOff : Icons.eyeOn}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                onPress={() => setHide[1;31mPassword[m((prevValue) => !prevValue)}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m  if (show[1;31mPassword[mForm) {
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                label='New [1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                invalid={![1;31mpassword[mInputs.new[1;31mPassword[m.isValid}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                errors={[1;31mpassword[mInputs.new[1;31mPassword[m.errors}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  value: [1;31mpassword[mInputs.new[1;31mPassword[m.value,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    '[1;31mpassword[m',
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    'new[1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                label='Confirm New [1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                invalid={![1;31mpassword[mInputs.confirm[1;31mPassword[m.isValid}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                errors={[1;31mpassword[mInputs.confirm[1;31mPassword[m.errors}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  value: [1;31mpassword[mInputs.confirm[1;31mPassword[m.value,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    '[1;31mpassword[m',
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    'confirm[1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                label='Current [1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                invalid={![1;31mpassword[mInputs.old[1;31mPassword[m.isValid}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                errors={[1;31mpassword[mInputs.old[1;31mPassword[m.errors}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  value: [1;31mpassword[mInputs.old[1;31mPassword[m.value,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    '[1;31mpassword[m',
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                    'old[1;31mPassword[m'
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                  secureTextEntry: hide[1;31mPassword[m,
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                icon={hide[1;31mPassword[m ? Icons.eyeOff : Icons.eyeOn}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                onPress={() => setHide[1;31mPassword[m((prevValue) => !prevValue)}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m                onPress={() => validateInputs('[1;31mpassword[m')}
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      [1;31mpassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m    set[1;31mPassword[mInputs({
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      new[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      confirm[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserProfile/UserDataForm.tsx[m[36m:[m      old[1;31mPassword[m: { value: '', isValid: true, errors: [] },
+[35msrc/components/UserPr

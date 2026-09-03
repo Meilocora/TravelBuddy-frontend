@@ -1,25 +1,83 @@
-// START \\
-npx expo start -c
+# ✈️ TravelBuddy
 
-// DEV Build - zum testen \\
-eas build --profile development -p android
+Full-stack mobile travel planning application built with
+React Native, Expo, TypeScript and a Python/Flask backend.
 
-// PREVIEW Build - zum benutzen \\
-eas build --profile preview -p android
+[Screenshot / Banner]
 
-// DEBUG \\
-1. CMD öffnen
+## About
 
-2. 
-cd "C:\Users\eric-\AppData\Local\Android\Sdk\platform-tools"
+TravelBuddy is an Android application for planning,
+organizing and documenting multi-stage journeys.
 
-3. 
-adb devices
+Users can manage destinations, activities, accommodation,
+transportation, expenses and travel media in one application.
 
-4.a) Für Crash
-adb logcat | findstr /i "fatal androidruntime crash"
+## Features
 
-4.b) Für Console.logs
-adb logcat *:S ReactNative:V ReactNativeJS:V
+- Interactive travel maps
+- Route planning with multiple waypoints
+- Location and POI management
+- Multi-stage journey planning
+- Accommodation management
+- Transportation planning
+- Travel expense tracking
+- Camera and travel media
+- Authentication
+- Firebase media storage
 
-5. App öffnen
+## Screenshots
+
+[4–6 images]
+
+## Architecture
+
+flowchart LR
+    A[React Native / Expo App] -->|REST API| B[Flask Backend]
+    B --> C[(PostgreSQL)]
+    A --> D[Google Maps APIs]
+    A --> E[Firebase Storage]
+
+## Tech Stack
+
+### Mobile
+- React Native
+- Expo
+- TypeScript
+- React Navigation
+- Axios
+
+### Backend
+- Python
+- Flask
+- SQLAlchemy
+- PostgreSQL
+
+### Services
+- Google Maps
+- Firebase
+
+## Architecture
+
+React Native App
+      ↓ REST
+Flask API
+      ↓
+SQLAlchemy
+      ↓
+PostgreSQL
+
+External:
+Google Maps / Firebase
+
+## Getting Started
+
+...
+
+# Backend Repository: TravelBuddy Backend
+
+ → https://github.com/Meilocora/TravelBuddy-backend
+
+## Author
+
+Eric Wenig
