@@ -24,11 +24,15 @@ The project consists of a React Native mobile client and a Python/Flask REST API
   <img src="docs/images/expense_tracking.jpg" width="220" />
 </p>
 
+---
+
 ## Demo
 
 See TravelBuddy in action:
 
 [![TravelBuddy Demo](docs/images/demo_preview.png)](docs/videos/demo_compressed.mp4)
+
+---
 
 ## Key Features
 
@@ -65,32 +69,26 @@ See TravelBuddy in action:
 
 TravelBuddy uses a separated mobile-client / REST-API architecture:
 
-┌─────────────────────────────┐
-│ React Native / Expo │
-│ TypeScript App │
-└──────────────┬──────────────┘
-│
-│ REST / JSON
-▼
-┌─────────────────────────────┐
-│ Flask REST API │
-│ Python │
-└──────────────┬──────────────┘
-│
-│ SQLAlchemy ORM
-▼
-┌─────────────────────────────┐
-│ Relational Database │
-└─────────────────────────────┘
+```mermaid
+flowchart TD
+    A["React Native / Expo<br/>TypeScript App"]
+    B["Flask REST API<br/>Python"]
+    C["Relational Database"]
+    D["Google Maps / Location Services"]
+    E["Firebase Media Storage"]
 
-Additional Services
-├── Google Maps / Location Services
-└── Firebase Media Storage
+    A -->|"REST / JSON"| B
+    B -->|"SQLAlchemy ORM"| C
+    A --> D
+    A --> E
+```
 
 The frontend and backend are maintained as separate repositories.
 
-Backend Repository:
-https://github.com/Meilocora/TravelBuddy-backend
+**Backend Repository:**  
+[TravelBuddy Backend](https://github.com/Meilocora/TravelBuddy-backend)
+
+---
 
 ## Tech Stack
 
@@ -118,9 +116,11 @@ https://github.com/Meilocora/TravelBuddy-backend
   Ruff
   GitHub Actions
 
+---
+
 ## Data Model
 
-````mermaid
+```mermaid
 erDiagram
     USER ||--o{ JOURNEY : owns
     USER ||--o{ CUSTOM_COUNTRY : owns
@@ -139,9 +139,10 @@ erDiagram
     MINOR_STAGE ||--o| COSTS : tracks
 
     COSTS ||--o{ SPENDING : contains
+```
 
+---
 
-```markdown
 ## Authentication & Security
 
 The backend uses JWT-based authentication with separate access and refresh tokens.
@@ -162,6 +163,7 @@ Ownership checks also cover nested and related resources, including:
 
 Authorization behavior is covered by automated regression tests.
 
+---
 
 ## Testing & Code Quality
 
@@ -180,11 +182,19 @@ Tests run against an isolated test database.
 Code quality is checked using **Ruff**, while **GitHub Actions** automatically runs linting and tests on pushes and pull requests.
 
 Run the test suite locally:
-  python -m pytest -v
+
+```bash
+python -m pytest -v
+```
 
 Run tests with coverage:
-  python -m pytest --cov=app --cov-report=term-missing
+
+```bash
+python -m pytest --cov=app --cov-report=term-missing
+```
 
 Run the linter:
-  ruff check .
-````
+
+```bash
+ruff check .
+```
