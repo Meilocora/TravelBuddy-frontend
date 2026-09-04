@@ -65,23 +65,22 @@ See TravelBuddy in action:
 
 TravelBuddy uses a separated mobile-client / REST-API architecture:
 
-````text
 ┌─────────────────────────────┐
-│     React Native / Expo     │
-│       TypeScript App        │
+│ React Native / Expo │
+│ TypeScript App │
 └──────────────┬──────────────┘
-               │
-               │ REST / JSON
-               ▼
+│
+│ REST / JSON
+▼
 ┌─────────────────────────────┐
-│        Flask REST API       │
-│            Python           │
+│ Flask REST API │
+│ Python │
 └──────────────┬──────────────┘
-               │
-               │ SQLAlchemy ORM
-               ▼
+│
+│ SQLAlchemy ORM
+▼
 ┌─────────────────────────────┐
-│     Relational Database     │
+│ Relational Database │
 └─────────────────────────────┘
 
 Additional Services
@@ -95,33 +94,33 @@ https://github.com/Meilocora/TravelBuddy-backend
 
 ## Tech Stack
 
-- Mobile
-      React Native
-      Expo
-      TypeScript
-      React Navigation
-      Google Maps integration
-      Expo Camera / Image Picker
-      Firebase
+- **Mobile**
+  React Native
+  Expo
+  TypeScript
+  React Navigation
+  Google Maps integration
+  Expo Camera / Image Picker
+  Firebase
 
-- Backend
-      Python
-      Flask
-      SQLAlchemy
-      REST API
-      JWT authentication
-      Relational database
+- **Backend**
+  Python
+  Flask
+  SQLAlchemy
+  REST API
+  JWT authentication
+  Relational database
 
-- Development & Quality
-      Git & GitHub
-      pytest
-      pytest-cov
-      Ruff
-      GitHub Actions
+- **Development & Quality**
+  Git & GitHub
+  pytest
+  pytest-cov
+  Ruff
+  GitHub Actions
 
 ## Data Model
 
-```mermaid
+````mermaid
 erDiagram
     USER ||--o{ JOURNEY : owns
     USER ||--o{ CUSTOM_COUNTRY : owns
