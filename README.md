@@ -282,11 +282,11 @@ cp .env.example .env
 
 Configure the required values, including:
 
-**GOOGLE_API_KEY**
-**HOST**
-**SECRET_KEY**
-**SQLALCHEMY_DATABASE_URI**
-**FLASK_DEBUG**
+- **GOOGLE_API_KEY**
+- **HOST**
+- **SECRET_KEY**
+- **SQLALCHEMY_DATABASE_URI**
+- **FLASK_DEBUG**
 
 Start the backend:
 
