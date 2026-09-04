@@ -15,7 +15,7 @@ The project consists of a React Native mobile client and a Python/Flask REST API
 <p align="center">
   <img src="docs/images/journeys_overview.jpg" width="220" />
   <img src="docs/images/major_stage_overview.jpg" width="220" />
-  <img src="docs/images/routeplanning.jpg" width="220" />
+  <img src="docs/images/route_planning.jpg" width="220" />
 </p>
 
 <p align="center">
