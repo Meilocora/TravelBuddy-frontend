@@ -1,12 +1,12 @@
 # TravelBuddy
 
-**A full-stack mobile travel planning application built with React Native, Expo and Flask.**
+**A full-stack mobile application for planning and managing complex multi-stage journeys.**
 
-TravelBuddy helps travelers organize complex multi-stage journeys in one place, from destinations and activities to transportation, accommodation, expenses and travel media.
+TravelBuddy brings itinerary planning, destinations, transportation, accommodation, activities, expenses, currencies and travel media into a single mobile workflow.
 
-The project consists of a React Native mobile client and a Python/Flask REST API backed by a relational database.
+The application is built as an end-to-end full-stack project with a **React Native / Expo frontend** and a **Python / Flask backend** using SQLAlchemy and a relational data model. It integrates map and location services, Firebase-based media storage and JWT authentication.
 
-> This is a personal portfolio project developed to explore full-stack mobile development, API design, relational data modeling, authentication, geospatial features and automated testing.
+The project focuses not only on the user-facing travel experience, but also on backend architecture, relational data modeling, resource-level authorization, automated testing and continuous integration.
 
 ---
 
@@ -36,32 +36,35 @@ See TravelBuddy in action:
 
 ## Key Features
 
-- **Multi-stage journey planning**  
-  Organize trips hierarchically into journeys, major stages and minor stages.
+- **Hierarchical journey planning**  
+  Structure complex trips into journeys, major stages and detailed minor stages.
 
-- **Interactive maps and places**  
-  Plan destinations and points of interest using map and location-based functionality.
+- **Map-based route planning**  
+  Visualize destinations and routes using integrated map and location services.
 
-- **Transportation management**  
-  Add transportation between stages and keep travel connections organized.
+- **Places & destination management**  
+  Save points of interest, organize them by country and associate them with individual travel stages.
 
-- **Accommodation & activities**  
-  Manage accommodation, activities and other trip-specific information.
+- **Transportation planning**  
+  Manage transportation at both major-stage and minor-stage level, including departure and arrival information.
 
-- **Expense tracking**  
-  Track travel costs and individual spendings across different parts of a journey.
+- **Activities & accommodation**  
+  Plan activities and accommodation together with dates, locations, booking information and costs.
 
-- **Travel media**  
-  Capture and organize photos and videos and associate them with locations and stages.
+- **Hierarchical expense tracking**  
+  Track budgets and individual spendings at journey, major-stage and minor-stage level.
 
-- **Currency support**  
-  Manage currencies and travel-related monetary information.
+- **Travel media management**  
+  Store and organize photos and videos and associate media with travel stages or saved places.
 
-- **User authentication & authorization**  
-  JWT-based authentication with resource-level ownership protection.
+- **Currency management**  
+  Maintain travel currencies and conversion rates for multi-country journeys.
 
-- **Location-aware functionality**  
-  Uses device location and external map/location services for travel-related features.
+- **Secure user-specific data**  
+  JWT authentication and resource-level authorization ensure that users can only access and modify their own data.
+
+- **Mobile-first workflow**  
+  Built with React Native and Expo for an integrated mobile travel-planning experience.
 
 ---
 
@@ -83,7 +86,7 @@ flowchart TD
     A --> E
 ```
 
-The frontend and backend are maintained as separate repositories.
+The mobile client and backend API are maintained as separate repositories, allowing both parts of the application to evolve independently.
 
 **Backend Repository:**  
 [TravelBuddy Backend](https://github.com/Meilocora/TravelBuddy-backend)
@@ -92,33 +95,23 @@ The frontend and backend are maintained as separate repositories.
 
 ## Tech Stack
 
-- **Mobile**
-  React Native
-  Expo
-  TypeScript
-  React Navigation
-  Google Maps integration
-  Expo Camera / Image Picker
-  Firebase
-
-- **Backend**
-  Python
-  Flask
-  SQLAlchemy
-  REST API
-  JWT authentication
-  Relational database
-
-- **Development & Quality**
-  Git & GitHub
-  pytest
-  pytest-cov
-  Ruff
-  GitHub Actions
+| Area                  | Technologies                                     |
+| --------------------- | ------------------------------------------------ |
+| **Mobile**            | React Native, Expo, TypeScript, React Navigation |
+| **Maps & Location**   | Google Maps / location services                  |
+| **Media**             | Expo Camera, Image Picker, Firebase Storage      |
+| **Backend**           | Python, Flask, SQLAlchemy, REST / JSON           |
+| **Authentication**    | JWT access & refresh tokens                      |
+| **Database**          | Relational data model via SQLAlchemy             |
+| **Testing**           | pytest, pytest-cov                               |
+| **Code Quality & CI** | Ruff, GitHub Actions                             |
+| **Version Control**   | Git, GitHub                                      |
 
 ---
 
 ## Data Model
+
+TravelBuddy uses a hierarchical relational model designed around multi-stage journeys.
 
 ```mermaid
 erDiagram
@@ -128,18 +121,29 @@ erDiagram
     USER ||--o{ MEDIUM : owns
     USER ||--o{ CURRENCY : owns
 
+    JOURNEY }o--o{ CUSTOM_COUNTRY : includes
+    CUSTOM_COUNTRY ||--o{ PLACE_TO_VISIT : contains
+
     JOURNEY ||--o{ MAJOR_STAGE : contains
     MAJOR_STAGE ||--o{ MINOR_STAGE : contains
 
+    MAJOR_STAGE ||--o{ TRANSPORTATION : has
+    MINOR_STAGE ||--o{ TRANSPORTATION : has
     MINOR_STAGE ||--o{ ACTIVITY : contains
     MINOR_STAGE ||--o{ ACCOMMODATION : contains
+
+    MINOR_STAGE }o--o{ PLACE_TO_VISIT : includes
 
     JOURNEY ||--o| COSTS : tracks
     MAJOR_STAGE ||--o| COSTS : tracks
     MINOR_STAGE ||--o| COSTS : tracks
-
     COSTS ||--o{ SPENDING : contains
+
+    MINOR_STAGE ||--o{ MEDIUM : groups
+    PLACE_TO_VISIT ||--o{ MEDIUM : associates
 ```
+
+This structure allows TravelBuddy to represent both high-level trip planning and detailed information for individual destinations while keeping costs, transportation and media connected to the relevant part of a journey.
 
 ---
 
@@ -198,3 +202,132 @@ Run the linter:
 ```bash
 ruff check .
 ```
+
+## Getting Started
+
+TravelBuddy consists of a mobile frontend and a separate Flask backend.
+
+### Prerequisites
+
+- Node.js and npm
+- Expo CLI / Expo Go or a development build
+- Python 3.12+
+- pip
+- A configured relational database
+- Firebase project for media storage
+- Google Maps API key
+
+### Frontend
+
+Clone the frontend repository and install the dependencies:
+
+```bash
+git clone https://github.com/Meilocora/TravelBuddy-frontend.git
+cd TravelBuddy-frontend
+npm install
+```
+
+Create a local environment configuration based on the provided example:
+
+```bash
+cp .env.example .env
+```
+
+Add the required values, including the backend URL and Google Maps API key.
+
+Start the Expo development server:
+
+```bash
+npx expo start
+```
+
+### Backend
+
+Clone the backend repository:
+
+```bash
+git clone https://github.com/Meilocora/TravelBuddy-backend.git
+cd TravelBuddy-backend
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+macOS / Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create the backend environment file:
+
+```bash
+cp .env.example .env
+```
+
+Configure the required values, including:
+
+**GOOGLE_API_KEY**
+**HOST**
+**SECRET_KEY**
+**SQLALCHEMY_DATABASE_URI**
+**FLASK_DEBUG**
+
+Start the backend:
+
+```bash
+python server.py
+```
+
+For development dependencies such as pytest and Ruff:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Run the automated tests:
+
+```bash
+python -m pytest -v
+```
+
+API keys, credentials and other secrets are not included in the repository and must be configured locally.
+
+---
+
+## Project Status
+
+TravelBuddy is an actively developed personal full-stack project.
+
+The core application already includes:
+
+- multi-stage journey planning
+- route and place management
+- activities, accommodation and transportation
+- expense and currency tracking
+- photo and video management
+- Google Maps and location-based functionality
+- Firebase-based media storage
+- JWT authentication and resource-level authorization
+- automated backend tests
+- static code analysis with Ruff
+- continuous integration with GitHub Actions
+
+The project is currently focused on refinement, code quality, usability and documentation rather than adding large amounts of new functionality.
+
+TravelBuddy is primarily developed as a portfolio project and is not currently intended as a production-ready commercial service.
