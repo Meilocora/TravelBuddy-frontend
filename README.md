@@ -13,7 +13,7 @@ The project consists of a React Native mobile client and a Python/Flask REST API
 ## Screenshots
 
 <p align="center">
-  <img src="docs/images/journeys-overview.jpg" width="220" />
+  <img src="docs/images/journeys_overview.jpg" width="220" />
   <img src="docs/images/major_stage_overview.jpg" width="220" />
   <img src="docs/images/routeplanning.jpg" width="220" />
 </p>
@@ -28,17 +28,7 @@ The project consists of a React Native mobile client and a Python/Flask REST API
 
 See TravelBuddy in action:
 
-┌────────────────────────────────────┐
-│                                    │
-│        TravelBuddy App             │
-│                                    │
-│               ▶                    │
-│                                    │
-│       Watch the demo               │
-│                                    │
-└────────────────────────────────────┘
-
-[![TravelBuddy Demo](docs/images/demo-preview.png)](docs/videos/demo.mp4)
+[![TravelBuddy Demo](docs/images/demo_preview.png)](docs/videos/demo_compressed.mp4)
 
 ## Key Features
 
@@ -75,7 +65,7 @@ See TravelBuddy in action:
 
 TravelBuddy uses a separated mobile-client / REST-API architecture:
 
-```text
+````text
 ┌─────────────────────────────┐
 │     React Native / Expo     │
 │       TypeScript App        │
@@ -198,3 +188,4 @@ Run tests with coverage:
 
 Run the linter:
   ruff check .
+````
