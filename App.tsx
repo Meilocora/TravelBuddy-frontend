@@ -60,10 +60,13 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// TODO: Error beim spendings eintragen, wenn Budget überschritten wird (Backend error?!)
+// TODO: Wahlmöglichkeit Fotos nur lokal auf dem Handy zu speichern
+// TODO: Stages nichtmehr per Datum, sondern Duration aufeinander aufbauen
+
 // TODO: MediumForm disable all fields and buttons, when submitting
 // TODO: Umrechner App beim Userprofil => Modal, wo man Beträge schnell umrechnen kann oder neue Currencies einführen kann bzw. bearbeiten kann
 // Vllt. doch besser als Screen und dann hier den + Profile einbinden?
-// TODO: Error beim spendings eintragen, wenn Budget überschritten wird (Backend error?!)
 
 // TODO: PlaceToVisit mit weiterem Attribut "type" --> Dining, Bar, Activity, Viewpoint, City (hier sollen auch andere Orte zugeordnet werden können), Hotel,
 // TODO: Map --> Mehrere Orte mit langem Tap markieren und gleichzeitig löschen... (rot oder so  markieren)

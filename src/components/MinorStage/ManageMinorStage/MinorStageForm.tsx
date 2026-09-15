@@ -61,11 +61,14 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   const [showImage, setShowImage] = useState(false);
 
+  const minorStages = majorStage!.minorStages;
+
   let maxAvailableMoney = majorStage!.costs.budget;
 
-  const minorStages = majorStage!.minorStages;
   minorStages?.forEach((ms) => {
-    maxAvailableMoney -= ms.costs.budget;
+    if (!isEditing || ms.id !== editMinorStageId) {
+      maxAvailableMoney -= ms.costs.budget;
+    }
   });
 
   let positions: number[];
@@ -147,12 +150,12 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       errors: [],
     },
     accommodation_latitude: {
-      value: defaultValues?.accommodation_latitude || undefined,
+      value: defaultValues?.accommodation_latitude ?? undefined,
       isValid: true,
       errors: [],
     },
     accommodation_longitude: {
-      value: defaultValues?.accommodation_longitude || undefined,
+      value: defaultValues?.accommodation_longitude ?? undefined,
       isValid: true,
       errors: [],
     },
@@ -212,12 +215,12 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
         errors: [],
       },
       accommodation_latitude: {
-        value: defaultValues?.accommodation_latitude || undefined,
+        value: defaultValues?.accommodation_latitude ?? undefined,
         isValid: true,
         errors: [],
       },
       accommodation_longitude: {
-        value: defaultValues?.accommodation_longitude || undefined,
+        value: defaultValues?.accommodation_longitude ?? undefined,
         isValid: true,
         errors: [],
       },
@@ -280,13 +283,11 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               errors: [],
             },
           }),
-        ...(location.title && {
-          accommodation_place: {
-            value: location.title!,
-            isValid: true,
-            errors: [],
-          },
-        }),
+        accommodation_place: {
+          value: location.title!,
+          isValid: true,
+          errors: [],
+        },
         accommodation_latitude: {
           value: location.lat,
           isValid: true,
@@ -471,8 +472,8 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               onPickLocation={handlePickLocation}
               onPressMarker={handlePickLocation}
               pickedLocation={
-                inputs.accommodation_latitude.value &&
-                inputs.accommodation_longitude.value
+                inputs.accommodation_latitude.value !== undefined &&
+                inputs.accommodation_longitude.value !== undefined
                   ? {
                       lat: inputs.accommodation_latitude.value,
                       lng: inputs.accommodation_longitude.value,
