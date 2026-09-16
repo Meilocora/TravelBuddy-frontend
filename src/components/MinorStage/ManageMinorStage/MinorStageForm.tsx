@@ -235,12 +235,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
         errors: [],
       },
     });
-  }, [
-    defaultValues,
-    initialStartTimeValue,
-    initialEndTimeValue,
-    initialPosition,
-  ]);
+  }, [editMinorStageId]);
 
   const [maxAvailableMoneyAccommodation, setMaxAvailableMoneyAccommodation] =
     useState(Math.max(0, inputs.budget.value));
@@ -275,7 +270,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     setInputs((currInputs) => {
       return {
         ...currInputs,
-        ...(inputs.title.value === '' &&
+        ...(currInputs.title.value === '' &&
           location.title && {
             title: {
               value: location.title!,

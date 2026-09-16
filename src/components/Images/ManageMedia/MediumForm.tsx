@@ -233,6 +233,8 @@ const MediumForm: React.FC<MediumFormProps> = ({
     }
   }
 
+  // TODO: disable all fields and buttons, when submitting
+
   return (
     <>
       <ScrollView

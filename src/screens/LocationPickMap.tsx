@@ -306,6 +306,15 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
     setRouteInfo(null);
   }
 
+  // TODO: Find out, why duplicate keys are being generated sometimes
+  if (journeysLocations) {
+    journeysLocations.forEach((element) => {
+      if (element.data.name == 'Chiang Mai') {
+        console.log('Name: ', element.data.name, '\nId: ', element.id, '\n');
+      }
+    });
+  }
+
   return (
     <View style={styles.container}>
       {showSettings && (
@@ -426,7 +435,7 @@ const LocationPickMap: React.FC<LocationPickMapProps> = ({
           journeysLocations.map((loc) => (
             <MapsMarker
               location={loc}
-              key={`${loc.data.name}_${loc.data.latitude}_${loc.data.longitude}`}
+              key={`${loc.data.name}_${loc.data.latitude}_${loc.data.longitude}_${loc.locationType}`}
               active={loc.done}
               onPressMarker={handlePressMarker}
             />
