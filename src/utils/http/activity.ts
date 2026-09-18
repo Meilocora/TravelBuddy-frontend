@@ -4,6 +4,7 @@ import { Activity, ActivityFormValues } from '../../models';
 import api from './api';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const prefix = `${REACT_APP_BACKEND_URL}/activity`;
 
 interface ManageActivityProps {
@@ -16,23 +17,23 @@ interface ManageActivityProps {
 
 export const createActivity = async (
   activityFormValues: ActivityFormValues,
-  minorStageId?: number
+  minorStageId?: number,
 ): Promise<ManageActivityProps> => {
   try {
     const response: AxiosResponse<ManageActivityProps> = await api.post(
       `${prefix}/create-activity/${minorStageId}`,
-      activityFormValues
+      activityFormValues,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.activityFormValues) {
       return {
         activityFormValues: response!.data.activityFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -41,7 +42,7 @@ export const createActivity = async (
       backendJourneyId: response!.data.backendJourneyId
         ? response!.data.backendJourneyId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -55,23 +56,23 @@ export const createActivity = async (
 export const updateActivity = async (
   activityFormValues: ActivityFormValues,
   activityId: number,
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManageActivityProps> => {
   try {
     const response: AxiosResponse<ManageActivityProps> = await api.post(
       `${prefix}/update-activity/${minorStageId}/${activityId}`,
-      activityFormValues
+      activityFormValues,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.activityFormValues) {
       return {
         activityFormValues: response!.data.activityFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -80,7 +81,7 @@ export const updateActivity = async (
       backendJourneyId: response!.data.backendJourneyId
         ? response!.data.backendJourneyId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -92,20 +93,20 @@ export const updateActivity = async (
 };
 
 export const deleteActivity = async (
-  activityId: number
+  activityId: number,
 ): Promise<ManageActivityProps> => {
   try {
     const response: AxiosResponse<ManageActivityProps> = await api.delete(
-      `${prefix}/delete-activity/${activityId}`
+      `${prefix}/delete-activity/${activityId}`,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     return {
-      status: response!.data.status,
+      status: response!.status,
       backendJourneyId: response!.data.backendJourneyId,
     };
   } catch (error) {

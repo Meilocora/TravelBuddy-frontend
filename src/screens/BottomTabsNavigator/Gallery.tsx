@@ -76,7 +76,7 @@ const Gallery: React.FC<GalleryProps> = ({
       if (!error && status === 200) {
         const deleteMediaIds = deletingMedia!.map((m) => m.id);
         mediumCtx.deleteMedia(deleteMediaIds);
-        mediumCtx.fetchMedia();
+        mediumCtx.fetchMedia(userCtx.storageMode);
         setSelectionResetKey((k) => k + 1);
       } else {
         setError(error!);
@@ -99,7 +99,7 @@ const Gallery: React.FC<GalleryProps> = ({
       );
       if (!error && status === 200) {
         mediumCtx.deleteMedium(deletingMedium!.id);
-        mediumCtx.fetchMedia();
+        mediumCtx.fetchMedia(userCtx.storageMode);
       } else {
         setError(error!);
         return;
@@ -126,7 +126,7 @@ const Gallery: React.FC<GalleryProps> = ({
         setPopupText(route.params?.popupText);
       }
       if (route.params?.refresh) {
-        mediumCtx.fetchMedia();
+        mediumCtx.fetchMedia(userCtx.storageMode);
       }
     }
     activatePopup();
@@ -170,7 +170,7 @@ const Gallery: React.FC<GalleryProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={false}
-            onRefresh={() => mediumCtx.fetchMedia()}
+            onRefresh={() => mediumCtx.fetchMedia(userCtx.storageMode)}
             colors={[GlobalStyles.colors.greenAccent]}
             tintColor={GlobalStyles.colors.greenAccent}
           />

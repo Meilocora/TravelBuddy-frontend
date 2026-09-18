@@ -12,6 +12,7 @@ interface IconButtonProps {
   containerStyle?: ViewStyle;
   style?: ViewStyle;
   onPress: () => void;
+  disabled?: boolean;
 }
 
 const IconButton: React.FC<IconButtonProps> = ({
@@ -21,11 +22,13 @@ const IconButton: React.FC<IconButtonProps> = ({
   containerStyle,
   style,
   onPress,
+  disabled = false,
 }): ReactElement => {
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [pressed && styles.pressed, style]}
+      disabled={disabled}
     >
       <View
         style={[

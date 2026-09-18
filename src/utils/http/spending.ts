@@ -16,23 +16,23 @@ interface ManageSpendingProps {
 
 export const createSpending = async (
   spendingFormValues: SpendingFormValues,
-  minorStageId?: number
+  minorStageId?: number,
 ): Promise<ManageSpendingProps> => {
   try {
     const response: AxiosResponse<ManageSpendingProps> = await api.post(
       `${prefix}/create-spending/${minorStageId}`,
-      spendingFormValues
+      spendingFormValues,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.spendingFormValues) {
       return {
         spendingFormValues: response!.data.spendingFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -41,7 +41,7 @@ export const createSpending = async (
       backendJourneyId: response!.data.backendJourneyId
         ? response!.data.backendJourneyId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -55,23 +55,23 @@ export const createSpending = async (
 export const updateSpending = async (
   spendingFormValues: SpendingFormValues,
   spendingId: number,
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManageSpendingProps> => {
   try {
     const response: AxiosResponse<ManageSpendingProps> = await api.post(
       `${prefix}/update-spending/${minorStageId}/${spendingId}`,
-      spendingFormValues
+      spendingFormValues,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.spendingFormValues) {
       return {
         spendingFormValues: response!.data.spendingFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -80,7 +80,7 @@ export const updateSpending = async (
       backendJourneyId: response!.data.backendJourneyId
         ? response!.data.backendJourneyId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -92,20 +92,20 @@ export const updateSpending = async (
 };
 
 export const deleteSpending = async (
-  spendingId: number
+  spendingId: number,
 ): Promise<ManageSpendingProps> => {
   try {
     const response: AxiosResponse<ManageSpendingProps> = await api.delete(
-      `${prefix}/delete-spending/${spendingId}`
+      `${prefix}/delete-spending/${spendingId}`,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     return {
-      status: response!.data.status,
+      status: response!.status,
       backendJourneyId: response!.data.backendJourneyId,
     };
   } catch (error) {
@@ -126,16 +126,16 @@ interface FetchCurrenciesProps {
 export const fetchCurrencies = async (): Promise<FetchCurrenciesProps> => {
   try {
     const response: AxiosResponse<FetchCurrenciesProps> = await api.get(
-      `${prefix}/get-currencies`
+      `${prefix}/get-currencies`,
     );
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     return {
-      status: response!.data.status,
+      status: response!.status,
       currencies: response!.data.currencies,
     };
   } catch (error) {

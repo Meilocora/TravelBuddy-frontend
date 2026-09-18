@@ -17,31 +17,31 @@ interface ManageTransportProps {
 export const createTransportation = async (
   transportationFormValues: TransportationFormValues,
   majorStageId?: number,
-  minorStageId?: number
+  minorStageId?: number,
 ): Promise<ManageTransportProps> => {
   try {
     let response: AxiosResponse<ManageTransportProps>;
     if (majorStageId) {
       response = await api.post(
         `${prefix}/create-major-stage-transportation/${majorStageId}`,
-        transportationFormValues
+        transportationFormValues,
       );
     } else if (minorStageId) {
       response = await api.post(
         `${prefix}/create-minor-stage-transportation/${minorStageId}`,
-        transportationFormValues
+        transportationFormValues,
       );
     }
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.transportationFormValues) {
       return {
         transportationFormValues: response!.data.transportationFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -50,7 +50,7 @@ export const createTransportation = async (
       backendMajorStageId: response!.data.backendMajorStageId
         ? response!.data.backendMajorStageId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -65,31 +65,31 @@ export const updateTransportation = async (
   transportationFormValues: TransportationFormValues,
   transportationId: number,
   majorStageId?: number,
-  minorStageId?: number
+  minorStageId?: number,
 ): Promise<ManageTransportProps> => {
   try {
     let response: AxiosResponse<ManageTransportProps>;
     if (majorStageId) {
       response = await api.post(
         `${prefix}/update-major-stage-transportation/${majorStageId}/${transportationId}`,
-        transportationFormValues
+        transportationFormValues,
       );
     } else if (minorStageId) {
       response = await api.post(
         `${prefix}/update-minor-stage-transportation/${minorStageId}/${transportationId}`,
-        transportationFormValues
+        transportationFormValues,
       );
     }
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     if (response!.data.transportationFormValues) {
       return {
         transportationFormValues: response!.data.transportationFormValues,
-        status: response!.data.status,
+        status: response!.status,
       };
     }
 
@@ -98,7 +98,7 @@ export const updateTransportation = async (
       backendMajorStageId: response!.data.backendMajorStageId
         ? response!.data.backendMajorStageId
         : undefined,
-      status: response!.data.status,
+      status: response!.status,
     };
   } catch (error) {
     // Error from frontend
@@ -111,27 +111,27 @@ export const updateTransportation = async (
 
 export const deleteTransportation = async (
   majorStageId?: number,
-  minorStageId?: number
+  minorStageId?: number,
 ): Promise<ManageTransportProps> => {
   try {
     let response: AxiosResponse<ManageTransportProps>;
     if (majorStageId) {
       response = await api.delete(
-        `${prefix}/delete-major-stage-transportation/${majorStageId}`
+        `${prefix}/delete-major-stage-transportation/${majorStageId}`,
       );
     } else if (minorStageId) {
       response = await api.delete(
-        `${prefix}/delete-minor-stage-transportation/${minorStageId}`
+        `${prefix}/delete-minor-stage-transportation/${minorStageId}`,
       );
     }
 
     // Error from backend
     if (response!.data.error) {
-      return { status: response!.data.status, error: response!.data.error };
+      return { status: response!.status, error: response!.data.error };
     }
 
     return {
-      status: response!.data.status,
+      status: response!.status,
       backendMajorStageId: response!.data.backendMajorStageId,
     };
   } catch (error) {

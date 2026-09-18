@@ -1,18 +1,18 @@
 import { createContext, useState } from 'react';
 
-import { Medium } from '../models/media';
+import { MediaStorageMode, Medium } from '../models/media';
 import { fetchAllMedia } from '../utils/http/media';
 
 interface MediumContextType {
   media: Medium[];
-  fetchMedia: () => Promise<void | string>;
+  fetchMedia: (mode: MediaStorageMode) => Promise<void | string>;
   findMedium: (mediumId: number) => Medium | undefined;
   deleteMedium: (mediumId: number) => void;
   deleteMedia: (mediumIds: number[]) => void;
   hasMedia: (
     mode: 'MinorStage' | 'MinorStages' | 'PlaceToVisit' | 'CustomCountry',
     singleId?: number,
-    idArray?: number[]
+    idArray?: number[],
   ) => boolean;
 }
 
@@ -32,8 +32,10 @@ export default function MediumContextProvider({
 }) {
   const [media, setMedia] = useState<Medium[]>([]);
 
-  async function fetchMedia(): Promise<void | string> {
-    const response = await fetchAllMedia();
+  async function fetchMedia(
+    storageMode: MediaStorageMode,
+  ): Promise<void | string> {
+    const response = await fetchAllMedia(storageMode);
     if (!response.error) {
       setMedia(response.media || []);
     } else {
@@ -48,20 +50,20 @@ export default function MediumContextProvider({
 
   function deleteMedium(mediumId: number) {
     setMedia((currentMedia) =>
-      currentMedia.filter((medium) => medium.id !== mediumId)
+      currentMedia.filter((medium) => medium.id !== mediumId),
     );
   }
 
   function deleteMedia(mediumIds: number[]) {
     setMedia((currentMedia) =>
-      currentMedia.filter((medium) => !mediumIds.includes(medium.id))
+      currentMedia.filter((medium) => !mediumIds.includes(medium.id)),
     );
   }
 
   function hasMedia(
     mode: 'MinorStage' | 'MinorStages' | 'PlaceToVisit' | 'CustomCountry',
     singleId?: number,
-    idArray?: number[]
+    idArray?: number[],
   ) {
     if (!singleId && !idArray) return false;
 

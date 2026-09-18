@@ -17,6 +17,7 @@ interface PlaceToVisitSelectorProps {
   errors: string[];
   mediumCoords?: LatLng;
   autoSuggestion?: boolean;
+  disabled?: boolean;
 }
 
 const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
@@ -26,6 +27,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
   errors,
   mediumCoords,
   autoSuggestion = true,
+  disabled = false,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState(false);
   const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(autoSuggestion);
@@ -78,7 +80,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
       />
       <View style={styles.container}>
         <View>
-          <Pressable onPress={handleOpenModal}>
+          <Pressable onPress={handleOpenModal} disabled={disabled}>
             <Input
               maxLength={12}
               label='Place'
@@ -96,6 +98,7 @@ const PlaceToVisitSelector: React.FC<PlaceToVisitSelectorProps> = ({
               onPress={handleClearPlace}
               style={styles.deleteButton}
               color={GlobalStyles.colors.graySoft}
+              disabled={disabled}
             />
           )}
         </View>

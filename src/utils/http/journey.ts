@@ -15,12 +15,12 @@ const prefix = `${REACT_APP_BACKEND_URL}/journey`;
 export const fetchStagesDatas = async (): Promise<FetchJourneysProps> => {
   try {
     const response: AxiosResponse<FetchJourneysProps> = await api.get(
-      `${prefix}/get-stages-data`
+      `${prefix}/get-stages-data`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { journeys, status } = response.data;
@@ -47,27 +47,27 @@ interface ManageJourneyProps {
 }
 
 export const createJourney = async (
-  journeyFormValues: JourneyFormValues
+  journeyFormValues: JourneyFormValues,
 ): Promise<ManageJourneyProps> => {
   try {
     const response: AxiosResponse<ManageJourneyProps> = await api.post(
       `${prefix}/create-journey`,
-      journeyFormValues
+      journeyFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.journeyFormValues) {
       return {
         journeyFormValues: response.data.journeyFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
-    return { journey: response.data.journey, status: response.data.status };
+    return { journey: response.data.journey, status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -79,27 +79,27 @@ export const createJourney = async (
 
 export const updateJourney = async (
   journeyFormValues: JourneyFormValues,
-  journeyId: number
+  journeyId: number,
 ): Promise<ManageJourneyProps> => {
   try {
     const response: AxiosResponse<ManageJourneyProps> = await api.post(
       `${prefix}/update-journey/${journeyId}`,
-      journeyFormValues
+      journeyFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.journeyFormValues) {
       return {
         journeyFormValues: response.data.journeyFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
-    return { journey: response.data.journey, status: response.data.status };
+    return { journey: response.data.journey, status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -110,19 +110,19 @@ export const updateJourney = async (
 };
 
 export const deleteJourney = async (
-  journeyId: number
+  journeyId: number,
 ): Promise<ManageJourneyProps> => {
   try {
     const response: AxiosResponse<ManageJourneyProps> = await api.delete(
-      `${prefix}/delete-journey/${journeyId}`
+      `${prefix}/delete-journey/${journeyId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {

@@ -6,6 +6,8 @@ import { fetchCurrencies } from '../utils/http/spending';
 import { FetchUserDataProps, fetchUsersData } from '../utils/http/user';
 import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 import { auth } from '../firebase';
+import { MediaStorageMode } from '../models/media';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function useFirebaseAuth() {
   const [firebaseUserId, setFirebaseUserId] = useState<string | null>(null);
@@ -40,6 +42,8 @@ interface UserContextType {
   localCurrency: CurrencyInfo;
   currencies: CurrencyInfo[];
   fetchUserData: (loc?: LatLng | undefined) => Promise<void | string>;
+  storageMode: MediaStorageMode;
+  loadStorageMode: () => void;
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -50,6 +54,8 @@ export const UserContext = createContext<UserContextType>({
   localCurrency: { code: 'EUR', name: 'Euro', symbol: '€', conversionRate: 1 },
   currencies: [],
   fetchUserData: async () => {},
+  storageMode: undefined,
+  loadStorageMode: () => {},
 });
 
 export default function UserContextProvider({
@@ -60,7 +66,7 @@ export default function UserContextProvider({
   useFirebaseAuth();
   const [userId, setUserId] = useState<number | undefined>(undefined);
   const [currentLocation, setCurrentLocation] = useState<LatLng | undefined>(
-    undefined
+    undefined,
   );
   const [timezoneoffset, setTimezoneOffset] = useState<number>(0);
   const [localCurrency, setLocalCurrency] = useState<CurrencyInfo>({
@@ -70,6 +76,7 @@ export default function UserContextProvider({
     conversionRate: 1,
   });
   const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
+  const [storageMode, setStorageMode] = useState<MediaStorageMode>('local');
 
   async function fetchUserData(location?: LatLng): Promise<void | string> {
     let userDataResponse: FetchUserDataProps;
@@ -107,7 +114,7 @@ export default function UserContextProvider({
     // Remove duplicates for localCurrency, EUR, USD
     const filtered = currencies.filter(
       (c) =>
-        c.code !== localCurrency.code && c.code !== 'EUR' && c.code !== 'USD'
+        c.code !== localCurrency.code && c.code !== 'EUR' && c.code !== 'USD',
     );
 
     // Sort the rest alphabetically by currency
@@ -124,6 +131,17 @@ export default function UserContextProvider({
     setCurrencies(sorted);
   }
 
+  async function loadStorageMode() {
+    const storageMode = await AsyncStorage.getItem('StorageMode');
+    if (storageMode) {
+      setStorageMode(storageMode as MediaStorageMode);
+    }
+  }
+
+  useEffect(() => {
+    loadStorageMode();
+  }, []);
+
   const value = {
     userId,
     currentLocation,
@@ -132,6 +150,8 @@ export default function UserContextProvider({
     localCurrency,
     currencies,
     fetchUserData,
+    storageMode,
+    loadStorageMode,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

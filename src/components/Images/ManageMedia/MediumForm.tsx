@@ -1,11 +1,14 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ButtonMode,
   ColorScheme,
   FormLimits,
   MapLocation,
+  StackParamList,
 } from '../../../models';
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
@@ -51,6 +54,9 @@ const MediumForm: React.FC<MediumFormProps> = ({
       ? { latitude: defaultValues.latitude, longitude: defaultValues.longitude }
       : undefined,
   );
+  const [pickedMedium, setPickedMedium] = useState(false);
+
+  const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
   const userCtx = useContext(UserContext);
   const stagesCtx = useContext(StagesContext);
@@ -102,6 +108,12 @@ const MediumForm: React.FC<MediumFormProps> = ({
       isValid: true,
       errors: [],
     },
+    storageType: userCtx.storageMode,
+    assetId: {
+      value: defaultValues?.assetId || '',
+      isValid: true,
+      errors: [],
+    },
   });
 
   useEffect(() => {
@@ -138,7 +150,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
     if (isEditing) {
       response = await updateMedium(inputs, editMediumId!);
     } else if (!isEditing && inputs.url.value) {
-      response = await addMedium(userCtx.userId!, inputs);
+      response = await addMedium(userCtx.userId!, inputs, pickedMedium);
     }
 
     const { error, status } = response!;
@@ -233,8 +245,6 @@ const MediumForm: React.FC<MediumFormProps> = ({
     }
   }
 
-  // TODO: disable all fields and buttons, when submitting
-
   return (
     <>
       <ScrollView
@@ -250,6 +260,8 @@ const MediumForm: React.FC<MediumFormProps> = ({
             inputChangedHandler('favorite', !inputs.favorite.value)
           }
           editing={!!editMediumId}
+          setPickedMedium={setPickedMedium}
+          disabled={isSubmitting}
         />
         <View style={styles.formContainer}>
           <View>
@@ -261,6 +273,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
                 onChangeMinorStage={(minorStageId) =>
                   inputChangedHandler('minorStageId', minorStageId)
                 }
+                disabled={isSubmitting}
               />
               <PlaceToVisitSelector
                 defaultValue={inputs.placeToVisitId?.value}
@@ -270,6 +283,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
                   inputChangedHandler('placeToVisitId', placeId)
                 }
                 mediumCoords={mediumCoords}
+                disabled={isSubmitting}
               />
             </View>
             <View style={styles.formRow}>
@@ -280,6 +294,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
                 errors={inputs.timestamp.errors}
                 value={inputs.timestamp.value?.toString()}
                 label='Timestamp'
+                disabled={isSubmitting}
               />
               <LocationPicker
                 onPickLocation={handlePickLocation}
@@ -294,6 +309,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
                       }
                     : undefined
                 }
+                disabled={isSubmitting}
               />
             </View>
             <View style={styles.formRow}>
@@ -316,6 +332,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
                 onPress={onCancel}
                 colorScheme={ColorScheme.neutral}
                 mode={ButtonMode.flat}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
@@ -326,6 +343,29 @@ const MediumForm: React.FC<MediumFormProps> = ({
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Submitting...' : submitButtonLabel}
+            </Button>
+          </View>
+        </View>
+        <View style={styles.noteContainer}>
+          <Text style={styles.note}>
+            Note: Medium will be saved{' '}
+            {userCtx.storageMode == 'local' ? 'locally' : 'on cloud'}
+          </Text>
+          <View style={styles.noteRow}>
+            <Text style={styles.note}>Change in</Text>
+            <Button
+              colorScheme={ColorScheme.neutral}
+              onPress={() => navigation.navigate('UserProfile')}
+              mode={ButtonMode.flat}
+              textStyle={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                textDecorationLine: 'underline',
+              }}
+              style={{ marginVertical: 0 }}
+              disabled={isSubmitting}
+            >
+              Userprofile
             </Button>
           </View>
         </View>
@@ -364,6 +404,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  noteContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  noteRow: {
+    flexDirection: 'row',
+  },
+  note: {
+    color: GlobalStyles.colors.grayMedium,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
 });
 

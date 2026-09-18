@@ -19,16 +19,16 @@ const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/country`;
 
 export const fetchCountries = async (
-  countryName: string
+  countryName: string,
 ): Promise<FetchCountriesResponseProps> => {
   try {
     const response: AxiosResponse<FetchCountriesProps> = await api.get(
-      `${prefix}/get-countries/${countryName}`
+      `${prefix}/get-countries/${countryName}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { countries, status } = response.data;
@@ -57,21 +57,21 @@ export interface AddCustomCountryResponseProps {
 }
 
 export const addCountry = async (
-  countryName: string
+  countryName: string,
 ): Promise<AddCustomCountryResponseProps> => {
   try {
     const response: AxiosResponse<AddCustomCountryProps> = await api.post(
       `${prefix}/create-custom-country`,
-      { countryName }
+      { countryName },
     );
 
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     return {
       addedItem: response.data.customCountry,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return { status: 500, error: 'Could not add country!' };
@@ -95,16 +95,16 @@ export const fetchCustomCountries =
   async (): Promise<FetchCustomCountryResponseProps> => {
     try {
       const response: AxiosResponse<FetchCustomCountryProps> = await api.get(
-        `${prefix}/get-custom-countries`
+        `${prefix}/get-custom-countries`,
       );
 
       if (response.data.error) {
-        return { status: response.data.status, error: response.data.error };
+        return { status: response.status, error: response.data.error };
       }
 
       return {
         data: response.data.customCountries,
-        status: response.data.status,
+        status: response.status,
       };
     } catch (error) {
       return { status: 500, error: 'Could not fetch custom countries!' };
@@ -121,24 +121,24 @@ export interface UpdateCustomCountryProps {
 
 export const updateCountry = async (
   customCountryFormValues: CustomCountryFormValues,
-  customCountryId: number
+  customCountryId: number,
 ): Promise<UpdateCustomCountryProps> => {
   try {
     const response: AxiosResponse<UpdateCustomCountryProps> = await api.post(
       `${prefix}/update-custom-country/${customCountryId}`,
-      customCountryFormValues
+      customCountryFormValues,
     );
 
     if (response.data.customCountryFormValues) {
       return {
         customCountryFormValues: response.data.customCountryFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       customCountry: response.data.customCountry,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return { status: 500, error: 'Could not update country!' };
@@ -153,20 +153,20 @@ export interface DeleteCustomCountryProps {
 }
 
 export const deleteCountry = async (
-  customCountryId: number
+  customCountryId: number,
 ): Promise<DeleteCustomCountryProps> => {
   try {
     const response: AxiosResponse<DeleteCustomCountryProps> = await api.delete(
-      `${prefix}/delete-custom-country/${customCountryId}`
+      `${prefix}/delete-custom-country/${customCountryId}`,
     );
 
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     return {
       countryName: response.data.countryName,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return { status: 500, error: 'Could not delete country!' };

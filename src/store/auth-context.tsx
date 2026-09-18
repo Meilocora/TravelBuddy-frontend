@@ -43,7 +43,7 @@ export default function AuthContextProvider({
       const storedRefreshToken = await AsyncStorage.getItem('refreshToken');
       if (storedToken) {
         const decodedToken = JSON.parse(
-          Buffer.from(storedToken.split('.')[1], 'base64').toString()
+          Buffer.from(storedToken.split('.')[1], 'base64').toString(),
         );
         if (decodedToken.exp * 1000 > Date.now()) {
           setAuthToken(storedToken);
@@ -67,7 +67,7 @@ export default function AuthContextProvider({
 
   function authenticate(token: string, refreshToken: string) {
     const decodedToken = JSON.parse(
-      Buffer.from(token.split('.')[1], 'base64').toString()
+      Buffer.from(token.split('.')[1], 'base64').toString(),
     );
 
     if (decodedToken.exp * 1000 > Date.now()) {
@@ -90,7 +90,7 @@ export default function AuthContextProvider({
 
   async function useRefreshToken(refreshToken: string) {
     const { error, status, newToken, newRefreshToken } = await refreshAuthToken(
-      refreshToken!
+      refreshToken!,
     );
     if (!error && newToken && newRefreshToken) {
       setAuthToken(newToken);

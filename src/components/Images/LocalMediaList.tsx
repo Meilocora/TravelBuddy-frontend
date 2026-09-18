@@ -43,13 +43,13 @@ const LocalMediaList: React.FC<LocalMediaListProps> = ({
     const places = placeCtx.getPlacesByCountry(countryId);
     const placeIds = places.map((p) => p.id);
     media = mediumCtx.media.filter(
-      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId)
+      (m) => m.placeToVisitId && placeIds.includes(m.placeToVisitId),
     );
   } else if (minorStageId) {
     media = mediumCtx.media.filter((m) => m.minorStageId === minorStageId);
   } else if (minorStageIds) {
     media = mediumCtx.media.filter(
-      (m) => m.minorStageId && minorStageIds.includes(m.minorStageId)
+      (m) => m.minorStageId && minorStageIds.includes(m.minorStageId),
     );
   } else if (placeId) {
     media = mediumCtx.media.filter((m) => m.placeToVisitId === placeId);
@@ -86,6 +86,8 @@ const LocalMediaList: React.FC<LocalMediaListProps> = ({
               >
                 <MediaListElement
                   medium={item}
+                  // TODO: Check, if this feature is needed here
+                  selectMedium={() => {}}
                   index={index}
                   media={media.length > 1 ? media : undefined}
                 />

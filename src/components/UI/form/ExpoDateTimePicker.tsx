@@ -14,6 +14,7 @@ interface ExpoDateTimePickerProps {
   label: string;
   minimumDate?: Date;
   maximumDate?: Date;
+  disabled?: boolean;
 }
 
 const ExpoDateTimePicker: React.FC<ExpoDateTimePickerProps> = ({
@@ -25,12 +26,13 @@ const ExpoDateTimePicker: React.FC<ExpoDateTimePickerProps> = ({
   label,
   minimumDate,
   maximumDate,
+  disabled = false,
 }) => {
   const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
 
   const initialDate = useMemo(
     () => (value ? parseDateAndTime(value) : new Date()),
-    [value]
+    [value],
   );
 
   function onConfirm(picked: Date) {
@@ -49,7 +51,10 @@ const ExpoDateTimePicker: React.FC<ExpoDateTimePickerProps> = ({
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => setOpenDateTimePicker(true)}>
+      <Pressable
+        onPress={() => setOpenDateTimePicker(true)}
+        disabled={disabled}
+      >
         <Input
           label={label}
           maxLength={100}
@@ -72,6 +77,7 @@ const ExpoDateTimePicker: React.FC<ExpoDateTimePickerProps> = ({
         is24Hour
         onCancel={() => setOpenDateTimePicker(false)}
         onConfirm={onConfirm}
+        disabled={disabled}
       />
     </View>
   );

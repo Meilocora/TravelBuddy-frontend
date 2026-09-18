@@ -9,26 +9,29 @@ import {
   deleteUserImages,
   uploadMedium,
 } from '../media';
-import { Medium, MediumFormValues } from '../../models/media';
+import { MediaStorageMode, Medium, MediumFormValues } from '../../models/media';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/medium`;
 
 interface FetchMediaProps {
   media?: Medium[];
+  storageMode?: MediaStorageMode;
   status: number;
   error?: string;
 }
 
-export const fetchAllMedia = async (): Promise<FetchMediaProps> => {
+export const fetchAllMedia = async (
+  storageMode: MediaStorageMode,
+): Promise<FetchMediaProps> => {
   try {
     const response: AxiosResponse<FetchMediaProps> = await api.get(
-      `${prefix}/get-media`,
+      `${prefix}/get-media/${storageMode}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { media, status } = response.data;
@@ -56,16 +59,28 @@ interface ManageMediumProps {
 export const addMedium = async (
   userId: number,
   mediumFormValues: MediumFormValues,
+  picked: boolean,
+): Promise<ManageMediumProps> => {
+  if (mediumFormValues.storageType === 'local') {
+    return saveMediumLocally(mediumFormValues, picked);
+  } else if (mediumFormValues.storageType === 'firebase') {
+    return saveMediumOnFirebase(userId, mediumFormValues);
+  }
+  return { status: 500, error: 'Invalid storage type!' };
+};
+
+const saveMediumOnFirebase = async (
+  userId: number,
+  mediumFormValues: MediumFormValues,
 ): Promise<ManageMediumProps> => {
   let thumbnailUrl: string | undefined = undefined;
+  let downloadUrl: string | undefined = undefined;
   // 1. Upload to Firebase Storage
   try {
-    const downloadUrl = await uploadMedium({
+    downloadUrl = await uploadMedium({
       uri: mediumFormValues.url.value,
       path: `${mediumFormValues.mediumType}s/${userId}`,
     });
-
-    mediumFormValues.url.value = downloadUrl;
 
     // If video, create thumbnail and upload
     if (mediumFormValues.mediumType === 'video') {
@@ -83,19 +98,72 @@ export const addMedium = async (
   }
 
   // 2. Create medium in backend (url = downloadUrl from firebase)
-  const mediumData = { ...mediumFormValues, thumbnailUrl };
+  const updatedMediumFormValues: MediumFormValues = {
+    ...mediumFormValues,
+    assetId: {
+      ...mediumFormValues.assetId,
+      value: '',
+    },
+    url: {
+      ...mediumFormValues.url,
+      value: thumbnailUrl ?? downloadUrl,
+    },
+  };
+
+  return addMediumToBackend(updatedMediumFormValues);
+};
+
+const saveMediumLocally = async (
+  mediumFormValues: MediumFormValues,
+  picked: boolean,
+): Promise<ManageMediumProps> => {
+  // Only save medium locally if it was not picked from the media library
+  if (!picked) {
+    console.log('Medium was not picked');
+
+    const permission = await MediaLibrary.requestPermissionsAsync();
+
+    if (!permission.granted) {
+      throw new Error('Media library permission denied.');
+    }
+
+    const asset = await MediaLibrary.createAssetAsync(
+      mediumFormValues.url.value,
+    );
+
+    const updatedMediumFormValues: MediumFormValues = {
+      ...mediumFormValues,
+      assetId: {
+        ...mediumFormValues.assetId,
+        value: asset.id,
+      },
+      url: {
+        ...mediumFormValues.url,
+        value: asset.uri,
+      },
+    };
+    return addMediumToBackend(updatedMediumFormValues);
+  } else {
+    console.log('Medium was picked');
+    return addMediumToBackend(mediumFormValues);
+  }
+};
+
+const addMediumToBackend = async (
+  mediumFormValues: MediumFormValues,
+): Promise<ManageMediumProps> => {
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.post(
       `${prefix}/add-medium`,
-      mediumData,
+      mediumFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -118,10 +186,10 @@ export const updateMedium = async (
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -135,9 +203,21 @@ export const deleteMedium = async (
   medium: Medium,
   userId: number,
 ): Promise<ManageMediumProps> => {
+  if (medium.storageType === 'firebase') {
+    return deleteMediumFromFirebase(medium, userId);
+  } else if (medium.storageType === 'local') {
+    return deleteMediumLocally(medium);
+  }
+  return { status: 500, error: 'Invalid storage type!' };
+};
+
+const deleteMediumFromFirebase = async (
+  medium: Medium,
+  userId: number,
+): Promise<ManageMediumProps> => {
   // 1. Delete medium from Firebase Storage
   try {
-    await deleteUserImage({
+    deleteUserImage({
       folderName: medium.mediumType === 'image' ? 'images' : 'videos',
       imageUrl: medium.url,
       userId: userId,
@@ -153,7 +233,7 @@ export const deleteMedium = async (
   // 2. If video => Delete thumbnail from Firebase Storage
   if (medium.mediumType === 'video' && medium.thumbnailUrl) {
     try {
-      await deleteUserImage({
+      deleteUserImage({
         folderName: 'video-thumbnails',
         imageUrl: medium.thumbnailUrl,
         userId: userId,
@@ -168,6 +248,25 @@ export const deleteMedium = async (
   }
 
   // 3. Delete medium in backend
+  return deleteMediumFromBackend(medium);
+};
+
+const deleteMediumLocally = async (
+  medium: Medium,
+): Promise<ManageMediumProps> => {
+  // Anmerkung: Medium wird nicht lokal gelöscht, da die verwendete Version von MediaLibrary.deleteAssetsAsync möglicherweise nicht zuverlässig funktioniert.
+  // if (!medium.assetId) {
+  //   throw new Error('Local medium has no asset ID.');
+  // }
+
+  // await MediaLibrary.deleteAssetsAsync([medium.assetId]);
+
+  return deleteMediumFromBackend(medium);
+};
+
+const deleteMediumFromBackend = async (
+  medium: Medium,
+): Promise<ManageMediumProps> => {
   try {
     const response: AxiosResponse<ManageMediumProps> = await api.delete(
       `${prefix}/delete-medium/${medium.id}`,
@@ -175,10 +274,10 @@ export const deleteMedium = async (
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -254,10 +353,10 @@ export const deleteMedia = async (
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -276,29 +375,40 @@ export type DownloadUserMediumParams = {
 export async function downloadUserMedium({
   medium,
   filename,
-}: DownloadUserMediumParams): Promise<{ success: boolean; error?: string }> {
-  try {
-    // 1. Request permissions
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status !== 'granted') {
-      return { success: false, error: 'Permission denied' };
+}: DownloadUserMediumParams): Promise<{
+  success: boolean;
+  error?: string;
+} | void> {
+  if (medium.storageType === 'local') {
+    // Local storage is not supported for downloading
+    return;
+  } else if (medium.storageType === 'firebase') {
+    try {
+      // 1. Request permissions
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        return { success: false, error: 'Permission denied' };
+      }
+
+      // 2. Generate filename if not provided
+      const extension = medium.mediumType === 'video' ? 'mp4' : 'jpg';
+      const finalFilename =
+        filename || `${medium.timestamp}_travelbuddy.${extension}`;
+      const fileUri = `${FileSystem.documentDirectory}${finalFilename}`;
+
+      // 3. Download the image
+      const downloadResult = await FileSystem.downloadAsync(
+        medium.url,
+        fileUri,
+      );
+      // 4. Save to media library (gallery)
+      const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
+      await MediaLibrary.createAlbumAsync('TravelBuddy', asset, false);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      return { success: false, error: String(error) };
     }
-
-    // 2. Generate filename if not provided
-    const extension = medium.mediumType === 'video' ? 'mp4' : 'jpg';
-    const finalFilename =
-      filename || `${medium.timestamp}_travelbuddy.${extension}`;
-    const fileUri = `${FileSystem.documentDirectory}${finalFilename}`;
-
-    // 3. Download the image
-    const downloadResult = await FileSystem.downloadAsync(medium.url, fileUri);
-    // 4. Save to media library (gallery)
-    const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
-    await MediaLibrary.createAlbumAsync('TravelBuddy', asset, false);
-
-    return { success: true };
-  } catch (error) {
-    console.error('Error downloading image:', error);
-    return { success: false, error: String(error) };
   }
 }

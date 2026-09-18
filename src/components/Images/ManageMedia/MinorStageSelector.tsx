@@ -13,6 +13,7 @@ interface MinorStageSelectorProps {
   invalid: boolean;
   defaultValue: number | undefined;
   errors: string[];
+  disabled?: boolean;
 }
 
 const MinorStageSelector: React.FC<MinorStageSelectorProps> = ({
@@ -20,6 +21,7 @@ const MinorStageSelector: React.FC<MinorStageSelectorProps> = ({
   invalid,
   defaultValue,
   errors,
+  disabled,
 }): ReactElement => {
   const [openSelection, setOpenSelection] = useState(false);
   const stagesCtx = useContext(StagesContext);
@@ -44,7 +46,7 @@ const MinorStageSelector: React.FC<MinorStageSelectorProps> = ({
 
       <View style={styles.container}>
         <View>
-          <Pressable onPress={handleOpenModal}>
+          <Pressable onPress={handleOpenModal} disabled={disabled}>
             <Input
               maxLength={12}
               label='Minor Stage'
@@ -62,6 +64,7 @@ const MinorStageSelector: React.FC<MinorStageSelectorProps> = ({
               onPress={() => onChangeMinorStage(undefined)}
               style={styles.deleteButton}
               color={GlobalStyles.colors.graySoft}
+              disabled={disabled}
             />
           )}
         </View>

@@ -1,4 +1,10 @@
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +25,7 @@ import { Icons, MediumLocation, StackParamList } from '../../models';
 import { Medium } from '../../models/media';
 import { downloadUserMedium } from '../../utils/http';
 import VideoModal from './VideoModal';
+import { UserContext } from '../../store/user-context';
 
 interface MediuaModalProps {
   medium?: Medium;
@@ -41,6 +48,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
   onDelete,
   onCalcRoute,
 }): ReactElement | null => {
+  const userCtx = useContext(UserContext);
   const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
@@ -53,7 +61,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
   const [rotatedCache, setRotatedCache] = useState<Record<string, string>>({});
 
   const [isRotatedShown, setIsRotatedShown] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
   const [isRotating, setIsRotating] = useState(false);
 
@@ -94,10 +102,10 @@ const MediaModal: React.FC<MediuaModalProps> = ({
             ? rotatedCache[m.id]
             : undefined;
 
-        const uri = isVideo && thumb ? thumb : rotatedUri ?? m.url;
+        const uri = isVideo && thumb ? thumb : (rotatedUri ?? m.url);
         return { uri };
       }),
-    [allMedia, rotatedCache, isRotatedShown]
+    [allMedia, rotatedCache, isRotatedShown],
   );
 
   if (!visible || allMedia.length === 0) {
@@ -128,7 +136,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
       const result = await ImageManipulator.manipulateAsync(
         m.url,
         [{ rotate: 90 }, { resize: { width: 2048 } }],
-        { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG }
+        { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG },
       );
 
       setRotatedCache((prev) => ({ ...prev, [id]: result.uri }));
@@ -141,13 +149,13 @@ const MediaModal: React.FC<MediuaModalProps> = ({
   async function handleDownload() {
     if (!currentMedium) return;
     const response = await downloadUserMedium({ medium: currentMedium });
-    if (response.success) {
+    if (response?.success) {
       Alert.alert(
         'Success',
-        `${currentMedium.mediumType} successfully saved to gallery!`
+        `${currentMedium.mediumType} successfully saved to gallery!`,
       );
       onClose();
-    } else if (response.error) {
+    } else if (response?.error) {
       Alert.alert('Error', response.error || 'Download failed');
     }
   }
@@ -190,7 +198,7 @@ const MediaModal: React.FC<MediuaModalProps> = ({
         latitude: currentMedium.latitude,
         longitude: currentMedium.longitude,
       },
-      currentMedium
+      currentMedium,
     );
     onClose();
   }
@@ -304,12 +312,14 @@ const MediaModal: React.FC<MediuaModalProps> = ({
                     </Text>
                   )}
                   <View style={styles.buttonsRow}>
-                    <IconButton
-                      icon={Icons.download}
-                      onPress={handleDownload}
-                      color={GlobalStyles.colors.graySoft}
-                      size={28}
-                    />
+                    {userCtx.storageMode == 'firebase' && (
+                      <IconButton
+                        icon={Icons.download}
+                        onPress={handleDownload}
+                        color={GlobalStyles.colors.graySoft}
+                        size={28}
+                      />
+                    )}
                     {onCalcRoute && (
                       <IconButton
                         icon={Icons.routePlanner}

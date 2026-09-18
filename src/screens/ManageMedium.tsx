@@ -69,13 +69,15 @@ const ManageMedium: React.FC<ManageMediumProps> = ({
     mediumType: selectedMedium?.mediumType || 'image',
     duration: selectedMedium?.duration || undefined,
     thumbnailUrl: selectedMedium?.thumbnailUrl || undefined,
+    storageType: selectedMedium?.storageType || userCtx.storageMode,
+    assetId: selectedMedium?.assetId || '',
   });
 
   async function deleteMediumHandler() {
     try {
       const { error, status } = await deleteMedium(
         selectedMedium!,
-        userCtx.userId!
+        userCtx.userId!,
       );
       if (!error && status === 200) {
         const popupText = 'Medium successfully deleted!';

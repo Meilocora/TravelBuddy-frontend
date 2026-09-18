@@ -13,20 +13,20 @@ export interface ManageCurrencyProps {
 }
 
 export const addCurrency = async (
-  currencyFormValues: CustomCurrencyFormValues
+  currencyFormValues: CustomCurrencyFormValues,
 ): Promise<ManageCurrencyProps> => {
   try {
     const response: AxiosResponse<ManageCurrencyProps> = await api.post(
       `${prefix}/add-currency`,
-      currencyFormValues
+      currencyFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -38,21 +38,21 @@ export const addCurrency = async (
 
 export const updateCurrency = async (
   currencyFormValues: CustomCurrencyFormValues,
-  currencyId: number
+  currencyId: number,
 ): Promise<ManageCurrencyProps> => {
   // Only Update Data in backend
   try {
     const response: AxiosResponse<ManageCurrencyProps> = await api.post(
       `${prefix}/update-currency/${currencyId}`,
-      currencyFormValues
+      currencyFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -63,19 +63,19 @@ export const updateCurrency = async (
 };
 
 export const deleteCurrency = async (
-  currencyId: number
+  currencyId: number,
 ): Promise<ManageCurrencyProps> => {
   try {
     const response: AxiosResponse<ManageCurrencyProps> = await api.delete(
-      `${prefix}/delete-currency/${currencyId}`
+      `${prefix}/delete-currency/${currencyId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {

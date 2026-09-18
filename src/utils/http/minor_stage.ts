@@ -19,29 +19,29 @@ interface ManageMinorStageProps {
 
 export const createMinorStage = async (
   majorStageId: number,
-  minorStageFormValues: MinorStageFormValues
+  minorStageFormValues: MinorStageFormValues,
 ): Promise<ManageMinorStageProps> => {
   try {
     const response: AxiosResponse<ManageMinorStageProps> = await api.post(
       `${prefix}/create-minor-stage/${majorStageId}`,
-      minorStageFormValues
+      minorStageFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.minorStageFormValues) {
       return {
         minorStageFormValues: response.data.minorStageFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       minorStage: response.data.minorStage,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     // Error from frontend
@@ -55,29 +55,29 @@ export const createMinorStage = async (
 export const updateMinorStage = async (
   majorStageId: number,
   minorStageFormValues: MinorStageFormValues,
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManageMinorStageProps> => {
   try {
     const response: AxiosResponse<ManageMinorStageProps> = await api.post(
       `${prefix}/update-minor-stage/${majorStageId}/${minorStageId}`,
-      minorStageFormValues
+      minorStageFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.minorStageFormValues) {
       return {
         minorStageFormValues: response.data.minorStageFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       minorStage: response.data.minorStage,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     // Error from frontend
@@ -89,19 +89,19 @@ export const updateMinorStage = async (
 };
 
 export const deleteMinorStage = async (
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManageMinorStageProps> => {
   try {
     const response: AxiosResponse<ManageMinorStageProps> = await api.delete(
-      `${prefix}/delete-minor-stage/${minorStageId}`
+      `${prefix}/delete-minor-stage/${minorStageId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -112,20 +112,20 @@ export const deleteMinorStage = async (
 };
 
 export const swapMinorStages = async (
-  stagesPositionList: StagesPositionDict[]
+  stagesPositionList: StagesPositionDict[],
 ): Promise<ManageMinorStageProps> => {
   try {
     const response: AxiosResponse<ManageMinorStageProps> = await api.post(
       `${prefix}/swap-minor-stages`,
-      { stagesPositionList }
+      { stagesPositionList },
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {

@@ -44,13 +44,15 @@ export function useAppData(options?: { autoFetch?: boolean }) {
 
         const userInfoBackendError = await authCtx.fetchUserInfo();
         const userBackendError = await userCtx.fetchUserData(
-          currentLocation || undefined
+          currentLocation || undefined,
         );
         const stagesBackendError = await stagesCtx.fetchStagesData();
         const countriesBackendError =
           await countryCtx.fetchUsersCustomCountries();
         const placesBackendError = await placesCtx.fetchPlacesToVisit();
-        const mediaBackendError = await mediumCtx.fetchMedia();
+        const mediaBackendError = await mediumCtx.fetchMedia(
+          userCtx.storageMode!,
+        );
 
         if (userInfoBackendError) collectedErrors.push(userInfoBackendError);
         if (userBackendError) collectedErrors.push(userBackendError);

@@ -19,30 +19,30 @@ interface UserCreationProps {
 }
 
 export const createUser = async (
-  authFormValues: AuthFormValues
+  authFormValues: AuthFormValues,
 ): Promise<UserCreationProps> => {
   try {
     const response: AxiosResponse<UserCreationProps> = await axios.post(
       `${prefix}/create-user`,
-      authFormValues
+      authFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.authFormValues) {
       return {
         authFormValues: response.data.authFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       token: response.data.token,
       refreshToken: response.data.refreshToken,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return {
@@ -53,30 +53,30 @@ export const createUser = async (
 };
 
 export const loginUser = async (
-  authFormValues: AuthFormValues
+  authFormValues: AuthFormValues,
 ): Promise<UserCreationProps> => {
   try {
     const response: AxiosResponse<UserCreationProps> = await axios.post(
       `${prefix}/login-user`,
-      authFormValues
+      authFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.authFormValues) {
       return {
         authFormValues: response.data.authFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       token: response.data.token,
       refreshToken: response.data.refreshToken,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return {
@@ -96,12 +96,12 @@ interface FetchUserInfosProps {
 export const fetchUserInfos = async (): Promise<FetchUserInfosProps> => {
   try {
     const response: AxiosResponse<FetchUserInfosProps> = await api.get(
-      `${prefix}/get-user-infos`
+      `${prefix}/get-user-infos`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { username, email, status } = response.data;
@@ -124,29 +124,29 @@ interface NameChangeProps {
 }
 
 export const changeUsername = async (
-  nameFormValues: NameChangeFormValues
+  nameFormValues: NameChangeFormValues,
 ): Promise<NameChangeProps> => {
   try {
     const response: AxiosResponse<NameChangeProps> = await api.post(
       `${prefix}/change-username`,
-      nameFormValues
+      nameFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.nameFormValues) {
       return {
         nameFormValues: response.data.nameFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
       newUsername: response.data.newUsername,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return {
@@ -163,28 +163,28 @@ interface PasswordChangeProps {
 }
 
 export const changePassword = async (
-  passwordFormValues: PasswordChangeFormValues
+  passwordFormValues: PasswordChangeFormValues,
 ): Promise<PasswordChangeProps> => {
   try {
     const response: AxiosResponse<PasswordChangeProps> = await api.post(
       `${prefix}/change-password`,
-      passwordFormValues
+      passwordFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.passwordFormValues) {
       return {
         passwordFormValues: response.data.passwordFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
     return {
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return {

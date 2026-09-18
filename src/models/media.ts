@@ -1,5 +1,7 @@
 import { Validable } from './other_models';
 
+export type MediaStorageMode = 'local' | 'firebase' | undefined;
+
 export interface Medium {
   id: number;
   url: string;
@@ -13,6 +15,8 @@ export interface Medium {
   minorStageId?: number;
   placeToVisitId?: number;
   description: string;
+  storageType: MediaStorageMode;
+  assetId: string;
 }
 
 export interface MediumValues {
@@ -27,6 +31,8 @@ export interface MediumValues {
   minorStageId?: number;
   placeToVisitId?: number;
   description: string;
+  storageType: MediaStorageMode;
+  assetId: string;
 }
 
 export interface MediumFormValues {
@@ -40,4 +46,6 @@ export interface MediumFormValues {
   minorStageId?: Validable<number | undefined>;
   placeToVisitId?: Validable<number | undefined>;
   description: Validable<string>;
+  storageType: MediaStorageMode;
+  assetId: Validable<string>;
 }

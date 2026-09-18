@@ -1,12 +1,26 @@
 import { ReactElement, useContext } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { GlobalStyles } from '../../constants/styles';
 import { UserContext } from '../../store/user-context';
+import Button from '../UI/Button';
+import { ColorScheme } from '../../models';
+import { MediaStorageMode } from '../../models/media';
+import { MediumContext } from '../../store/medium-context';
 
 interface UserSettingsProps {}
 
 const UserSettings: React.FC<UserSettingsProps> = ({}): ReactElement => {
   const userCtx = useContext(UserContext);
+  const mediumCtx = useContext(MediumContext);
+
+  function changeStorageMode(storageMode: MediaStorageMode) {
+    AsyncStorage.setItem('StorageMode', storageMode ?? '');
+    userCtx.loadStorageMode();
+    mediumCtx.fetchMedia(storageMode);
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -42,6 +56,35 @@ const UserSettings: React.FC<UserSettingsProps> = ({}): ReactElement => {
                 {userCtx.localCurrency.code !== 'EUR' &&
                   `~ ${(1 / userCtx.localCurrency.conversionRate).toFixed(2)}€`}
               </Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.rowElement}>
+              <Text style={styles.text}>Media Storage</Text>
+            </View>
+            <View style={styles.rowElement}>
+              <Button
+                onPress={() => changeStorageMode('local')}
+                colorScheme={
+                  userCtx.storageMode == 'local'
+                    ? ColorScheme.primary
+                    : ColorScheme.neutral
+                }
+                disabled={userCtx.storageMode == 'local'}
+              >
+                locally
+              </Button>
+              <Button
+                onPress={() => changeStorageMode('firebase')}
+                colorScheme={
+                  userCtx.storageMode == 'firebase'
+                    ? ColorScheme.primary
+                    : ColorScheme.neutral
+                }
+                disabled={userCtx.storageMode == 'firebase'}
+              >
+                on cloud
+              </Button>
             </View>
           </View>
         </View>

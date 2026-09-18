@@ -17,12 +17,12 @@ const prefix = `${REACT_APP_BACKEND_URL}/place-to-visit`;
 export const fetchPlaces = async (): Promise<FetchPlacesProps> => {
   try {
     const response: AxiosResponse<FetchPlacesProps> = await api.get(
-      `${prefix}/get-places`
+      `${prefix}/get-places`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { places, status } = response.data;
@@ -43,16 +43,16 @@ export const fetchPlaces = async (): Promise<FetchPlacesProps> => {
 
 export const fetchavailablePlacesByCountry = async (
   minorStageId: number,
-  countryName: string
+  countryName: string,
 ): Promise<FetchPlacesProps> => {
   try {
     const response: AxiosResponse<FetchPlacesProps> = await api.get(
-      `${prefix}/get-available-places-by-country/${minorStageId}/${countryName}`
+      `${prefix}/get-available-places-by-country/${minorStageId}/${countryName}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { places, countryId, status } = response.data;
@@ -75,27 +75,27 @@ interface ManagePlaceProps {
 }
 
 export const createPlace = async (
-  placeFormValues: PlaceFormValues
+  placeFormValues: PlaceFormValues,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
       `${prefix}/create-place`,
-      placeFormValues
+      placeFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.placeFormValues) {
       return {
         placeFormValues: response.data.placeFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
-    return { place: response.data.place, status: response.data.status };
+    return { place: response.data.place, status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -107,27 +107,27 @@ export const createPlace = async (
 
 export const updatePlace = async (
   placeFormValues: PlaceFormValues,
-  placeId: number
+  placeId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
       `${prefix}/update-place/${placeId}`,
-      placeFormValues
+      placeFormValues,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     if (response.data.placeFormValues) {
       return {
         placeFormValues: response.data.placeFormValues,
-        status: response.data.status,
+        status: response.status,
       };
     }
 
-    return { place: response.data.place, status: response.data.status };
+    return { place: response.data.place, status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -138,19 +138,19 @@ export const updatePlace = async (
 };
 
 export const deletePlace = async (
-  placeId: number
+  placeId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.delete(
-      `${prefix}/delete-place/${placeId}`
+      `${prefix}/delete-place/${placeId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -161,19 +161,19 @@ export const deletePlace = async (
 };
 
 export const toggleFavoritePlace = async (
-  placeId: number
+  placeId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/toggle-favorite-place/${placeId}`
+      `${prefix}/toggle-favorite-place/${placeId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -185,19 +185,19 @@ export const toggleFavoritePlace = async (
 };
 
 export const toggleVisitedPlace = async (
-  placeId: number
+  placeId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/toggle-visited-place/${placeId}`
+      `${prefix}/toggle-visited-place/${placeId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -209,19 +209,19 @@ export const toggleVisitedPlace = async (
 
 export const addMinorStageToPlace = async (
   placeId: number,
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/add-minor-stage-to-place/${placeId}/${minorStageId}`
+      `${prefix}/add-minor-stage-to-place/${placeId}/${minorStageId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {
@@ -234,19 +234,19 @@ export const addMinorStageToPlace = async (
 
 export const removeMinorStageFromPlace = async (
   placeId: number,
-  minorStageId: number
+  minorStageId: number,
 ): Promise<ManagePlaceProps> => {
   try {
     const response: AxiosResponse<ManagePlaceProps> = await api.post(
-      `${prefix}/remove-minor-stage-from-place/${placeId}/${minorStageId}`
+      `${prefix}/remove-minor-stage-from-place/${placeId}/${minorStageId}`,
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
-    return { status: response.data.status };
+    return { status: response.status };
   } catch (error) {
     // Error from frontend
     return {

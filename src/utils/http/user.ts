@@ -16,19 +16,19 @@ const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/user`;
 
 export const fetchUsersData = async (
-  currentLocation: LatLng | undefined
+  currentLocation: LatLng | undefined,
 ): Promise<FetchUserDataProps> => {
   try {
     const response: AxiosResponse<FetchUserDataProps> = await api.get(
       `${prefix}/get-user-data`,
       {
         params: currentLocation,
-      }
+      },
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     const { userId, offset, localCurrency, status } = response.data;

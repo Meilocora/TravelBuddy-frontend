@@ -25,6 +25,7 @@ interface LocationPickerProps {
   colorScheme?: ColorScheme;
   countryId?: number;
   majorStageId?: number;
+  disabled?: boolean;
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
@@ -36,6 +37,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   colorScheme = ColorScheme.primary,
   countryId,
   majorStageId,
+  disabled = false,
 }): ReactElement => {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
 
@@ -116,9 +118,10 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             iconColor
               ? iconColor
               : hasInitialLocation
-              ? iconStandardColor
-              : 'white'
+                ? iconStandardColor
+                : 'white'
           }
+          disabled={disabled}
         />
       )}
     </View>

@@ -13,23 +13,23 @@ interface RefreshTokenProps {
 }
 
 export const refreshAuthToken = async (
-  refreshToken: string
+  refreshToken: string,
 ): Promise<RefreshTokenProps> => {
   try {
     const response: AxiosResponse<RefreshTokenProps> = await axios.post(
       `${prefix}/refresh-token`,
-      { refreshToken }
+      { refreshToken },
     );
 
     // Error from backend
     if (response.data.error) {
-      return { status: response.data.status, error: response.data.error };
+      return { status: response.status, error: response.data.error };
     }
 
     return {
       newToken: response.data.newToken,
       newRefreshToken: response.data.newRefreshToken,
-      status: response.data.status,
+      status: response.status,
     };
   } catch (error) {
     return {

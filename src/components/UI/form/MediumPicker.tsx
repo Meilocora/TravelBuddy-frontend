@@ -24,6 +24,8 @@ interface CustomMediumPickerProps {
     timestamp?: Date,
   ) => void;
   editing: boolean;
+  setPickedMedium: (boolean: boolean) => void;
+  disabled: boolean;
 }
 
 const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
@@ -33,6 +35,8 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
   setFavorite,
   addMedium,
   editing,
+  setPickedMedium,
+  disabled,
 }): ReactElement => {
   const videoRef = useRef<Video | null>(null);
 
@@ -73,10 +77,12 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
     }
 
     if (capture.type === 'image') {
+      setPickedMedium(false);
       setMediumType('image');
       setUrl(capture.uri);
       addMedium(capture.uri, 'image', undefined, lat, lng);
     } else {
+      setPickedMedium(false);
       setMediumType('video');
       setUrl(capture.uri);
       addMedium(capture.uri, 'video', capture.duration, lat, lng);
@@ -134,6 +140,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
         timestamp = new Date(dateStr);
       }
 
+      setPickedMedium(true);
       setMediumType('image');
       setUrl(url);
       addMedium(url, 'image', undefined, lat, lng, timestamp);
@@ -176,6 +183,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
         }
       }
 
+      setPickedMedium(true);
       setMediumType('video');
       setUrl(url);
       addMedium(
@@ -230,6 +238,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
               color='red'
               containerStyle={styles.icon}
               size={46}
+              disabled={disabled}
             />
           </View>
         ) : (
@@ -252,6 +261,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             }
             containerStyle={url ? styles.iconContainer : undefined}
             size={32}
+            disabled={disabled}
           />
           <IconButton
             icon={Icons.cameraOutline}
@@ -261,6 +271,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             }
             containerStyle={url ? styles.iconContainer : undefined}
             size={32}
+            disabled={disabled}
           />
           <IconButton
             icon={Icons.videocam}
@@ -270,6 +281,7 @@ const CustomMediumPicker: React.FC<CustomMediumPickerProps> = ({
             }
             containerStyle={url ? styles.iconContainer : undefined}
             size={32}
+            disabled={disabled}
           />
         </View>
       )}
