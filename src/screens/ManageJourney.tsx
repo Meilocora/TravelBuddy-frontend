@@ -19,7 +19,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../components/UI/Modal';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { StagesContext } from '../store/stages-context';
-
 import { useAppData } from '../hooks/useAppData';
 
 interface ManageJourneyProps {
@@ -57,6 +56,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
     scheduled_end_time: selectedJourney?.scheduled_end_time
       ? formatDateString(selectedJourney.scheduled_end_time)!
       : null,
+    duration_days: selectedJourney?.duration_days ?? 0,
     budget: selectedJourney?.costs.budget || 0,
     spent_money: selectedJourney?.costs.spent_money || 0,
     countries: selectedJourney?.countries
@@ -76,6 +76,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
         scheduled_end_time: selectedJourney?.scheduled_end_time
           ? formatDateString(selectedJourney.scheduled_end_time)!
           : null,
+        duration_days: selectedJourney?.duration_days ?? 0,
         budget: selectedJourney?.costs.budget || 0,
         spent_money: selectedJourney?.costs.spent_money || 0,
         countries: selectedJourney?.countries
@@ -91,12 +92,13 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
           description: '',
           scheduled_start_time: null,
           scheduled_end_time: null,
+          duration_days: 0,
           budget: 0,
           spent_money: 0,
           countries: '',
         });
       };
-    }, [selectedJourney])
+    }, [selectedJourney]),
   );
 
   async function deleteJourneyHandler() {

@@ -7,6 +7,7 @@ export interface MajorStage {
   title: string;
   scheduled_start_time: string;
   scheduled_end_time: string;
+  duration_days: number;
   additional_info: string;
   country: CustomCountry;
   costs: Costs;
@@ -20,6 +21,7 @@ export interface MajorStageValues {
   title: string;
   scheduled_start_time: string | null;
   scheduled_end_time: string | null;
+  duration_days: number;
   additional_info: string | null;
   budget: number;
   spent_money: number;
@@ -31,6 +33,7 @@ export interface MajorStageFormValues {
   title: Validable<string>;
   scheduled_start_time: Validable<string | null>;
   scheduled_end_time: Validable<string | null>;
+  duration_days: Validable<number>;
   additional_info: Validable<string | undefined>;
   budget: Validable<number>;
   spent_money: Validable<number>;

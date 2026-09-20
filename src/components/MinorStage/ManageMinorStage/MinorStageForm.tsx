@@ -14,21 +14,19 @@ import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import {
-  addDaysToDateString,
+  calculateDatesForMinorStage,
   createMinorStage,
   formatAmount,
-  formatDate,
-  parseDate,
   updateMinorStage,
 } from '../../../utils';
 import LocationPicker from '../../UI/form/LocationPicker';
 import { StagesContext } from '../../../store/stages-context';
 import AmountElement from '../../UI/form/Money/AmountElement';
-import ExpoDatePicker from '../../UI/form/ExpoDatePicker';
 import PositionSelector from '../../UI/form/PositionSelector';
 import CustomLinkInput from '../../UI/form/CustomLinkInput';
 import CustomCheckBox from '../../UI/form/CustomCheckBox';
 import LinkImageModal from '../../UI/LinkImageModal';
+import StageDates from '../../UI/form/StageDates';
 
 type InputValidationResponse = {
   minorStage?: MinorStage;
@@ -87,35 +85,24 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     ? (defaultValues?.position ?? 1)
     : positions[positions.length - 1];
 
-  const minStartDate = majorStage!.scheduled_start_time;
-  const priorMinorStage = minorStages?.find(
-    (stage) => stage.position === initialPosition - 1,
-  );
-
-  const initialStartTimeValue = defaultValues
-    ? defaultValues.scheduled_start_time
-    : priorMinorStage
-      ? addDaysToDateString(priorMinorStage.scheduled_end_time)
-      : null;
-  const initialEndTimeValue = defaultValues
-    ? defaultValues.scheduled_end_time
-    : priorMinorStage
-      ? addDaysToDateString(priorMinorStage.scheduled_end_time)
-      : null;
-
-  const maxEndDate = majorStage!.scheduled_end_time;
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const [inputs, setInputs] = useState<MinorStageFormValues>({
     title: { value: defaultValues?.title || '', isValid: true, errors: [] },
     scheduled_start_time: {
-      value: initialStartTimeValue,
+      value: null,
       isValid: true,
       errors: [],
     },
     scheduled_end_time: {
-      value: initialEndTimeValue,
+      value: null,
+      isValid: true,
+      errors: [],
+    },
+    duration_days: {
+      value: defaultValues?.duration_days ?? 0,
       isValid: true,
       errors: [],
     },
@@ -175,12 +162,17 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     setInputs({
       title: { value: defaultValues?.title || '', isValid: true, errors: [] },
       scheduled_start_time: {
-        value: initialStartTimeValue,
+        value: null,
         isValid: true,
         errors: [],
       },
       scheduled_end_time: {
-        value: initialEndTimeValue,
+        value: null,
+        isValid: true,
+        errors: [],
+      },
+      duration_days: {
+        value: defaultValues?.duration_days ?? 0,
         isValid: true,
         errors: [],
       },
@@ -236,6 +228,18 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
       },
     });
   }, [editMinorStageId]);
+
+  useEffect(() => {
+    if (majorStage != undefined) {
+      const [startDate, endDate] = calculateDatesForMinorStage(
+        majorStage,
+        inputs,
+        initialPosition,
+      );
+      setStartDate(startDate);
+      setEndDate(endDate);
+    }
+  }, [inputs.position.value, inputs.duration_days.value]);
 
   const [maxAvailableMoneyAccommodation, setMaxAvailableMoneyAccommodation] =
     useState(Math.max(0, inputs.budget.value));
@@ -336,24 +340,6 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     return;
   }
 
-  function handleChangeDate(
-    inputIdentifier: string,
-    selectedDate: Date | undefined,
-  ) {
-    if (selectedDate === undefined) {
-      return;
-    }
-    const formattedDate = formatDate(new Date(selectedDate));
-    setInputs((prevValues) => ({
-      ...prevValues,
-      [inputIdentifier]: {
-        value: formattedDate,
-        isValid: true,
-        errors: [],
-      },
-    }));
-  }
-
   return (
     <>
       <LinkImageModal
@@ -417,34 +403,19 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
             />
           </View>
           <View style={styles.formRow}>
-            <ExpoDatePicker
-              handleChange={handleChangeDate}
-              inputIdentifier='scheduled_start_time'
-              invalid={!inputs.scheduled_start_time.isValid}
-              errors={inputs.scheduled_start_time.errors}
-              value={inputs.scheduled_start_time.value?.toString()}
-              label='Starts on'
-              minimumDate={parseDate(minStartDate)}
-              maximumDate={
-                inputs.scheduled_end_time.value
-                  ? parseDate(inputs.scheduled_end_time.value)
-                  : parseDate(maxEndDate)
-              }
+            <Input
+              label='Duration'
+              maxLength={3}
+              invalid={!inputs.duration_days.isValid}
+              errors={inputs.duration_days.errors}
+              textInputConfig={{
+                keyboardType: 'decimal-pad',
+                value: inputs.duration_days.value.toString(),
+                onChangeText: inputChangedHandler.bind(this, 'duration_days'),
+              }}
+              mandatory
             />
-            <ExpoDatePicker
-              handleChange={handleChangeDate}
-              inputIdentifier='scheduled_end_time'
-              invalid={!inputs.scheduled_end_time.isValid}
-              errors={inputs.scheduled_end_time.errors}
-              value={inputs.scheduled_end_time.value?.toString()}
-              label='Ends on'
-              minimumDate={
-                inputs.scheduled_start_time.value
-                  ? parseDate(inputs.scheduled_start_time.value)
-                  : parseDate(minStartDate)
-              }
-              maximumDate={parseDate(maxEndDate)}
-            />
+            <StageDates startDate={startDate} endDate={endDate} />
           </View>
           <View style={styles.separator}>
             <Text style={styles.subtitle}>Accommodation</Text>

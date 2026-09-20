@@ -4,3 +4,4 @@ export * from './generator';
 export * from './languages';
 export * from './validate';
 export * from './media';
+export * from './durations';

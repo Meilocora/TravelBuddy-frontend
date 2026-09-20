@@ -119,8 +119,6 @@ const saveMediumLocally = async (
 ): Promise<ManageMediumProps> => {
   // Only save medium locally if it was not picked from the media library
   if (!picked) {
-    console.log('Medium was not picked');
-
     const permission = await MediaLibrary.requestPermissionsAsync();
 
     if (!permission.granted) {
@@ -144,7 +142,6 @@ const saveMediumLocally = async (
     };
     return addMediumToBackend(updatedMediumFormValues);
   } else {
-    console.log('Medium was picked');
     return addMediumToBackend(mediumFormValues);
   }
 };

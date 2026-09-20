@@ -8,6 +8,7 @@ export interface Journey {
   description: string;
   scheduled_start_time: string;
   scheduled_end_time: string;
+  duration_days: number;
   majorStages?: MajorStage[];
   costs: Costs;
   countries: CustomCountry[];
@@ -21,6 +22,7 @@ export interface JourneyValues {
   spent_money: number;
   scheduled_start_time: string | null;
   scheduled_end_time: string | null;
+  duration_days: number;
   countries: string;
 }
 
@@ -31,5 +33,6 @@ export interface JourneyFormValues {
   spent_money: Validable<number>;
   scheduled_start_time: Validable<string | null>;
   scheduled_end_time: Validable<string | null>;
+  duration_days: Validable<number>;
   countries: Validable<string>;
 }

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -72,6 +72,11 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
       isValid: true,
       errors: [],
     },
+    duration_days: {
+      value: defaultValues?.duration_days ?? 0,
+      isValid: true,
+      errors: [],
+    },
     scheduled_end_time: {
       value: defaultValues?.scheduled_end_time || null,
       isValid: true,
@@ -84,10 +89,33 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
     },
   });
 
+  const [endDate, setEndDate] = useState<string | undefined>();
+
+  useEffect(() => {
+    function handleChangeDuration() {
+      const calculatedEndDate = inputs.scheduled_start_time.value
+        ? new Date(parseDate(inputs.scheduled_start_time.value))
+        : undefined;
+
+      calculatedEndDate?.setDate(
+        calculatedEndDate.getDate() +
+          Math.max(inputs.duration_days.value - 1, 0),
+      );
+
+      if (inputs.duration_days.value - 1 < 1) {
+        setEndDate(undefined);
+      } else if (calculatedEndDate != undefined) {
+        setEndDate(formatDate(calculatedEndDate));
+      }
+    }
+
+    handleChangeDuration();
+  }, [inputs.duration_days.value, inputs.scheduled_start_time.value]);
+
   const defaultCountriesNames = defaultValues?.countries.split(', ') || [];
   // State only exists for easier handling of countryNames
   const [currentCountryNames, setCurrentCountryNames] = useState<string[]>(
-    defaultCountriesNames
+    defaultCountriesNames,
   );
 
   function inputChangedHandler(inputIdentifier: string, enteredValue: string) {
@@ -118,7 +146,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
 
   function handleDeleteCountry(countryName: string) {
     setCurrentCountryNames(
-      currentCountryNames.filter((name) => name !== countryName)
+      currentCountryNames.filter((name) => name !== countryName),
     );
 
     const updatedCountryNames = [...currentCountryNames];
@@ -138,7 +166,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
   }
 
   async function validateInputs(
-    updateConfirmed: boolean = false
+    updateConfirmed: boolean = false,
   ): Promise<void> {
     setIsSubmitting(true);
 
@@ -150,14 +178,14 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
     let response: InputValidationResponse;
     if (isEditing) {
       const defaultCountryDeleted = defaultCountriesNames.some(
-        (country) => !currentCountryNames.includes(country)
+        (country) => !currentCountryNames.includes(country),
       );
 
       if (!updateConfirmed && defaultCountryDeleted) {
         setDeletedCountries(
           defaultCountriesNames.filter(
-            (country) => !currentCountryNames.includes(country)
-          )
+            (country) => !currentCountryNames.includes(country),
+          ),
         );
         return;
       }
@@ -181,7 +209,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
 
   function handleChangeDate(
     inputIdentifier: string,
-    selectedDate: Date | undefined
+    selectedDate: Date | undefined,
   ) {
     if (selectedDate === undefined) {
       return;
@@ -207,7 +235,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
         <Modal
           title='Are you sure?'
           content={`Major Stages and Minor Stages, that are connected to the following countries will be deleted: ${deletedCountries.join(
-            ', '
+            ', ',
           )}`}
           onConfirm={validateInputs.bind(this, true)}
           onCancel={closeModalHandler}
@@ -282,20 +310,27 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
                       : undefined
                   }
                 />
-                <ExpoDatePicker
-                  handleChange={handleChangeDate}
-                  inputIdentifier='scheduled_end_time'
-                  invalid={!inputs.scheduled_end_time.isValid}
-                  errors={inputs.scheduled_end_time.errors}
-                  value={inputs.scheduled_end_time.value?.toString()}
-                  label='Ends on'
-                  minimumDate={
-                    inputs.scheduled_start_time.value
-                      ? parseDate(inputs.scheduled_start_time.value)
-                      : undefined
-                  }
+                <Input
+                  label='Duration'
+                  maxLength={3}
+                  invalid={!inputs.duration_days.isValid}
+                  errors={inputs.duration_days.errors}
+                  textInputConfig={{
+                    keyboardType: 'decimal-pad',
+                    value: inputs.duration_days.value.toString(),
+                    onChangeText: inputChangedHandler.bind(
+                      this,
+                      'duration_days',
+                    ),
+                  }}
+                  mandatory
                 />
               </View>
+              {endDate != undefined && (
+                <View style={styles.noteContainer}>
+                  <Text style={styles.note}>Ends on {endDate}</Text>
+                </View>
+              )}
               <CountriesSelectionForm
                 onAddCountry={handleAddCountry}
                 onDeleteCountry={handleDeleteCountry}
@@ -358,6 +393,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  noteContainer: {
+    alignSelf: 'center',
+  },
+  note: {
+    fontStyle: 'italic',
   },
 });
 

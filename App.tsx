@@ -60,6 +60,7 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// When switching stages => Loading Symbol + disable everything
 // TODO: Umrechner App beim Userprofil => Modal, wo man Beträge schnell umrechnen kann oder neue Currencies einführen kann bzw. bearbeiten kann
 // Vllt. doch besser als Screen und dann hier den + Profile einbinden?
 

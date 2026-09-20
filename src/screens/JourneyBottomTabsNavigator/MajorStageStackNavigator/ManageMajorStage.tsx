@@ -75,6 +75,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
     scheduled_end_time: selectedMajorStage?.scheduled_end_time
       ? formatDateString(selectedMajorStage.scheduled_end_time)!
       : null,
+    duration_days: selectedMajorStage?.duration_days ?? 0,
     additional_info: selectedMajorStage?.additional_info ?? '',
     budget: selectedMajorStage?.costs.budget ?? 0,
     spent_money: selectedMajorStage?.costs.spent_money ?? 0,
@@ -93,6 +94,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
         scheduled_end_time: selectedMajorStage?.scheduled_end_time
           ? formatDateString(selectedMajorStage.scheduled_end_time)!
           : null,
+        duration_days: selectedMajorStage?.duration_days ?? 0,
         additional_info: selectedMajorStage?.additional_info ?? '',
         budget: selectedMajorStage?.costs.budget ?? 0,
         spent_money: selectedMajorStage?.costs.spent_money ?? 0,
@@ -107,6 +109,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
           title: '',
           scheduled_start_time: null,
           scheduled_end_time: null,
+          duration_days: 0,
           additional_info: '',
           budget: 0,
           spent_money: 0,

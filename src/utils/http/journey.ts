@@ -69,6 +69,7 @@ export const createJourney = async (
 
     return { journey: response.data.journey, status: response.status };
   } catch (error) {
+    console.error('Error creating journey:', error);
     // Error from frontend
     return {
       status: 500,

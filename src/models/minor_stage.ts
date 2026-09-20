@@ -6,6 +6,7 @@ export interface MinorStage {
   title: string;
   scheduled_start_time: string;
   scheduled_end_time: string;
+  duration_days: number;
   costs: Costs;
   position: number;
   transportation?: Transportation;
@@ -19,6 +20,7 @@ export interface MinorStageValues {
   title: string;
   scheduled_start_time: string | null;
   scheduled_end_time: string | null;
+  duration_days: number;
   budget: number;
   spent_money: number;
   accommodation_place: string;
@@ -34,6 +36,7 @@ export interface MinorStageFormValues {
   title: Validable<string>;
   scheduled_start_time: Validable<string | null>;
   scheduled_end_time: Validable<string | null>;
+  duration_days: Validable<number>;
   budget: Validable<number>;
   spent_money: Validable<number>;
   accommodation_place: Validable<string>;

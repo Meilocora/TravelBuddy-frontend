@@ -5,11 +5,11 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 
 import {
   FormLimits,
@@ -18,7 +18,6 @@ import {
   MinorStage,
   MinorStageValues,
 } from '../../../models';
-import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import ComplementaryGradient from '../../../components/UI/LinearGradients/ComplementaryGradient';
 import { GlobalStyles } from '../../../constants/styles';
 import { deleteMinorStage, formatDateString } from '../../../utils';
@@ -75,6 +74,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
       scheduled_end_time: selectedMinorStage?.scheduled_end_time
         ? formatDateString(selectedMinorStage.scheduled_end_time)!
         : null,
+      duration_days: selectedMinorStage?.duration_days ?? 0,
       budget: selectedMinorStage?.costs.budget || 0,
       spent_money: selectedMinorStage?.costs.spent_money || 0,
       accommodation_place: selectedMinorStage?.accommodation.place || '',
@@ -100,6 +100,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
         scheduled_end_time: selectedMinorStage?.scheduled_end_time
           ? formatDateString(selectedMinorStage.scheduled_end_time)!
           : null,
+        duration_days: selectedMinorStage?.duration_days ?? 0,
         budget: selectedMinorStage?.costs.budget || 0,
         spent_money: selectedMinorStage?.costs.spent_money || 0,
         accommodation_place: selectedMinorStage?.accommodation.place || '',
@@ -120,6 +121,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
           title: '',
           scheduled_start_time: null,
           scheduled_end_time: null,
+          duration_days: 0,
           budget: 0,
           spent_money: 0,
           accommodation_place: '',
