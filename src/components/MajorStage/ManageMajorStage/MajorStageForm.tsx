@@ -12,7 +12,11 @@ import {
 import Input from '../../UI/form/Input';
 import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
-import { calculateDatesForMajorStage, formatAmount } from '../../../utils';
+import {
+  calculateDatesForMajorStage,
+  calculateMaxDurationDaysForMajorStage,
+  formatAmount,
+} from '../../../utils';
 import Modal from '../../UI/Modal';
 import CountrySelector from './CountrySelector';
 import { createMajorStage, updateMajorStage } from '../../../utils/http';
@@ -71,9 +75,12 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
     ? (defaultValues?.position ?? 1)
     : positions[positions.length - 1];
 
+  const maxDurationDays = calculateMaxDurationDaysForMajorStage(journey);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [durationError, setDurationError] = useState<boolean>(false);
   const [changeCountry, setChangeCountry] = useState(false);
   const [updateConfirmed, setUpdateConfirmed] = useState(false);
 
@@ -169,13 +176,16 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
 
   useEffect(() => {
     if (journey != undefined) {
-      const [startDate, endDate] = calculateDatesForMajorStage(
-        journey,
-        inputs,
-        initialPosition,
-      );
+      const [startDate, endDate, durationExceeded] =
+        calculateDatesForMajorStage(
+          journey,
+          inputs.duration_days.value,
+          initialPosition,
+          editMajorStageId,
+        );
       setStartDate(startDate);
       setEndDate(endDate);
+      setDurationError(durationExceeded);
     }
   }, [inputs.position.value, inputs.duration_days.value]);
 
@@ -228,7 +238,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
 
     const { error, status, majorStage, majorStageFormValues } = response!;
 
-    if (!error && majorStage) {
+    if (status.toString()[0] === '2') {
       onSubmit({ majorStage, status });
     } else if (error) {
       onSubmit({ error, status });
@@ -335,12 +345,24 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
               errors={inputs.duration_days.errors}
               textInputConfig={{
                 keyboardType: 'decimal-pad',
-                value: inputs.duration_days.value.toString(),
-                onChangeText: inputChangedHandler.bind(this, 'duration_days'),
+                value:
+                  inputs.duration_days.value != 0
+                    ? inputs.duration_days.value.toString()
+                    : '',
+                placeholder: `Max: ${maxDurationDays}`,
+                onChangeText: (text) =>
+                  inputChangedHandler(
+                    'duration_days',
+                    text === '' ? 0 : Number(text),
+                  ),
               }}
               mandatory
             />
-            <StageDates startDate={startDate} endDate={endDate} />
+            <StageDates
+              startDate={startDate}
+              endDate={endDate}
+              durationError={durationError}
+            />
           </View>
           <View style={styles.formRow}>
             <CountrySelector
@@ -364,7 +386,7 @@ const MajorStageForm: React.FC<MajorStageFormProps> = ({
           <Button
             onPress={validateInputs}
             colorScheme={ColorScheme.neutral}
-            disabled={isSubmitting}
+            disabled={isSubmitting || durationError}
           >
             {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>

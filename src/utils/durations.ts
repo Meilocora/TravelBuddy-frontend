@@ -1,70 +1,110 @@
-import {
-  Journey,
-  MajorStage,
-  MajorStageFormValues,
-  MinorStageFormValues,
-} from '../models';
+import { Journey, MajorStage, MinorStageFormValues } from '../models';
 import { formatDate, parseDate } from './formatting';
 
 export function calculateDatesForMajorStage(
   journey: Journey,
-  majorStageFormValues: MajorStageFormValues,
+  durationDays: number,
   initialPosition: number,
-): [string, string] {
+  editMajorStageId: number | undefined,
+): [string, string, boolean] {
   let startDate = '';
   let endDate = '';
+  let durationExceeded = false;
+  let majorStageDurations: number = 0;
 
-  if (majorStageFormValues) {
-    // if (majorStageFormValues.position.value > 1) {
-    if (initialPosition > 1) {
-      for (const stage of journey.majorStages!) {
-        if (stage.position === initialPosition - 1) {
-          startDate = increaseDateByOneDay(stage.scheduled_end_time);
-          endDate = calculateEndDateByDuration(
-            startDate,
-            majorStageFormValues.duration_days.value,
-          );
-        }
+  if (initialPosition > 1) {
+    for (const stage of journey.majorStages!) {
+      if (stage.position === initialPosition - 1) {
+        startDate = increaseDateByOneDay(stage.scheduled_end_time);
+        endDate = calculateEndDateByDuration(startDate, durationDays);
       }
-    } else {
-      startDate = journey.scheduled_start_time;
-      endDate = calculateEndDateByDuration(
-        startDate,
-        majorStageFormValues.duration_days.value,
-      );
+    }
+  } else {
+    startDate = journey.scheduled_start_time;
+    endDate = calculateEndDateByDuration(startDate, durationDays);
+  }
+  if (journey.majorStages && journey.majorStages.length > 0) {
+    for (const stage of journey.majorStages!) {
+      if (stage.id !== editMajorStageId) {
+        majorStageDurations += stage.duration_days;
+      }
+    }
+    durationExceeded =
+      majorStageDurations + durationDays > journey.duration_days;
+  } else {
+    durationExceeded =
+      parseDate(endDate) > parseDate(journey.scheduled_end_time);
+  }
+
+  return [startDate, endDate, durationExceeded];
+}
+
+export function calculateMaxDurationDaysForMajorStage(
+  journey: Journey | undefined,
+): number {
+  if (journey == undefined) {
+    return 0;
+  }
+  let majorStageDurations = 0;
+  if (journey.majorStages && journey.majorStages.length > 0) {
+    for (const stage of journey.majorStages) {
+      majorStageDurations += stage.duration_days;
     }
   }
-  return [startDate, endDate];
+  return journey.duration_days - majorStageDurations;
 }
 
 export function calculateDatesForMinorStage(
   majorStage: MajorStage,
-  minorStageFormValues: MinorStageFormValues,
+  durationDays: number,
   initialPosition: number,
-): [string, string] {
+  editMinorStageId: number | undefined,
+): [string, string, boolean] {
   let startDate = '';
   let endDate = '';
+  let durationExceeded = false;
+  let minorStageDurations = 0;
 
-  if (minorStageFormValues) {
-    if (initialPosition > 1) {
-      for (const stage of majorStage.minorStages!) {
-        if (stage.position === initialPosition - 1) {
-          startDate = increaseDateByOneDay(stage.scheduled_end_time);
-          endDate = calculateEndDateByDuration(
-            startDate,
-            minorStageFormValues.duration_days.value,
-          );
-        }
+  if (initialPosition > 1) {
+    for (const stage of majorStage.minorStages!) {
+      if (stage.position === initialPosition - 1) {
+        startDate = increaseDateByOneDay(stage.scheduled_end_time);
+        endDate = calculateEndDateByDuration(startDate, durationDays);
       }
-    } else {
-      startDate = majorStage.scheduled_start_time;
-      endDate = calculateEndDateByDuration(
-        startDate,
-        minorStageFormValues.duration_days.value,
-      );
+    }
+  } else {
+    startDate = majorStage.scheduled_start_time;
+    endDate = calculateEndDateByDuration(startDate, durationDays);
+  }
+  if (majorStage.minorStages && majorStage.minorStages.length > 0) {
+    for (const stage of majorStage.minorStages!) {
+      if (stage.id !== editMinorStageId) {
+        minorStageDurations += stage.duration_days;
+      }
+    }
+    durationExceeded =
+      minorStageDurations + durationDays > majorStage.duration_days;
+  } else {
+    durationExceeded =
+      parseDate(endDate) > parseDate(majorStage.scheduled_end_time);
+  }
+
+  return [startDate, endDate, durationExceeded];
+}
+
+export function calculateMaxDurationDaysForMinorStage(
+  majorStage: MajorStage | undefined,
+): number {
+  if (majorStage == undefined) {
+    return 0;
+  }
+  let minorStageDurations = 0;
+  if (majorStage.minorStages && majorStage.minorStages.length > 0) {
+    for (const stage of majorStage.minorStages) {
+      minorStageDurations += stage.duration_days;
     }
   }
-  return [startDate, endDate];
+  return majorStage.duration_days - minorStageDurations;
 }
 
 function calculateEndDateByDuration(

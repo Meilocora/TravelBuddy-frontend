@@ -79,7 +79,7 @@ const ManageMedium: React.FC<ManageMediumProps> = ({
         selectedMedium!,
         userCtx.userId!,
       );
-      if (!error && status === 200) {
+      if (status.toString()[0] === '2') {
         const popupText = 'Medium successfully deleted!';
         galleryNavigation.navigate('Gallery', {
           popupText: popupText,

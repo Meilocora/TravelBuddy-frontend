@@ -15,6 +15,7 @@ import { GlobalStyles } from '../../../constants/styles';
 import Button from '../../UI/Button';
 import {
   calculateDatesForMinorStage,
+  calculateMaxDurationDaysForMinorStage,
   createMinorStage,
   formatAmount,
   updateMinorStage,
@@ -85,9 +86,12 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
     ? (defaultValues?.position ?? 1)
     : positions[positions.length - 1];
 
+  const maxDurationDays = calculateMaxDurationDaysForMinorStage(majorStage);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [durationError, setDurationError] = useState<boolean>(false);
 
   const [inputs, setInputs] = useState<MinorStageFormValues>({
     title: { value: defaultValues?.title || '', isValid: true, errors: [] },
@@ -231,13 +235,16 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
   useEffect(() => {
     if (majorStage != undefined) {
-      const [startDate, endDate] = calculateDatesForMinorStage(
-        majorStage,
-        inputs,
-        initialPosition,
-      );
+      const [startDate, endDate, durationExceeded] =
+        calculateDatesForMinorStage(
+          majorStage,
+          inputs.duration_days.value,
+          initialPosition,
+          editMinorStageId,
+        );
       setStartDate(startDate);
       setEndDate(endDate);
+      setDurationError(durationExceeded);
     }
   }, [inputs.position.value, inputs.duration_days.value]);
 
@@ -322,7 +329,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
 
     const { error, status, minorStage, minorStageFormValues } = response!;
 
-    if (!error && minorStage) {
+    if (status.toString()[0] === '2') {
       onSubmit({ minorStage, status });
     } else if (error) {
       onSubmit({ error, status });
@@ -410,12 +417,24 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
               errors={inputs.duration_days.errors}
               textInputConfig={{
                 keyboardType: 'decimal-pad',
-                value: inputs.duration_days.value.toString(),
-                onChangeText: inputChangedHandler.bind(this, 'duration_days'),
+                value:
+                  inputs.duration_days.value > 0
+                    ? inputs.duration_days.value.toString()
+                    : '',
+                placeholder: `Max: ${maxDurationDays}`,
+                onChangeText: (text) =>
+                  inputChangedHandler(
+                    'duration_days',
+                    text === '' ? 0 : Number(text),
+                  ),
               }}
               mandatory
             />
-            <StageDates startDate={startDate} endDate={endDate} />
+            <StageDates
+              startDate={startDate}
+              endDate={endDate}
+              durationError={durationError}
+            />
           </View>
           <View style={styles.separator}>
             <Text style={styles.subtitle}>Accommodation</Text>
@@ -492,7 +511,7 @@ const MinorStageForm: React.FC<MinorStageFormProps> = ({
           <Button
             onPress={validateInputs}
             colorScheme={ColorScheme.neutral}
-            disabled={isSubmitting}
+            disabled={isSubmitting || durationError}
           >
             {isSubmitting ? 'Submitting...' : submitButtonLabel}
           </Button>

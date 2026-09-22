@@ -53,9 +53,9 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
 
   const maxAvailableMoney = Math.max(
     Math.round(
-      (minorStage!.costs.budget - minorStage!.costs.spent_money) * 100
+      (minorStage!.costs.budget - minorStage!.costs.spent_money) * 100,
     ) / 100,
-    0
+    0,
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +86,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean | number
+    enteredValue: string | boolean | number,
   ) {
     setInputs((currInputs) => {
       return {
@@ -114,7 +114,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
     const { error, status, spending, spendingFormValues, backendJourneyId } =
       response!;
 
-    if (!error && spending) {
+    if (status.toString()[0] === '2') {
       onSubmit({ spending, status, backendJourneyId });
     } else if (error) {
       onSubmit({ error, status });
@@ -134,7 +134,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
 
   function handleChangeDate(
     inputIdentifier: string,
-    selectedDate: Date | undefined
+    selectedDate: Date | undefined,
   ) {
     if (selectedDate === undefined) {
       return;
@@ -171,7 +171,7 @@ const SpendingForm: React.FC<SpendingFormProps> = ({
             <SpendingCategorySelector
               onChangeSpendingCategory={inputChangedHandler.bind(
                 this,
-                'category'
+                'category',
               )}
               defaultCategory={inputs.category.value}
               invalid={!inputs.category.isValid}

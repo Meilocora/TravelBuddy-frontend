@@ -137,7 +137,7 @@ const ManageMajorStage: React.FC<ManageMajorStageProps> = ({
   async function deleteMajorStageHandler() {
     try {
       const { error, status } = await deleteMajorStage(editedMajorStageId!);
-      if (!error && status === 200) {
+      if (status.toString()[0] === '2') {
         triggerRefresh();
         const popupText = `Major Stage successfully deleted!`;
         planningNavigation.navigate('Planning', {

@@ -8,3 +8,4 @@ export * from './transportation';
 export * from './activity';
 export * from './common';
 export * from './media';
+export * from './currency';

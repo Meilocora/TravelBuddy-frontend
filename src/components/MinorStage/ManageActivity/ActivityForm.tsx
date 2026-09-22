@@ -54,9 +54,9 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
   const maxAvailableMoney = Math.max(
     Math.round(
-      (minorStage!.costs.budget - minorStage!.costs.spent_money) * 100
+      (minorStage!.costs.budget - minorStage!.costs.spent_money) * 100,
     ) / 100,
-    0
+    0,
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +108,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean | number
+    enteredValue: string | boolean | number,
   ) {
     setInputs((currInputs) => {
       return {
@@ -169,7 +169,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     const { error, status, activity, activityFormValues, backendJourneyId } =
       response!;
 
-    if (!error && activity) {
+    if (status.toString()[0] === '2') {
       onSubmit({ activity, status, backendJourneyId });
     } else if (error) {
       onSubmit({ error, status });

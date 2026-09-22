@@ -46,7 +46,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
   const countryId = route.params.countryId;
 
   const country = customCountryCtx.customCountries.find(
-    (country) => country.id === countryId
+    (country) => country.id === countryId,
   );
   if (!country && !error) {
     setError('Country not found');
@@ -79,7 +79,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
 
     if (error) {
       setError(error);
-    } else if (status === 200 && customCountry) {
+    } else if (status.toString()[0] === '2' && customCountry) {
       customCountryCtx.updateCustomCountry(customCountry);
       triggerRefresh();
       setIsEditing(false);

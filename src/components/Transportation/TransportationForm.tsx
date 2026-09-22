@@ -212,7 +212,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean | number
+    enteredValue: string | boolean | number,
   ) {
     setInputs((currInputs) => {
       return {
@@ -286,7 +286,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
         inputs,
         stage!.transportation!.id,
         majorStageId,
-        minorStageId
+        minorStageId,
       );
     } else if (!isEditing) {
       response = await createTransportation(inputs, majorStageId, minorStageId);
@@ -300,7 +300,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
       transportationFormValues,
     } = response!;
 
-    if (!error && transportation) {
+    if (status.toString()[0] === '2') {
       onSubmit({
         transportation,
         status,
@@ -381,7 +381,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
                 value: inputs.place_of_departure.value,
                 onChangeText: inputChangedHandler.bind(
                   this,
-                  'place_of_departure'
+                  'place_of_departure',
                 ),
               }}
             />
@@ -417,7 +417,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({
                 value: inputs.place_of_arrival.value,
                 onChangeText: inputChangedHandler.bind(
                   this,
-                  'place_of_arrival'
+                  'place_of_arrival',
                 ),
               }}
             />

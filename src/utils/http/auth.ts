@@ -6,6 +6,7 @@ import {
   PasswordChangeFormValues,
 } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/auth`;
@@ -27,28 +28,16 @@ export const createUser = async (
       authFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.authFormValues) {
-      return {
-        authFormValues: response.data.authFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       token: response.data.token,
       refreshToken: response.data.refreshToken,
       status: response.status,
     };
   } catch (error) {
-    return {
-      status: 500,
-      error: 'Could not create user! Backend request failed.',
-    };
+    return handleBackendRequestError<UserCreationProps>(
+      error,
+      'Could not create user! Backend request failed.',
+    );
   }
 };
 
@@ -61,28 +50,16 @@ export const loginUser = async (
       authFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.authFormValues) {
-      return {
-        authFormValues: response.data.authFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       token: response.data.token,
       refreshToken: response.data.refreshToken,
       status: response.status,
     };
   } catch (error) {
-    return {
-      status: 500,
-      error: 'Could not login user! Backend request failed.',
-    };
+    return handleBackendRequestError<UserCreationProps>(
+      error,
+      'Could not login user! Backend request failed.',
+    );
   }
 };
 
@@ -99,20 +76,14 @@ export const fetchUserInfos = async (): Promise<FetchUserInfosProps> => {
       `${prefix}/get-user-infos`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     const { username, email, status } = response.data;
 
     return { username, email, status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not fetch data! Backend request failed.',
-    };
+    return handleBackendRequestError<FetchUserInfosProps>(
+      error,
+      'Could not fetch data! Backend request failed.',
+    );
   }
 };
 
@@ -132,27 +103,15 @@ export const changeUsername = async (
       nameFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.nameFormValues) {
-      return {
-        nameFormValues: response.data.nameFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       newUsername: response.data.newUsername,
       status: response.status,
     };
   } catch (error) {
-    return {
-      status: 500,
-      error: 'Could not change username! Backend request failed.',
-    };
+    return handleBackendRequestError<NameChangeProps>(
+      error,
+      'Could not change username! Backend request failed.',
+    );
   }
 };
 
@@ -171,25 +130,13 @@ export const changePassword = async (
       passwordFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.passwordFormValues) {
-      return {
-        passwordFormValues: response.data.passwordFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       status: response.status,
     };
   } catch (error) {
-    return {
-      status: 500,
-      error: 'Could not change password! Backend request failed.',
-    };
+    return handleBackendRequestError<PasswordChangeProps>(
+      error,
+      'Could not change password! Backend request failed.',
+    );
   }
 };

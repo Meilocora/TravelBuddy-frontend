@@ -6,6 +6,7 @@ import {
   StagesPositionDict,
 } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/major_stage`;
@@ -27,28 +28,15 @@ export const createMajorStage = async (
       majorStageFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.majorStageFormValues) {
-      return {
-        majorStageFormValues: response.data.majorStageFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       majorStage: response.data.majorStage,
       status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create major stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMajorStageProps>(
+      error,
+      'Could not create major stage! Backend request failed.',
+    );
   }
 };
 
@@ -63,28 +51,15 @@ export const updateMajorStage = async (
       majorStageFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.majorStageFormValues) {
-      return {
-        majorStageFormValues: response.data.majorStageFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       majorStage: response.data.majorStage,
       status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update major stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMajorStageProps>(
+      error,
+      'Could not update major stage! Backend request failed.',
+    );
   }
 };
 
@@ -96,18 +71,12 @@ export const deleteMajorStage = async (
       `${prefix}/delete-major-stage/${majorStageId}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete major stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMajorStageProps>(
+      error,
+      'Could not delete major stage! Backend request failed.',
+    );
   }
 };
 
@@ -120,17 +89,11 @@ export const swapMajorStages = async (
       { stagesPositionList },
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not swap major stages! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMajorStageProps>(
+      error,
+      'Could not swap major stages! Backend request failed.',
+    );
   }
 };

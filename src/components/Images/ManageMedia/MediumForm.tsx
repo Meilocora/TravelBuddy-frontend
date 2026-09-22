@@ -155,7 +155,7 @@ const MediumForm: React.FC<MediumFormProps> = ({
 
     const { error, status } = response!;
 
-    if (!error) {
+    if (status.toString()[0] === '2') {
       onSubmit({ status });
     } else if (error) {
       onSubmit({ error, status });

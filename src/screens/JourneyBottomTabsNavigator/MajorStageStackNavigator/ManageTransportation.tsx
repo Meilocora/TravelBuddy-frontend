@@ -75,11 +75,11 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
   useEffect(() => {
     if (minorStageId) {
       setSelectedTransportation(
-        stagesCtx.findMinorStage(minorStageId)?.transportation
+        stagesCtx.findMinorStage(minorStageId)?.transportation,
       );
     } else if (majorStageId) {
       setSelectedTransportation(
-        stagesCtx.findMajorStage(majorStageId)?.transportation
+        stagesCtx.findMajorStage(majorStageId)?.transportation,
       );
     }
 
@@ -107,9 +107,9 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     try {
       const { error, status, backendMajorStageId } = await deleteTransportation(
         majorStageId!,
-        minorStageId!
+        minorStageId!,
       );
-      if (!error && status === 200) {
+      if (status.toString()[0] === '2') {
         if (majorStageId) {
           triggerRefresh();
           const popupText = `Transportation successfully deleted!`;
@@ -156,10 +156,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     if (error) {
       setError(error);
       return;
-    } else if (
-      (transportation && status === 200) ||
-      (transportation && status === 201)
-    ) {
+    } else if (status.toString()[0] === '2') {
       if (mode === 'major') {
         triggerRefresh();
         const majorStageTitle = stagesCtx.findMajorStage(majorStageId!)?.title;

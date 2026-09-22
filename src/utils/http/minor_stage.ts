@@ -6,6 +6,7 @@ import {
   StagesPositionDict,
 } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/minor_stage`;
@@ -27,28 +28,15 @@ export const createMinorStage = async (
       minorStageFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.minorStageFormValues) {
-      return {
-        minorStageFormValues: response.data.minorStageFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       minorStage: response.data.minorStage,
       status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create minor stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMinorStageProps>(
+      error,
+      'Could not create minor stage! Backend request failed.',
+    );
   }
 };
 
@@ -63,28 +51,15 @@ export const updateMinorStage = async (
       minorStageFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.minorStageFormValues) {
-      return {
-        minorStageFormValues: response.data.minorStageFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       minorStage: response.data.minorStage,
       status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update minor stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMinorStageProps>(
+      error,
+      'Could not update minor stage! Backend request failed.',
+    );
   }
 };
 
@@ -96,18 +71,12 @@ export const deleteMinorStage = async (
       `${prefix}/delete-minor-stage/${minorStageId}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete minor stage! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMinorStageProps>(
+      error,
+      'Could not delete minor stage! Backend request failed.',
+    );
   }
 };
 
@@ -120,17 +89,11 @@ export const swapMinorStages = async (
       { stagesPositionList },
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not swap minor stages! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMinorStageProps>(
+      error,
+      'Could not swap minor stages! Backend request failed.',
+    );
   }
 };

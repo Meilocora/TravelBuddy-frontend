@@ -51,7 +51,7 @@ const CurrenciesSelectorList: React.FC<CurrenciesSelectorListProps> = ({
   let currencies = userCtx.currencies.filter((c) => c.code !== defaultCurrency);
 
   const currencyObj = userCtx.currencies?.find(
-    (c) => c.code === defaultCurrency
+    (c) => c.code === defaultCurrency,
   );
 
   if (sort === 'desc') {
@@ -62,7 +62,7 @@ const CurrenciesSelectorList: React.FC<CurrenciesSelectorListProps> = ({
 
   if (searchTerm !== '') {
     currencies = currencies.filter((c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase())
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }
 

@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { Activity, ActivityFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -25,31 +26,18 @@ export const createActivity = async (
       activityFormValues,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.activityFormValues) {
-      return {
-        activityFormValues: response!.data.activityFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
-      activity: response!.data.activity,
-      backendJourneyId: response!.data.backendJourneyId
-        ? response!.data.backendJourneyId
+      activity: response.data.activity,
+      backendJourneyId: response.data.backendJourneyId
+        ? response.data.backendJourneyId
         : undefined,
-      status: response!.status,
+      status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create activity! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageActivityProps>(
+      error,
+      'Could not create activity! Backend request failed.',
+    );
   }
 };
 
@@ -64,31 +52,18 @@ export const updateActivity = async (
       activityFormValues,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.activityFormValues) {
-      return {
-        activityFormValues: response!.data.activityFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
-      activity: response!.data.activity,
-      backendJourneyId: response!.data.backendJourneyId
-        ? response!.data.backendJourneyId
+      activity: response.data.activity,
+      backendJourneyId: response.data.backendJourneyId
+        ? response.data.backendJourneyId
         : undefined,
-      status: response!.status,
+      status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update activity! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageActivityProps>(
+      error,
+      'Could not update activity! Backend request failed.',
+    );
   }
 };
 
@@ -100,20 +75,14 @@ export const deleteActivity = async (
       `${prefix}/delete-activity/${activityId}`,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
     return {
-      status: response!.status,
-      backendJourneyId: response!.data.backendJourneyId,
+      status: response.status,
+      backendJourneyId: response.data.backendJourneyId,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete activity! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageActivityProps>(
+      error,
+      'Could not delete activity! Backend request failed.',
+    );
   }
 };

@@ -75,10 +75,11 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   const moneyAvailable = formatAmount(majorStage.costs.budget);
   const moneyPlanned = formatAmount(majorStage.costs.spent_money);
   const startDate = formatDateString(majorStage.scheduled_start_time);
+  // TODO: Red, when exceeds journey duration!
   const endDate = formatDateString(majorStage.scheduled_end_time);
   const durationInDays = formatDurationToDays(
     majorStage.scheduled_start_time,
-    majorStage.scheduled_end_time
+    majorStage.scheduled_end_time,
   );
   const isOver = validateIsOver(majorStage.scheduled_end_time);
   const hasMedia = mediumCtx.hasMedia('MinorStages', undefined, minorStageIds);
@@ -87,7 +88,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
     majorStage?.transportation?.start_time,
     majorStage?.transportation?.start_time_offset,
     majorStage?.transportation?.arrival_time,
-    majorStage?.transportation?.arrival_time_offset
+    majorStage?.transportation?.arrival_time_offset,
   );
 
   const IconComponent =

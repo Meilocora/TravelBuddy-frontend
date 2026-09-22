@@ -61,7 +61,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 }): ReactElement => {
   const countryCtx = useContext(CustomCountryContext);
   const countryname = countryCtx.customCountries.find(
-    (country) => country.id === defaultValues?.countryId
+    (country) => country.id === defaultValues?.countryId,
   )!.name;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,7 +104,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | boolean
+    enteredValue: string | boolean,
   ): void {
     setInputs((currInputs) => {
       return {
@@ -155,7 +155,7 @@ const PlaceForm: React.FC<PlaceFormProps> = ({
 
     const { error, status, place, placeFormValues } = response!;
 
-    if (!error && place) {
+    if (status.toString()[0] === '2') {
       onSubmit({ place, status });
     } else if (error) {
       onSubmit({ error, status });

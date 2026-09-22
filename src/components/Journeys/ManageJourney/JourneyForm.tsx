@@ -196,7 +196,7 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
 
     const { error, status, journey, journeyFormValues } = response!;
 
-    if (!error && journey) {
+    if (status.toString()[0] === '2') {
       onSubmit({ journey, status });
     } else if (error) {
       onSubmit({ error, status });

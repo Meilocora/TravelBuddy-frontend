@@ -69,7 +69,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
   const currencyObj = userCtx.currencies?.find((c) =>
     Array.isArray(country.currencies)
       ? country.currencies.includes(c.code)
-      : c.code === country.currencies
+      : c.code === country.currencies,
   );
 
   if (displayedCurrency !== '' && currencyObj && currencyObj.code !== 'EUR') {
@@ -141,7 +141,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | string[] | undefined
+    enteredValue: string | string[] | undefined,
   ) {
     setInputs((currInputs) => {
       return {
@@ -171,7 +171,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
 
     const { error, status, customCountry, customCountryFormValues } = response!;
 
-    if ((!error && customCountry) || error) {
+    if (status.toString()[0] === '2' || error) {
       onUpdate(response);
     } else if (customCountryFormValues) {
       setInputs((prevValues) => customCountryFormValues);
@@ -195,7 +195,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
     setIsDeleting(false);
   }
 
-  let buttonLabel = 'Submitt';
+  let buttonLabel = 'Submit';
   if (isSubmitting) {
     buttonLabel = 'Submitting...';
   }
@@ -368,7 +368,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   value: inputs.best_time_to_visit.value?.toString(),
                   onChangeText: inputChangedHandler.bind(
                     this,
-                    'best_time_to_visit'
+                    'best_time_to_visit',
                   ),
                 }}
               />
@@ -393,7 +393,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   value: inputs.general_information.value?.toString(),
                   onChangeText: inputChangedHandler.bind(
                     this,
-                    'general_information'
+                    'general_information',
                   ),
                 }}
               />
@@ -418,7 +418,7 @@ const CustomCountryForm: React.FC<CustomCountryFormProps> = ({
                   value: inputs.visum_regulations.value?.toString(),
                   onChangeText: inputChangedHandler.bind(
                     this,
-                    'visum_regulations'
+                    'visum_regulations',
                   ),
                 }}
               />

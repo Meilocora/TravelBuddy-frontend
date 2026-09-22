@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 import api from './api';
 import { LatLng } from 'react-native-maps';
 import { CurrencyInfo } from '../../models';
+import { handleBackendRequestError } from './common';
 
 export interface FetchUserDataProps {
   userId?: number;
@@ -26,19 +27,16 @@ export const fetchUsersData = async (
       },
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    const { userId, offset, localCurrency, status } = response.data;
-
-    return { userId, offset, localCurrency, status };
-  } catch (error) {
-    // Error from frontend
     return {
-      status: 500,
-      error: 'Could not fetch data! Backend request failed.',
+      userId: response.data.userId,
+      offset: response.data.offset,
+      localCurrency: response.data.localCurrency,
+      status: response.status,
     };
+  } catch (error) {
+    return handleBackendRequestError<FetchUserDataProps>(
+      error,
+      'Could not fetch data! Backend request failed.',
+    );
   }
 };

@@ -10,6 +10,7 @@ import {
   uploadMedium,
 } from '../media';
 import { MediaStorageMode, Medium, MediumFormValues } from '../../models/media';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/medium`;
@@ -29,21 +30,12 @@ export const fetchAllMedia = async (
       `${prefix}/get-media/${storageMode}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    const { media, status } = response.data;
-
-    if (!media) {
-      return { status };
-    }
-
-    return { media, status };
+    return { media: response.data.media, status: response.status };
   } catch (error) {
-    // Error from frontend
-    return { status: 500, error: 'Could not fetch media!' };
+    return handleBackendRequestError<FetchMediaProps>(
+      error,
+      'Could not fetch media!',
+    );
   }
 };
 
@@ -155,18 +147,12 @@ const addMediumToBackend = async (
       mediumFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not add medium! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMediumProps>(
+      error,
+      'Could not add medium! Backend request failed.',
+    );
   }
 };
 
@@ -181,18 +167,12 @@ export const updateMedium = async (
       mediumFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update medium! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMediumProps>(
+      error,
+      'Could not update medium! Backend request failed.',
+    );
   }
 };
 
@@ -269,18 +249,12 @@ const deleteMediumFromBackend = async (
       `${prefix}/delete-medium/${medium.id}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete medium! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageMediumProps>(
+      error,
+      'Could not delete medium! Backend request failed.',
+    );
   }
 };
 
@@ -347,11 +321,6 @@ export const deleteMedia = async (
       `${prefix}/delete-media`,
       { data: { ids: mediaIds } },
     );
-
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
 
     return { status: response.status };
   } catch (error) {

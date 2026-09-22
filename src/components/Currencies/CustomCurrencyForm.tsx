@@ -49,7 +49,7 @@ const CustomCurrencyForm: React.FC<CustomCurrencyFormProps> = ({
 
   function inputChangedHandler(
     inputIdentifier: string,
-    enteredValue: string | number
+    enteredValue: string | number,
   ) {
     setInputs((currInputs) => {
       return {
@@ -81,7 +81,7 @@ const CustomCurrencyForm: React.FC<CustomCurrencyFormProps> = ({
 
     const { error, status, currencyFormValues } = response!;
 
-    if (!error) {
+    if (status.toString()[0] === '2') {
       onSubmit({ status });
     } else if (error) {
       onSubmit({ error, status });

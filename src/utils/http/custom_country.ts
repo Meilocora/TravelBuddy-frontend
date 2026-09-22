@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { CustomCountry, CustomCountryFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 export interface FetchCountriesProps {
   countries?: string[];
@@ -26,21 +27,12 @@ export const fetchCountries = async (
       `${prefix}/get-countries/${countryName}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    const { countries, status } = response.data;
-
-    if (!countries) {
-      return { status };
-    }
-
-    return { items: countries, status: status };
+    return { items: response.data.countries, status: response.status };
   } catch (error) {
-    // Error from frontend
-    return { status: 500, error: 'Could not fetch countries!' };
+    return handleBackendRequestError<FetchCountriesResponseProps>(
+      error,
+      'Could not fetch countries!',
+    );
   }
 };
 
@@ -65,16 +57,15 @@ export const addCountry = async (
       { countryName },
     );
 
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return {
       addedItem: response.data.customCountry,
       status: response.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not add country!' };
+    return handleBackendRequestError<AddCustomCountryResponseProps>(
+      error,
+      'Could not add country!',
+    );
   }
 };
 
@@ -98,16 +89,15 @@ export const fetchCustomCountries =
         `${prefix}/get-custom-countries`,
       );
 
-      if (response.data.error) {
-        return { status: response.status, error: response.data.error };
-      }
-
       return {
         data: response.data.customCountries,
         status: response.status,
       };
     } catch (error) {
-      return { status: 500, error: 'Could not fetch custom countries!' };
+      return handleBackendRequestError<FetchCustomCountryResponseProps>(
+        error,
+        'Could not fetch custom countries!',
+      );
     }
   };
 
@@ -129,19 +119,15 @@ export const updateCountry = async (
       customCountryFormValues,
     );
 
-    if (response.data.customCountryFormValues) {
-      return {
-        customCountryFormValues: response.data.customCountryFormValues,
-        status: response.status,
-      };
-    }
-
     return {
       customCountry: response.data.customCountry,
       status: response.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not update country!' };
+    return handleBackendRequestError<UpdateCustomCountryProps>(
+      error,
+      'Could not update country!',
+    );
   }
 };
 
@@ -160,15 +146,14 @@ export const deleteCountry = async (
       `${prefix}/delete-custom-country/${customCountryId}`,
     );
 
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return {
       countryName: response.data.countryName,
       status: response.status,
     };
   } catch (error) {
-    return { status: 500, error: 'Could not delete country!' };
+    return handleBackendRequestError<DeleteCustomCountryProps>(
+      error,
+      'Could not delete country!',
+    );
   }
 };

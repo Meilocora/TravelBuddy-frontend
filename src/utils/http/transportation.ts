@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { Transportation, TransportationFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/transportation`;
@@ -33,18 +34,6 @@ export const createTransportation = async (
       );
     }
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.transportationFormValues) {
-      return {
-        transportationFormValues: response!.data.transportationFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
       transportation: response!.data.transportation,
       backendMajorStageId: response!.data.backendMajorStageId
@@ -53,11 +42,10 @@ export const createTransportation = async (
       status: response!.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create transportation! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageTransportProps>(
+      error,
+      'Could not create transportation! Backend request failed.',
+    );
   }
 };
 
@@ -81,18 +69,6 @@ export const updateTransportation = async (
       );
     }
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.transportationFormValues) {
-      return {
-        transportationFormValues: response!.data.transportationFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
       transportation: response!.data.transportation,
       backendMajorStageId: response!.data.backendMajorStageId
@@ -101,11 +77,10 @@ export const updateTransportation = async (
       status: response!.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update transportation! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageTransportProps>(
+      error,
+      'Could not update transportation! Backend request failed.',
+    );
   }
 };
 
@@ -125,20 +100,14 @@ export const deleteTransportation = async (
       );
     }
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
     return {
       status: response!.status,
       backendMajorStageId: response!.data.backendMajorStageId,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete transportation! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageTransportProps>(
+      error,
+      'Could not delete transportation! Backend request failed.',
+    );
   }
 };

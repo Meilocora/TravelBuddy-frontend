@@ -89,7 +89,7 @@ const MainContent: React.FC<MainContentProps> = ({
   }
 
   async function handleDeleteActivity(id: number) {
-    await deleteActivity(id);
+    deleteActivity(id);
     triggerRefresh();
   }
 

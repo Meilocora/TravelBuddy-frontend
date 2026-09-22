@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { Journey, JourneyFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 interface FetchJourneysProps {
   journeys?: Journey[];
@@ -18,24 +19,12 @@ export const fetchStagesDatas = async (): Promise<FetchJourneysProps> => {
       `${prefix}/get-stages-data`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    const { journeys, status } = response.data;
-
-    if (!journeys) {
-      return { status };
-    }
-
-    return { journeys, status };
+    return { journeys: response.data.journeys, status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not fetch data! Backend request failed.',
-    };
+    return handleBackendRequestError<FetchJourneysProps>(
+      error,
+      'Could not fetch data! Backend request failed.',
+    );
   }
 };
 
@@ -55,26 +44,12 @@ export const createJourney = async (
       journeyFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.journeyFormValues) {
-      return {
-        journeyFormValues: response.data.journeyFormValues,
-        status: response.status,
-      };
-    }
-
     return { journey: response.data.journey, status: response.status };
   } catch (error) {
-    console.error('Error creating journey:', error);
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create journey! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageJourneyProps>(
+      error,
+      'Could not create journey! Backend request failed.',
+    );
   }
 };
 
@@ -88,25 +63,12 @@ export const updateJourney = async (
       journeyFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
-    if (response.data.journeyFormValues) {
-      return {
-        journeyFormValues: response.data.journeyFormValues,
-        status: response.status,
-      };
-    }
-
     return { journey: response.data.journey, status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update journey! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageJourneyProps>(
+      error,
+      'Could not update journey! Backend request failed.',
+    );
   }
 };
 
@@ -118,17 +80,11 @@ export const deleteJourney = async (
       `${prefix}/delete-journey/${journeyId}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete journey! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageJourneyProps>(
+      error,
+      'Could not delete journey! Backend request failed.',
+    );
   }
 };

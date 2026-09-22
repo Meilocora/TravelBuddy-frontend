@@ -58,7 +58,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
 
   if (activityId) {
     selectedActivity = minorStage?.activities?.find(
-      (activity) => activity.id === activityId
+      (activity) => activity.id === activityId,
     );
   }
 
@@ -98,7 +98,7 @@ const ManageActivity: React.FC<ManageActivityProps> = ({
   async function deleteHandler() {
     try {
       const { error, status, backendJourneyId } = await deleteActivity(
-        activityId!
+        activityId!,
       );
       if (!error && status === 200) {
         triggerRefresh();

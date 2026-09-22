@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { CurrencyInfo, Spending, SpendingFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/spending`;
@@ -24,31 +25,18 @@ export const createSpending = async (
       spendingFormValues,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.spendingFormValues) {
-      return {
-        spendingFormValues: response!.data.spendingFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
-      spending: response!.data.spending,
-      backendJourneyId: response!.data.backendJourneyId
-        ? response!.data.backendJourneyId
+      spending: response.data.spending,
+      backendJourneyId: response.data.backendJourneyId
+        ? response.data.backendJourneyId
         : undefined,
-      status: response!.status,
+      status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not create spending! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageSpendingProps>(
+      error,
+      'Could not create spending! Backend request failed.',
+    );
   }
 };
 
@@ -63,31 +51,18 @@ export const updateSpending = async (
       spendingFormValues,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
-    if (response!.data.spendingFormValues) {
-      return {
-        spendingFormValues: response!.data.spendingFormValues,
-        status: response!.status,
-      };
-    }
-
     return {
-      spending: response!.data.spending,
-      backendJourneyId: response!.data.backendJourneyId
-        ? response!.data.backendJourneyId
+      spending: response.data.spending,
+      backendJourneyId: response.data.backendJourneyId
+        ? response.data.backendJourneyId
         : undefined,
-      status: response!.status,
+      status: response.status,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update spending! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageSpendingProps>(
+      error,
+      'Could not update spending! Backend request failed.',
+    );
   }
 };
 
@@ -99,21 +74,15 @@ export const deleteSpending = async (
       `${prefix}/delete-spending/${spendingId}`,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
     return {
-      status: response!.status,
-      backendJourneyId: response!.data.backendJourneyId,
+      status: response.status,
+      backendJourneyId: response.data.backendJourneyId,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete spending! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageSpendingProps>(
+      error,
+      'Could not delete spending! Backend request failed.',
+    );
   }
 };
 
@@ -129,20 +98,14 @@ export const fetchCurrencies = async (): Promise<FetchCurrenciesProps> => {
       `${prefix}/get-currencies`,
     );
 
-    // Error from backend
-    if (response!.data.error) {
-      return { status: response!.status, error: response!.data.error };
-    }
-
     return {
-      status: response!.status,
-      currencies: response!.data.currencies,
+      status: response.status,
+      currencies: response.data.currencies,
     };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not fetch currencies! Backend request failed.',
-    };
+    return handleBackendRequestError<FetchCurrenciesProps>(
+      error,
+      'Could not fetch currencies! Backend request failed.',
+    );
   }
 };

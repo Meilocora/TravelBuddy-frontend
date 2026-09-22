@@ -1,6 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { CustomCurrencyFormValues } from '../../models';
 import api from './api';
+import { handleBackendRequestError } from './common';
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const prefix = `${REACT_APP_BACKEND_URL}/currency`;
@@ -21,18 +22,12 @@ export const addCurrency = async (
       currencyFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not add currency! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageCurrencyProps>(
+      error,
+      'Could not add currency! Backend request failed.',
+    );
   }
 };
 
@@ -47,18 +42,12 @@ export const updateCurrency = async (
       currencyFormValues,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not update currency! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageCurrencyProps>(
+      error,
+      'Could not update currency! Backend request failed.',
+    );
   }
 };
 
@@ -70,17 +59,11 @@ export const deleteCurrency = async (
       `${prefix}/delete-currency/${currencyId}`,
     );
 
-    // Error from backend
-    if (response.data.error) {
-      return { status: response.status, error: response.data.error };
-    }
-
     return { status: response.status };
   } catch (error) {
-    // Error from frontend
-    return {
-      status: 500,
-      error: 'Could not delete currency! Backend request failed.',
-    };
+    return handleBackendRequestError<ManageCurrencyProps>(
+      error,
+      'Could not delete currency! Backend request failed.',
+    );
   }
 };

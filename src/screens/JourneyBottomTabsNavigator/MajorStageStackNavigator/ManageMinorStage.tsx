@@ -174,7 +174,7 @@ const ManageMinorStage: React.FC<ManageMinorStageProps> = ({
   async function deleteMinorStageHandler() {
     try {
       const { error, status } = await deleteMinorStage(editedMinorStageId!);
-      if (!error && status === 200) {
+      if (status.toString()[0] === '2') {
         triggerRefresh();
         const popupText = `Minor Stage successfully deleted!`;
         navigation.navigate('MinorStages', {

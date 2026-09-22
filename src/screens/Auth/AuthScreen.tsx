@@ -30,7 +30,7 @@ const AuthScreen: React.FC<AuthScreenProps> = (): ReactElement => {
     if (error) {
       setError(error);
       return;
-    } else if (token && refreshToken && (status === 201 || status === 200)) {
+    } else if (token && refreshToken && status.toString()[0] === '2') {
       authCtx.authenticate(token, refreshToken);
     }
   }

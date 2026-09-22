@@ -6,11 +6,13 @@ import { GlobalStyles } from '../../../constants/styles';
 interface StageDatesProps {
   startDate: string;
   endDate: string;
+  durationError: boolean;
 }
 
 const StageDates: React.FC<StageDatesProps> = ({
   startDate,
   endDate,
+  durationError = false,
 }): ReactElement => {
   return (
     <View style={styles.outerContainer}>
@@ -20,8 +22,12 @@ const StageDates: React.FC<StageDatesProps> = ({
           <Text style={styles.dateText}>{startDate}</Text>
         </View>
         <View style={styles.containerRow}>
-          <Text style={styles.text}>Ends:</Text>
-          <Text style={styles.dateText}>{endDate}</Text>
+          <Text style={[styles.text, durationError && styles.errorText]}>
+            Ends:
+          </Text>
+          <Text style={[styles.dateText, durationError && styles.errorText]}>
+            {endDate}
+          </Text>
         </View>
       </View>
     </View>
@@ -51,6 +57,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     flexWrap: 'wrap',
+  },
+  errorText: {
+    color: GlobalStyles.colors.error200,
   },
   dateText: {
     textAlign: 'right',

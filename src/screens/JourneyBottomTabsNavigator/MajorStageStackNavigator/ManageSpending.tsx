@@ -57,7 +57,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
 
   if (spendingId) {
     selectedSpending = minorStage?.costs.spendings?.find(
-      (spending) => spending.id === spendingId
+      (spending) => spending.id === spendingId,
     );
   }
 
@@ -93,9 +93,9 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
   async function deleteHandler() {
     try {
       const { error, status, backendJourneyId } = await deleteSpending(
-        spendingId!
+        spendingId!,
       );
-      if (!error && status === 200) {
+      if (status.toString()[0] === '2') {
         triggerRefresh();
         navigation.goBack();
       } else {
