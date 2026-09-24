@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -18,7 +18,8 @@ import FilterSettings from '../UI/FilterSettings';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GlobalStyles } from '../../constants/styles';
 import ErrorOverlay from '../UI/ErrorOverlay';
-import { useAppData } from '../../hooks/useAppData';
+import { StagesContext } from '../../store/stages-context';
+import InfoModal from '../UI/InfoModal';
 
 interface MajorStageListProps {
   journey: Journey;
@@ -30,6 +31,8 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   majorStages,
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
+  const [isFetching, SetIsFetching] = useState(false);
+  const stagesCtx = useContext(StagesContext);
 
   const journeyIsOver = validateIsOver(journey.scheduled_end_time);
 
@@ -38,8 +41,6 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
   );
 
   const [openModal, setOpenModal] = useState<boolean>(false);
-
-  const { triggerRefresh } = useAppData();
 
   const shownMajorStages = majorStages.filter((majorStage) => {
     if (filter === 'current') {
@@ -63,7 +64,9 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
     if (error) {
       return setError(error);
     } else {
-      triggerRefresh();
+      SetIsFetching(true);
+      await stagesCtx.fetchStagesData();
+      SetIsFetching(false);
     }
   }
 
@@ -90,6 +93,7 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
           colorScheme={ColorScheme.accent}
         />
       )}
+      {isFetching && <InfoModal />}
       <DraggableFlatList
         data={shownMajorStages}
         keyExtractor={(item) => item.id.toString()}
@@ -106,6 +110,7 @@ const MajorStageList: React.FC<MajorStageListProps> = ({
                   journeyId={journey.id}
                   majorStage={item}
                   isActive={isActive}
+                  disabled={isFetching}
                 />
               </Animated.View>
               {index !== shownMajorStages.length - 1 && (

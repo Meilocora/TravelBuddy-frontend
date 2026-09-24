@@ -48,7 +48,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
   const placesCtx = useContext(PlaceContext);
   const mediumCtx = useContext(MediumContext);
   const countryCtx = useContext(CustomCountryContext);
-  const { triggerRefresh } = useAppData();
+  const { fetchStageCountryPlaceAndMediaData } = useAppData();
 
   const hasMedia = mediumCtx.hasMedia('PlaceToVisit', place.id);
 
@@ -57,7 +57,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     if (!response.error) {
       placesCtx.toggleFavorite(place.id);
       onToggleFavorite(place.id);
-      triggerRefresh();
+      fetchStageCountryPlaceAndMediaData();
     }
   }
 
@@ -67,7 +67,7 @@ const PlacesListItem: React.FC<PlacesListItemProps> = ({
     if (!response.error) {
       placesCtx.toggleVisited(place.id);
       onToggleVisited(place.id);
-      triggerRefresh();
+      fetchStageCountryPlaceAndMediaData();
     }
   }
 

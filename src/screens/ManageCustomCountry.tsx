@@ -42,7 +42,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
   const [isShowingPlaces, setIsShowingPlaces] = useState(false);
 
   const customCountryCtx = useContext(CustomCountryContext);
-  const { triggerRefresh } = useAppData();
+  const { fetchStageCountryPlaceAndMediaData } = useAppData();
   const countryId = route.params.countryId;
 
   const country = customCountryCtx.customCountries.find(
@@ -81,7 +81,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
       setError(error);
     } else if (status.toString()[0] === '2' && customCountry) {
       customCountryCtx.updateCustomCountry(customCountry);
-      triggerRefresh();
+      fetchStageCountryPlaceAndMediaData();
       setIsEditing(false);
     }
   }
@@ -95,7 +95,7 @@ const ManageCustomCountry: React.FC<ManageCustomCountryProps> = ({
       setError(error);
     } else if (status === 200) {
       customCountryCtx.deleteCustomCountry(countryId);
-      triggerRefresh();
+      fetchStageCountryPlaceAndMediaData();
       const popupText = `"${countryName}" successfully deleted!`;
       secondaryNavigation.navigate('Locations', { popupText: popupText });
     }

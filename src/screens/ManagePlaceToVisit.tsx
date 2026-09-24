@@ -39,7 +39,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const placesCtx = useContext(PlaceContext);
-  const { triggerRefresh } = useAppData();
+  const { fetchStageCountryPlaceAndMediaData } = useAppData();
 
   const placeId = route.params?.placeId;
   const initialLat = route.params.lat;
@@ -48,7 +48,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
   let isEditing = !!placeId;
 
   const selectedPlace = placesCtx.placesToVisit.find(
-    (place) => place.id === placeId
+    (place) => place.id === placeId,
   );
 
   let countryId: number | null = null;
@@ -79,7 +79,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
         return;
       } else if (place && status === 200) {
         placesCtx.updatePlace(place);
-        triggerRefresh();
+        fetchStageCountryPlaceAndMediaData();
         navigation.goBack();
       }
     } else {
@@ -88,7 +88,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
         return;
       } else if (place && status === 201) {
         placesCtx.addPlace(place);
-        triggerRefresh();
+        fetchStageCountryPlaceAndMediaData();
         navigation.goBack();
       }
     }
@@ -100,7 +100,7 @@ const ManagePlaceToVisit: React.FC<ManagePlaceToVisitProps> = ({
       return;
     } else if (response.status === 200) {
       placesCtx.deletePlace(placeId);
-      triggerRefresh();
+      fetchStageCountryPlaceAndMediaData();
       navigation.goBack();
     }
   }

@@ -26,7 +26,6 @@ import ComplementaryGradient from '../../../components/UI/LinearGradients/Comple
 import ErrorOverlay from '../../../components/UI/ErrorOverlay';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
-import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageTransportationProps {
   navigation: NativeStackNavigationProp<
@@ -57,7 +56,6 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
     useNavigation<BottomTabNavigationProp<JourneyBottomTabsParamsList>>();
 
   const stagesCtx = useContext(StagesContext);
-  const { triggerRefresh } = useAppData();
 
   let { journeyId, majorStageId, minorStageId, transportationId } =
     route.params;
@@ -111,14 +109,14 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       );
       if (status.toString()[0] === '2') {
         if (majorStageId) {
-          triggerRefresh();
+          stagesCtx.fetchStagesData();
           const popupText = `Transportation successfully deleted!`;
           planningNavigation.navigate('Planning', {
             journeyId: journeyId!,
             popupText: popupText,
           });
         } else if (minorStageId) {
-          triggerRefresh();
+          stagesCtx.fetchStagesData();
           const popupText = `Transportation successfully deleted!`;
           navigation.navigate('MinorStages', {
             journeyId: journeyId!,
@@ -158,7 +156,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
       return;
     } else if (status.toString()[0] === '2') {
       if (mode === 'major') {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         const majorStageTitle = stagesCtx.findMajorStage(majorStageId!)?.title;
         const popupText =
           status === 200
@@ -169,7 +167,7 @@ const ManageTransportation: React.FC<ManageTransportationProps> = ({
           popupText: popupText,
         });
       } else if (mode === 'minor') {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         const minorStage = stagesCtx.findMinorStage(minorStageId!);
         const popupText =
           status === 200

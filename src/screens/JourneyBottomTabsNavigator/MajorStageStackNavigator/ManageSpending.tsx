@@ -24,7 +24,6 @@ import { deleteSpending } from '../../../utils/http/spending';
 import SpendingForm from '../../../components/MinorStage/ManageSpending/SpendingForm';
 import { StagesContext } from '../../../store/stages-context';
 import HeaderTitle from '../../../components/UI/HeaderTitle';
-import { useAppData } from '../../../hooks/useAppData';
 
 interface ManageSpendingProps {
   navigation: NativeStackNavigationProp<
@@ -47,7 +46,6 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
   const stagesCtx = useContext(StagesContext);
-  const { triggerRefresh } = useAppData();
 
   const { minorStageId, spendingId } = route.params;
   const minorStage = stagesCtx.findMinorStage(minorStageId);
@@ -96,7 +94,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
         spendingId!,
       );
       if (status.toString()[0] === '2') {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         navigation.goBack();
       } else {
         setError(error!);
@@ -118,7 +116,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
         setError(error);
         return;
       } else if (spending && status === 200) {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         navigation.goBack();
       }
     } else {
@@ -126,7 +124,7 @@ const ManageSpending: React.FC<ManageSpendingProps> = ({
         setError(error);
         return;
       } else if (spending && status === 201) {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         navigation.goBack();
       }
     }

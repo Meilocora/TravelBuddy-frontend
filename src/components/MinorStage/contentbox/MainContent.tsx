@@ -40,7 +40,7 @@ const MainContent: React.FC<MainContentProps> = ({
   minorStage,
 }): ReactElement => {
   const stagesCtx = useContext(StagesContext);
-  const { triggerRefresh } = useAppData();
+  const { fetchStageCountryPlaceAndMediaData } = useAppData();
 
   const customCountryId = stagesCtx.findMajorStage(majorStageId)!.country.id;
   const navigation =
@@ -66,13 +66,13 @@ const MainContent: React.FC<MainContentProps> = ({
   async function handleAddPlace(placeId: number) {
     stagesCtx.togglePlaceInMinorStage(minorStage.id, placeId);
     await addMinorStageToPlace(placeId, minorStage.id);
-    triggerRefresh();
+    fetchStageCountryPlaceAndMediaData();
   }
 
   async function handleRemovePlace(placeId: number) {
     stagesCtx.togglePlaceInMinorStage(minorStage.id, placeId);
     await removeMinorStageFromPlace(placeId, minorStage.id);
-    triggerRefresh();
+    fetchStageCountryPlaceAndMediaData();
   }
 
   function handleAddActivity() {
@@ -90,7 +90,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
   async function handleDeleteActivity(id: number) {
     deleteActivity(id);
-    triggerRefresh();
+    fetchStageCountryPlaceAndMediaData();
   }
 
   function handleAddSpending() {

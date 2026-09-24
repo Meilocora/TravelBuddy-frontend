@@ -25,7 +25,7 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
   const [openSelection, setOpenSelection] = useState(false);
 
   const stagesCtx = useContext(StagesContext);
-  const { triggerRefresh } = useAppData();
+  const { fetchStageCountryPlaceAndMediaData } = useAppData();
 
   const majorStage = stagesCtx.findMinorStagesMajorStage(minorStage.id);
   const countryName = majorStage!.country.name;
@@ -40,11 +40,11 @@ const PlacesElement: React.FC<PlacesElementProps> = ({
   }
 
   async function handleToggleFavourite(placeId: number) {
-    triggerRefresh();
+    fetchStageCountryPlaceAndMediaData();
   }
 
   async function handleToggleVisited(placeId: number) {
-    triggerRefresh();
+    fetchStageCountryPlaceAndMediaData();
   }
 
   return (

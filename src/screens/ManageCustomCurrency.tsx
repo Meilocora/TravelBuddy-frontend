@@ -17,7 +17,6 @@ import {
 } from '../models';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import MainGradient from '../components/UI/LinearGradients/MainGradient';
-import { useAppData } from '../hooks/useAppData';
 import { UserContext } from '../store/user-context';
 import { deleteCurrency, ManageCurrencyProps } from '../utils/http/currency';
 import CustomCurrencyForm from '../components/Currencies/CustomCurrencyForm';
@@ -42,7 +41,6 @@ const ManageCustomCurrency: React.FC<ManageCustomCurrencyProps> = ({
     useNavigation<NativeStackNavigationProp<BottomTabsParamList>>();
 
   const userCtx = useContext(UserContext);
-  const { triggerRefresh } = useAppData();
 
   const currencyId = route.params.currencyId;
   let isEditing = !!currencyId;
@@ -72,7 +70,7 @@ const ManageCustomCurrency: React.FC<ManageCustomCurrencyProps> = ({
     try {
       const { error, status } = await deleteCurrency(selectedCurrency!.id!);
       if (!error && status === 200) {
-        triggerRefresh();
+        userCtx.fetchUserData();
         const popupText = 'Currency successfully deleted!';
         allJourneysNavigation.navigate('AllJourneys', {
           popupText: popupText,
@@ -106,7 +104,7 @@ const ManageCustomCurrency: React.FC<ManageCustomCurrencyProps> = ({
         setError(error);
         return;
       } else {
-        triggerRefresh();
+        userCtx.fetchUserData();
         const popupText = 'Currency successfully updated!';
         allJourneysNavigation.navigate('AllJourneys', {
           popupText: popupText,
@@ -117,7 +115,7 @@ const ManageCustomCurrency: React.FC<ManageCustomCurrencyProps> = ({
         setError(error);
         return;
       } else {
-        triggerRefresh();
+        userCtx.fetchUserData();
         const popupText = 'Currency successfully added!';
         allJourneysNavigation.navigate('AllJourneys', {
           popupText: popupText,

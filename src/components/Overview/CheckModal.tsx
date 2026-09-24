@@ -45,7 +45,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
             <Animated.ScrollView scrollEnabled nestedScrollEnabled>
               {checkLogs.map((item, index) => (
                 <Pressable
-                  key={item.subtitle}
+                  key={item.subtitle + index}
                   style={({ pressed }) => pressed && styles.pressed}
                   android_ripple={{ color: GlobalStyles.colors.grayMedium }}
                   onPress={() => onTapItem(item)}

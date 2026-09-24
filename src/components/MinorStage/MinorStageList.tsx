@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import MinorStageListElement from './MinorStageListElement';
@@ -17,8 +17,8 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { GlobalStyles } from '../../constants/styles';
 import ErrorOverlay from '../UI/ErrorOverlay';
-import { useAppData } from '../../hooks/useAppData';
-import { usePersistedState } from '../../hooks/usePersistedState';
+import InfoModal from '../UI/InfoModal';
+import { StagesContext } from '../../store/stages-context';
 
 interface MinorStageListProps {
   majorStage: MajorStage;
@@ -30,6 +30,8 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   minorStages,
 }): ReactElement => {
   const [error, setError] = useState<string | null>(null);
+  const [isFetching, SetIsFetching] = useState(false);
+  const stagesCtx = useContext(StagesContext);
 
   const journeyIsOver = validateIsOver(majorStage.scheduled_end_time);
 
@@ -38,8 +40,6 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
   );
 
   const [openModal, setOpenModal] = useState<boolean>(false);
-
-  const { triggerRefresh } = useAppData();
 
   const shownMinorStages = minorStages.filter((minorStage) => {
     if (filter === 'current') {
@@ -72,7 +72,9 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
     if (error) {
       return setError(error);
     } else {
-      triggerRefresh();
+      SetIsFetching(true);
+      await stagesCtx.fetchStagesData();
+      SetIsFetching(false);
     }
   }
 
@@ -99,6 +101,7 @@ const MinorStageList: React.FC<MinorStageListProps> = ({
           colorScheme={ColorScheme.complementary}
         />
       )}
+      {isFetching && <InfoModal />}
       <DraggableFlatList
         data={shownMinorStages}
         nestedScrollEnabled

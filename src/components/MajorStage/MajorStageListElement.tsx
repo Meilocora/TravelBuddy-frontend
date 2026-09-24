@@ -50,6 +50,7 @@ interface MajorStageListElementProps {
   majorStage: MajorStage;
   onLongPress: () => void;
   isActive: boolean;
+  disabled: boolean;
 }
 
 const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
@@ -57,6 +58,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   majorStage,
   onLongPress,
   isActive,
+  disabled,
 }): ReactElement => {
   const navigation =
     useNavigation<NativeStackNavigationProp<JourneyBottomTabsParamsList>>();
@@ -75,7 +77,6 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
   const moneyAvailable = formatAmount(majorStage.costs.budget);
   const moneyPlanned = formatAmount(majorStage.costs.spent_money);
   const startDate = formatDateString(majorStage.scheduled_start_time);
-  // TODO: Red, when exceeds journey duration!
   const endDate = formatDateString(majorStage.scheduled_end_time);
   const durationInDays = formatDurationToDays(
     majorStage.scheduled_start_time,
@@ -241,7 +242,7 @@ const MajorStageListElement: React.FC<MajorStageListElementProps> = ({
         <Pressable
           style={({ pressed }) => pressed && styles.pressed}
           android_ripple={{ color: GlobalStyles.colors.amberAccent }}
-          onPress={handleOnPress}
+          onPress={disabled ? undefined : handleOnPress}
           onLongPress={onLongPress}
         >
           <View

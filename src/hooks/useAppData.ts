@@ -25,6 +25,34 @@ export function useAppData(options?: { autoFetch?: boolean }) {
   const placesCtx = useContext(PlaceContext);
   const mediumCtx = useContext(MediumContext);
 
+  const fetchStageCountryPlaceAndMediaData = async () => {
+    setIsFetching(true);
+    setErrors([]);
+    const collectedErrors: string[] = [];
+
+    try {
+      const stagesBackendError = await stagesCtx.fetchStagesData();
+      const countriesBackendError =
+        await countryCtx.fetchUsersCustomCountries();
+      const placesBackendError = await placesCtx.fetchPlacesToVisit();
+      const mediaBackendError = await mediumCtx.fetchMedia(
+        userCtx.storageMode!,
+      );
+
+      if (stagesBackendError) collectedErrors.push(stagesBackendError);
+      if (countriesBackendError) collectedErrors.push(countriesBackendError);
+      if (placesBackendError) collectedErrors.push(placesBackendError);
+      if (mediaBackendError) collectedErrors.push(mediaBackendError);
+
+      setErrors(collectedErrors);
+    } catch (err) {
+      collectedErrors.push('Unexpected error while fetching data');
+      setErrors(collectedErrors);
+    }
+
+    setIsFetching(false);
+  };
+
   useEffect(() => {
     // Prevent automatic fetch on initial render if autoFetch is false
     if (!autoFetch && refresh === 0) return;
@@ -81,5 +109,6 @@ export function useAppData(options?: { autoFetch?: boolean }) {
     isFetching,
     errors,
     triggerRefresh,
+    fetchStageCountryPlaceAndMediaData,
   };
 }

@@ -17,11 +17,11 @@ export function validateIsOver(date: string): boolean {
 export function validateIsOverDateTime(
   comparisonDate: string,
   comparisonDateOffset: string,
-  userOffset: number
+  userOffset: number,
 ): boolean {
   const comparisonDateObject = parseDateAndTime(comparisonDate);
   comparisonDateObject.setHours(
-    comparisonDateObject.getHours() + Number(comparisonDateOffset)
+    comparisonDateObject.getHours() + Number(comparisonDateOffset),
   );
 
   const currentDateObject = new Date();
@@ -47,25 +47,26 @@ export function validateJourney(journey: Journey): CheckLog[] {
   // Check if all countries in the journey are represented in major stages
   const journeyCountries = journey.countries.map((country) => country.name);
   const majorStagesCountries = new Set(
-    journey.majorStages?.map((majorStage) => majorStage.country.name) || []
+    journey.majorStages?.map((majorStage) => majorStage.country.name) || [],
   );
   const missingCountries = journeyCountries.filter(
-    (country) => !majorStagesCountries.has(country)
+    (country) => !majorStagesCountries.has(country),
   );
 
   if (missingCountries.length > 0) {
     checks.push({
       subtitle: 'Missing countries in major stages',
       description: `The following countries are not represented in any major stage: ${missingCountries.join(
-        ', '
+        ', ',
       )}.`,
     });
   }
 
-  // TODO: Check for overlaping stages or stages, that are in the wrong order
-
   // Check if budget of journey is exceeded
-  if (journey.costs.budget < journey.costs.spent_money) {
+  if (
+    journey.costs.budget < journey.costs.spent_money &&
+    journey.costs.spent_money !== 0
+  ) {
     checks.push({
       subtitle: 'Journey Budget exceeded',
       description: `Your budget of ${
@@ -86,7 +87,7 @@ export function validateJourney(journey: Journey): CheckLog[] {
     // Check if the journey is covered by major stages
     const coverageChecks = validateCoversSuperiorStage(
       journey,
-      journey.majorStages
+      journey.majorStages,
     );
     if (coverageChecks.length > 0) {
       checks.push(...coverageChecks);
@@ -100,7 +101,10 @@ export function validateJourney(journey: Journey): CheckLog[] {
 
     for (const majorStage of journey.majorStages) {
       // Check if the budget of the majorStage is exceeded
-      if (majorStage.costs.budget < majorStage.costs.spent_money) {
+      if (
+        majorStage.costs.budget < majorStage.costs.spent_money &&
+        majorStage.costs.spent_money !== 0
+      ) {
         checks.push({
           subtitle: 'Major stage budget exceeded',
           description: `Major stage "${
@@ -127,7 +131,7 @@ export function validateJourney(journey: Journey): CheckLog[] {
         // Check if the major stage is covered by minor stages
         const coverageChecks = validateCoversSuperiorStage(
           majorStage,
-          majorStage.minorStages
+          majorStage.minorStages,
         );
         if (coverageChecks.length > 0) {
           checks.push(...coverageChecks);
@@ -141,7 +145,10 @@ export function validateJourney(journey: Journey): CheckLog[] {
 
         for (const minorStage of majorStage.minorStages) {
           // Check if the budget of the minorStage is exceeded
-          if (minorStage.costs.budget <= minorStage.costs.spent_money) {
+          if (
+            minorStage.costs.budget <= minorStage.costs.spent_money &&
+            minorStage.costs.spent_money !== 0
+          ) {
             checks.push({
               subtitle: 'Minor stage budget exceeded',
               description: `Minor stage "${
@@ -178,7 +185,7 @@ export function validateJourney(journey: Journey): CheckLog[] {
 
 function validateCoversSuperiorStage(
   superiorStage: Journey | MajorStage,
-  inferiorStages: MajorStage[] | MinorStage[]
+  inferiorStages: MajorStage[] | MinorStage[],
 ): CheckLog[] {
   let checks: CheckLog[] = [];
 
@@ -195,7 +202,7 @@ function validateCoversSuperiorStage(
   }
 
   const superiorStart = parseDate(superiorStage.scheduled_start_time).getDate();
-  const superiorEnd = parseEndDate(superiorStage.scheduled_end_time).getDate();
+  const superiorEnd = parseDate(superiorStage.scheduled_end_time).getDate();
 
   const coversStart =
     parseDate(inferiorStages[0].scheduled_start_time).getDate() ===
@@ -208,7 +215,7 @@ function validateCoversSuperiorStage(
   }
   const coversEnd =
     parseDate(
-      inferiorStages[inferiorStages.length - 1].scheduled_end_time
+      inferiorStages[inferiorStages.length - 1].scheduled_end_time,
     ).getDate() === superiorEnd;
   if (!coversEnd) {
     checks.push({
@@ -231,14 +238,14 @@ function validateStagesDates(stages: MajorStage[] | MinorStage[]) {
   const stageType = 'country' in stages[0] ? 'Major Stage' : 'Minor Stage';
 
   for (let i = 0; i < stages.length - 1; i++) {
-    const currentEnd = parseEndDate(stages[i].scheduled_end_time).getDate();
+    const currentEnd = parseDate(stages[i].scheduled_end_time).getDate();
     const nextStart = parseDate(stages[i + 1].scheduled_start_time).getDate();
     if (currentEnd !== nextStart - 1) {
       checks.push({
         subtitle: `Gap between ${stageType}s`,
         description: `There is a gap between "${
           stages[i].title
-        }" (${currentEnd}) and "${stages[i + 1].title}" (${nextStart}).`,
+        }" (${currentEnd}.) and "${stages[i + 1].title}" (${nextStart}.).`,
       });
     }
   }
@@ -248,7 +255,7 @@ function validateStagesDates(stages: MajorStage[] | MinorStage[]) {
 
 export function validateOrders(
   a: StagesPositionDict[],
-  b: StagesPositionDict[]
+  b: StagesPositionDict[],
 ) {
   if (a.length !== b.length) return false;
   return a.every((x, i) => x.id === b[i].id && x.position === b[i].position);

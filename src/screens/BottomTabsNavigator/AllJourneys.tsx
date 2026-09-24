@@ -1,6 +1,5 @@
 import React, {
   ReactElement,
-  useContext,
   useEffect,
   useLayoutEffect,
   useState,
@@ -15,7 +14,6 @@ import JourneysList from '../../components/Journeys/JourneysList';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
 import { BottomTabsParamList, Icons, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
-import { StagesContext } from '../../store/stages-context';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { GlobalStyles } from '../../constants/styles';
 import Animated from 'react-native-reanimated';
@@ -36,7 +34,6 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
   const { isFetching, errors, triggerRefresh } = useAppData({
     autoFetch: true,
   });
-  const stagesCtx = useContext(StagesContext);
 
   const manageJourneyNavigation =
     useNavigation<NativeStackNavigationProp<StackParamList>>();

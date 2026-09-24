@@ -19,7 +19,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import Modal from '../components/UI/Modal';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { StagesContext } from '../store/stages-context';
-import { useAppData } from '../hooks/useAppData';
 
 interface ManageJourneyProps {
   navigation: BottomTabNavigationProp<StackParamList, 'ManageJourney'>;
@@ -40,7 +39,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const stagesCtx = useContext(StagesContext);
-  const { triggerRefresh } = useAppData();
+
   const editedJourneyId = route.params?.journeyId;
   let isEditing = !!editedJourneyId;
 
@@ -105,7 +104,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
     try {
       const { error, status } = await deleteJourney(editedJourneyId!);
       if (!error && status === 200) {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         const popupText = 'Journey successfully deleted!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'AllJourneys',
@@ -146,7 +145,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
         setError(error);
         return;
       } else if (journey && status === 200) {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         const popupText = 'Journey successfully updated!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'AllJourneys',
@@ -158,7 +157,7 @@ const ManageJourney: React.FC<ManageJourneyProps> = ({
         setError(error);
         return;
       } else if (journey && status === 201) {
-        triggerRefresh();
+        stagesCtx.fetchStagesData();
         const popupText = 'Journey successfully created!';
         navigation.navigate('BottomTabsNavigator', {
           screen: 'AllJourneys',

@@ -15,7 +15,6 @@ import IconButton from '../../components/UI/IconButton';
 import Popup from '../../components/UI/Popup';
 import InfoText from '../../components/UI/InfoText';
 import ErrorOverlay from '../../components/UI/ErrorOverlay';
-import { validateIsOver } from '../../utils';
 import { StagesContext } from '../../store/stages-context';
 
 interface PlanningProps {
@@ -37,8 +36,6 @@ const Planning: React.FC<PlanningProps> = ({
   let { journeyId } = route.params;
   const stagesCtx = useContext(StagesContext);
   const journey = stagesCtx.findJourney(journeyId);
-
-  const isOver = validateIsOver(journey!.scheduled_end_time);
 
   useEffect(() => {
     function activatePopup() {
