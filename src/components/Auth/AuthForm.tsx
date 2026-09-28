@@ -14,6 +14,7 @@ import Input from '../UI/form/Input';
 import IconButton from '../UI/IconButton';
 import { createUser, loginUser } from '../../utils/http';
 import { AuthHandlerProps } from '../../screens/Auth/AuthScreen';
+import { ActivityIndicator } from 'react-native-paper';
 
 type CredentialValidationResponse = {
   token?: string;
@@ -187,15 +188,21 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 onPress={onSwitchHandler}
                 colorScheme={ColorScheme.neutral}
                 mode={ButtonMode.flat}
+                disabled={isAuthenticating}
               >
                 {isLogin ? 'Switch to SignUp' : 'Switch to Login'}
               </Button>
-              <Button
-                onPress={validateInputs}
-                colorScheme={ColorScheme.neutral}
-              >
-                {isLogin ? 'Login' : 'SignUp'}
-              </Button>
+              {isAuthenticating ? (
+                <ActivityIndicator />
+              ) : (
+                <Button
+                  onPress={validateInputs}
+                  colorScheme={ColorScheme.neutral}
+                  disabled={isAuthenticating}
+                >
+                  {isLogin ? 'Login' : 'SignUp'}
+                </Button>
+              )}
             </View>
           </FormShell>
         </ScrollView>

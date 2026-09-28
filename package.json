@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
+    "start": "npx expo start -c",
     "android": "expo start --android",
+    "start:dev": "dotenv -e .env.dev -o -- expo start -c",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",

@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View, RefreshControl } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 
@@ -16,10 +15,10 @@ import { BottomTabsParamList, Icons, StackParamList } from '../../models';
 import Popup from '../../components/UI/Popup';
 import CurrentElementList from '../../components/CurrentElements/CurrentElementList';
 import { GlobalStyles } from '../../constants/styles';
-import Animated from 'react-native-reanimated';
 import { useAppData } from '../../hooks/useAppData';
 import FloatingButton from '../../components/UI/FloatingButton';
 import IconButton from '../../components/UI/IconButton';
+import JourneysListSkeleton from '../../components/Journeys/JourneysListSkeleton';
 
 interface AllJourneysProps {
   navigation: NativeStackNavigationProp<BottomTabsParamList, 'AllJourneys'>;
@@ -79,15 +78,7 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
 
   let content;
   if (isFetching) {
-    content = (
-      <Animated.View style={styles.indicator}>
-        <ActivityIndicator
-          size={80}
-          color={GlobalStyles.colors.greenAccent}
-          style={styles.indicator}
-        />
-      </Animated.View>
-    );
+    content = <JourneysListSkeleton />;
   } else {
     content = (
       <JourneysList
@@ -126,9 +117,6 @@ const AllJourneys: React.FC<AllJourneysProps> = ({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  indicator: {
-    marginVertical: 'auto',
   },
 });
 
