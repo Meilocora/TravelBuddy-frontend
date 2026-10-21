@@ -40,7 +40,7 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
   const endDate = formatDateString(journey.scheduled_end_time);
   const durationInDays = formatDurationToDays(
     journey.scheduled_start_time,
-    journey.scheduled_end_time
+    journey.scheduled_end_time,
   );
   const majorStagesQty = journey.majorStages?.length || 0;
   let currentCountry: string;
@@ -155,10 +155,10 @@ const JourneyListElement: React.FC<JourneyListElementProps> = ({
               ))}
             </View>
           </View>
-          {/* <CustomProgressBar
+          <CustomProgressBar
             startDate={journey.scheduled_start_time}
             endDate={journey.scheduled_end_time}
-          /> */}
+          />
         </Pressable>
       </View>
     </>

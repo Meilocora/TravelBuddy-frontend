@@ -1,4 +1,3 @@
-import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { CustomCountry } from '../models';
 
 export function formatAmount(amount: number): string {
@@ -196,22 +195,79 @@ export function formatCountdownDays(startDate: string | undefined) {
   return daysLeft;
 }
 
-export function formatProgress(startDate: string, endDate: string): Float {
-  const today = new Date();
-  const startDateObject = parseDate(startDate);
-  const endDateObject = parseDate(endDate);
+export type DateProgressStatus = 'upcoming' | 'active' | 'completed';
 
-  if (today < startDateObject!) {
-    return 0;
-  } else if (today > endDateObject!) {
-    return 1;
-  } else {
-    const totalDuration = formatDurationToDays(startDate, endDate);
-    const daysPassed = formatDurationToDays(startDate, formatDate(today));
+export interface DateProgress {
+  status: DateProgressStatus;
+  progress: number; // always within [0, 1]
+  currentDay: number;
+  totalDays: number;
+  daysUntilStart: number;
+}
 
-    const progress = daysPassed / totalDuration;
-    return parseFloat((daysPassed / totalDuration).toFixed(2));
+const DATE_PATTERN = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function diffInDays(from: Date, to: Date): number {
+  // Math.round compensates for DST shifts (23h / 25h days)
+  return Math.round((to.getTime() - from.getTime()) / MS_PER_DAY);
+}
+
+/**
+ * Calculates the day-based progress between two "dd.mm.yyyy" dates.
+ * Returns null for missing, malformed or inverted dates instead of throwing / producing NaN.
+ */
+export function getDateProgress(
+  startDate: string | null | undefined,
+  endDate: string | null | undefined,
+  now: Date = new Date(),
+): DateProgress | null {
+  if (
+    !startDate ||
+    !endDate ||
+    !DATE_PATTERN.test(startDate.trim()) ||
+    !DATE_PATTERN.test(endDate.trim())
+  ) {
+    return null;
   }
+
+  const start = parseDate(startDate.trim());
+  const end = parseDate(endDate.trim());
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) {
+    return null;
+  }
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const totalDays = diffInDays(start, end) + 1;
+
+  if (today < start) {
+    return {
+      status: 'upcoming',
+      progress: 0,
+      currentDay: 0,
+      totalDays,
+      daysUntilStart: diffInDays(today, start),
+    };
+  }
+
+  if (today > end) {
+    return {
+      status: 'completed',
+      progress: 1,
+      currentDay: totalDays,
+      totalDays,
+      daysUntilStart: 0,
+    };
+  }
+
+  const currentDay = diffInDays(start, today) + 1;
+  return {
+    status: 'active',
+    progress: Math.min(Math.max(currentDay / totalDays, 0), 1),
+    currentDay,
+    totalDays,
+    daysUntilStart: 0,
+  };
 }
 
 export function formatStringToList(string: string): string[] {
