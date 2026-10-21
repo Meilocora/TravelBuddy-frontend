@@ -4,15 +4,14 @@
   "main": "expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start -c",
-    "android": "expo start --android",
     "start:dev": "dotenv -e .env.dev -o -- expo start -c",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:precommit": "jest --runInBand",
     "test:ci": "jest --runInBand --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build:test": "eas build --profile development -p android",
+    "build:preview": "eas build --profile preview -p android"
   },
   "dependencies": {
     "@expo/vector-icons": "~14.0.4",

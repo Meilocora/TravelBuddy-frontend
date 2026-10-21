@@ -75,7 +75,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
   const endDate = formatDateString(minorStage.scheduled_end_time);
   const durationInDays = formatDurationToDays(
     minorStage.scheduled_start_time,
-    minorStage.scheduled_end_time
+    minorStage.scheduled_end_time,
   );
   const moneyAvailable = formatAmount(minorStage.costs.budget);
   const moneyPlanned = formatAmount(minorStage.costs.spent_money);
@@ -86,7 +86,7 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
     minorStage?.transportation?.start_time,
     minorStage?.transportation?.start_time_offset,
     minorStage?.transportation?.arrival_time,
-    minorStage?.transportation?.arrival_time_offset
+    minorStage?.transportation?.arrival_time_offset,
   );
 
   const IconComponent =
@@ -242,10 +242,10 @@ const MinorStageListElement: React.FC<MinorStageListElementProps> = ({
               </View>
             )}
           </View>
-          {/* <CustomProgressBar
-        startDate={minorStage.scheduled_start_time}
-        endDate={minorStage.scheduled_end_time}
-      /> */}
+          <CustomProgressBar
+            startDate={minorStage.scheduled_start_time}
+            endDate={minorStage.scheduled_end_time}
+          />
         </Pressable>
       </View>
     </>

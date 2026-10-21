@@ -77,7 +77,6 @@ import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 // TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Outsource inputChangedHandler and related handlers from the Forms
 // TODO: Fix custom progress bar
-// TODO: automate generation of DiaShow for Images of a Journey
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();
