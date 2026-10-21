@@ -1,6 +1,6 @@
 import { parse } from 'dotenv';
 import { Journey, MajorStage, MinorStage, StagesPositionDict } from '../models';
-import { parseDate, parseDateAndTime, parseEndDate } from './formatting';
+import { diffInCalendarDays, parseDate, toUtcTimestamp } from './formatting';
 
 export function validateIsOver(date: string): boolean {
   const d = parseDate(date);
@@ -17,23 +17,11 @@ export function validateIsOver(date: string): boolean {
 export function validateIsOverDateTime(
   comparisonDate: string,
   comparisonDateOffset: string,
-  userOffset: number,
+  // Not needed anymore: Date.now() is already an absolute instant. Kept for call-site compatibility.
+  _userOffset?: number,
+  now: number = Date.now(),
 ): boolean {
-  const comparisonDateObject = parseDateAndTime(comparisonDate);
-  comparisonDateObject.setHours(
-    comparisonDateObject.getHours() + Number(comparisonDateOffset),
-  );
-
-  const currentDateObject = new Date();
-  currentDateObject.setHours(currentDateObject.getHours() + userOffset);
-
-  const timeDifference =
-    comparisonDateObject.getTime() - currentDateObject.getTime();
-  if (timeDifference > 0) {
-    return false;
-  } else {
-    return true;
-  }
+  return toUtcTimestamp(comparisonDate, comparisonDateOffset) <= now;
 }
 
 export interface CheckLog {
@@ -201,12 +189,11 @@ function validateCoversSuperiorStage(
     superiorTitle = (superiorStage as Journey).name!;
   }
 
-  const superiorStart = parseDate(superiorStage.scheduled_start_time).getDate();
-  const superiorEnd = parseDate(superiorStage.scheduled_end_time).getDate();
-
   const coversStart =
-    parseDate(inferiorStages[0].scheduled_start_time).getDate() ===
-    superiorStart;
+    diffInCalendarDays(
+      superiorStage.scheduled_start_time,
+      inferiorStages[0].scheduled_start_time,
+    ) === 0;
   if (!coversStart) {
     checks.push({
       subtitle: `${superiorStageType}'s start date not covered`,
@@ -214,9 +201,10 @@ function validateCoversSuperiorStage(
     });
   }
   const coversEnd =
-    parseDate(
+    diffInCalendarDays(
+      superiorStage.scheduled_end_time,
       inferiorStages[inferiorStages.length - 1].scheduled_end_time,
-    ).getDate() === superiorEnd;
+    ) === 0;
   if (!coversEnd) {
     checks.push({
       subtitle: `${superiorStageType}'s end date not covered`,
@@ -238,14 +226,15 @@ function validateStagesDates(stages: MajorStage[] | MinorStage[]) {
   const stageType = 'country' in stages[0] ? 'Major Stage' : 'Minor Stage';
 
   for (let i = 0; i < stages.length - 1; i++) {
-    const currentEnd = parseDate(stages[i].scheduled_end_time).getDate();
-    const nextStart = parseDate(stages[i + 1].scheduled_start_time).getDate();
-    if (currentEnd !== nextStart - 1) {
+    const currentEnd = stages[i].scheduled_end_time;
+    const nextStart = stages[i + 1].scheduled_start_time;
+    // The next stage has to start exactly one calendar day after the current one ends
+    if (diffInCalendarDays(currentEnd, nextStart) !== 1) {
       checks.push({
         subtitle: `Gap between ${stageType}s`,
         description: `There is a gap between "${
           stages[i].title
-        }" (${currentEnd}.) and "${stages[i + 1].title}" (${nextStart}.).`,
+        }" (${currentEnd}) and "${stages[i + 1].title}" (${nextStart}).`,
       });
     }
   }

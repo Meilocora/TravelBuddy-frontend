@@ -100,38 +100,37 @@ export function formatDurationToDays(
   );
 }
 
-export function formatCountdown(
-  startDate: string | undefined,
-  startDateOffset: string,
-  userOffset: number,
-): string | undefined {
-  if (!startDate) {
-    return undefined;
-  }
-  const currentDateObject = new Date();
-  currentDateObject.setHours(currentDateObject.getHours() + userOffset);
+const MS_PER_MINUTE = 1000 * 60;
+const MS_PER_HOUR = MS_PER_MINUTE * 60;
+const MS_PER_DAY = MS_PER_HOUR * 24;
 
-  const startDateObject = parseDateAndTime(startDate);
-  startDateObject.setHours(
-    startDateObject.getHours() + Number(startDateOffset),
+/**
+ * Converts a local "dd.mm.yyyy hh:mm" time plus the UTC offset (in hours) of that place
+ * into an absolute UTC timestamp. Independent of the device's timezone and DST,
+ * supports fractional offsets (e.g. "5.5" for India).
+ */
+export function toUtcTimestamp(
+  dateTime: string,
+  utcOffset: string | number | undefined,
+): number {
+  const [datePart, timePart = '00:00'] = dateTime.trim().split(/\s+/);
+  const [day, month, year] = datePart.split('.').map(Number);
+  const [hours, minutes] = timePart.split(':').map(Number);
+  const offsetHours = Number(utcOffset) || 0;
+
+  return (
+    Date.UTC(year, month - 1, day, hours, minutes) - offsetHours * MS_PER_HOUR
   );
+}
 
-  const timeDifference =
-    startDateObject.getTime() - currentDateObject.getTime();
-
-  if (timeDifference < 0) {
-    return 'already departed';
-  }
-
-  const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-  const hours = Math.floor(
-    (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-  );
-  const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
+function formatTimeSpan(timeSpan: number, shortenFromDays?: number): string {
+  const days = Math.floor(timeSpan / MS_PER_DAY);
+  const hours = Math.floor((timeSpan % MS_PER_DAY) / MS_PER_HOUR);
+  const minutes = Math.floor((timeSpan % MS_PER_HOUR) / MS_PER_MINUTE)
     .toString()
     .padStart(2, '0'); // Always 2 digits
 
-  if (days >= 3) {
+  if (shortenFromDays !== undefined && days >= shortenFromDays) {
     return `${days}d`;
   }
 
@@ -147,6 +146,26 @@ export function formatCountdown(
   }
 }
 
+export function formatCountdown(
+  startDate: string | undefined,
+  startDateOffset: string,
+  // Not needed anymore: Date.now() is already an absolute instant. Kept for call-site compatibility.
+  _userOffset?: number,
+  now: number = Date.now(),
+): string | undefined {
+  if (!startDate) {
+    return undefined;
+  }
+
+  const timeDifference = toUtcTimestamp(startDate, startDateOffset) - now;
+
+  if (timeDifference < 0) {
+    return 'already departed';
+  }
+
+  return formatTimeSpan(timeDifference, 3);
+}
+
 export function formatDuration(
   startDate: string | undefined,
   startDateOffset: string | undefined,
@@ -157,42 +176,48 @@ export function formatDuration(
     return undefined;
   }
 
-  const startDateObject = parseDateAndTime(startDate);
-  startDateObject.setHours(
-    startDateObject.getHours() - Number(startDateOffset),
-  );
+  const timeDifference =
+    toUtcTimestamp(endDate, endDateOffset) -
+    toUtcTimestamp(startDate, startDateOffset);
 
-  const endDateObject = parseDateAndTime(endDate);
-  endDateObject.setHours(endDateObject.getHours() - Number(endDateOffset));
-  const timeDifference = endDateObject.getTime() - startDateObject.getTime();
-
-  const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-  const hours = Math.floor(
-    (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-  );
-  const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
-    .toString()
-    .padStart(2, '0'); // Always 2 digits
-
-  if (days !== 0) {
-    return `${days}d ${hours}:${minutes}h`;
-  } else if (hours !== 0) {
-    if (minutes === '00') {
-      return `${hours}h`;
-    }
-    return `${hours}:${minutes}h`;
-  } else {
-    return `${minutes}m`;
+  if (isNaN(timeDifference) || timeDifference < 0) {
+    return '–';
   }
+
+  return formatTimeSpan(timeDifference);
 }
 
-export function formatCountdownDays(startDate: string | undefined) {
-  if (!startDate) {
+/**
+ * Remaining days of a stage, counting today and the end date inclusively
+ * (on the last day this returns 1).
+ */
+export function formatRemainingDays(endDate: string | undefined) {
+  if (!endDate) {
     return undefined;
   }
   const today = formatDate(new Date());
-  const daysLeft = formatDurationToDays(today, startDate);
-  return daysLeft;
+  return formatDurationToDays(today, endDate);
+}
+
+function diffInDays(from: Date, to: Date): number {
+  // Math.round compensates for DST shifts (23h / 25h days)
+  return Math.round((to.getTime() - from.getTime()) / MS_PER_DAY);
+}
+
+/**
+ * Calendar days between two "dd.mm.yyyy" dates (positive if `to` is later).
+ */
+export function diffInCalendarDays(from: string, to: string): number {
+  return diffInDays(parseDate(from), parseDate(to));
+}
+
+/**
+ * Calendar days from today until the given "dd.mm.yyyy" date
+ * (0 = today, 1 = tomorrow, negative = in the past).
+ */
+export function daysUntil(date: string, now: Date = new Date()): number {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return diffInDays(today, parseDate(date));
 }
 
 export type DateProgressStatus = 'upcoming' | 'active' | 'completed';
@@ -206,12 +231,6 @@ export interface DateProgress {
 }
 
 const DATE_PATTERN = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
-const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-function diffInDays(from: Date, to: Date): number {
-  // Math.round compensates for DST shifts (23h / 25h days)
-  return Math.round((to.getTime() - from.getTime()) / MS_PER_DAY);
-}
 
 /**
  * Calculates the day-based progress between two "dd.mm.yyyy" dates.

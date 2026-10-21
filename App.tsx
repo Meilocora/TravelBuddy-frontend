@@ -60,7 +60,9 @@ import MediaShowMap from './src/screens/MediaShowMap';
 import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 
 // PRIO 1 \\
+// TODO: Add push notifications
 // TODO: More tests + github workflow
+// TODO: Chatbot, that interacts with the app?! => that can make journeys
 // TODO: Umrechner App beim Userprofil => Modal, wo man Beträge schnell umrechnen kann oder neue Currencies einführen kann bzw. bearbeiten kann
 // Vllt. doch besser als Screen und dann hier den + Profile einbinden?
 
@@ -68,15 +70,8 @@ import ManageCustomCurrency from './src/screens/ManageCustomCurrency';
 // TODO: Map --> Mehrere Orte mit langem Tap markieren und gleichzeitig löschen... (rot oder so  markieren)
 
 // PRIO 2 \\
-// TODO: Add Chatbot, thats translates into local language or can give recommendations for locations
-// TODO: Chatbot should get stages data as input and suggest improvements of the route
-
-// PRIO 3 \\
 // TODO: Videos + durations zu Statistiken hinzufügen
 // TODO: Checks für ValidationLog erweitern
-// TODO: Chatbot, that interacts with the app?! => that can make journeys
-// TODO: Outsource inputChangedHandler and related handlers from the Forms
-// TODO: Fix custom progress bar
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();
