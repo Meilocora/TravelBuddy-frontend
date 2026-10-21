@@ -4,7 +4,11 @@ import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 
 import { GlobalStyles } from '../../constants/styles';
 import { ButtonMode, ColorScheme, Icons, Journey } from '../../models';
-import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
+import {
+  formatDurationToDays,
+  getDateProgress,
+  parseEndDate,
+} from '../../utils';
 import IconButton from '../UI/IconButton';
 import { CustomCountryContext } from '../../store/custom-country-context';
 import Button from '../UI/Button';
@@ -70,16 +74,11 @@ const UserStats: React.FC<UserStatsProps> = ({
       journey.scheduled_start_time,
       journey.scheduled_end_time
     );
-    let elapsedDays = formatDurationToDays(
-      journey.scheduled_start_time,
-      formatDate(new Date())
-    );
-
-    if (elapsedDays >= durationInDays) {
-      completedTraveldays += durationInDays;
-    } else if (elapsedDays > 0) {
-      completedTraveldays += elapsedDays;
-    }
+    // 0 for upcoming journeys, capped at the journey's duration
+    const elapsedDays =
+      getDateProgress(journey.scheduled_start_time, journey.scheduled_end_time)
+        ?.currentDay ?? 0;
+    completedTraveldays += Math.min(elapsedDays, durationInDays);
     plannedTravelDays += durationInDays;
     plannedJourneys += 1;
 

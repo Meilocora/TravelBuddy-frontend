@@ -3,7 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { GlobalStyles } from '../../constants/styles';
 import { Icons, Journey } from '../../models';
-import { formatDate, formatDurationToDays, parseEndDate } from '../../utils';
+import {
+  formatDurationToDays,
+  getDateProgress,
+  parseEndDate,
+} from '../../utils';
 import IconButton from '../UI/IconButton';
 import { MediumContext } from '../../store/medium-context';
 
@@ -34,15 +38,10 @@ const OverviewDetails: React.FC<OverviewDetailsProps> = ({
     journey.scheduled_start_time,
     journey.scheduled_end_time
   );
-  let elapsedDays = formatDurationToDays(
-    journey.scheduled_start_time,
-    formatDate(new Date())
-  );
-  if (elapsedDays < 0) {
-    elapsedDays = 0;
-  } else if (elapsedDays > durationInDays) {
-    elapsedDays = durationInDays;
-  }
+  // 0 before the journey starts, today counts as an elapsed day
+  const elapsedDays =
+    getDateProgress(journey.scheduled_start_time, journey.scheduled_end_time)
+      ?.currentDay ?? 0;
 
   let completedMajorStagesQty = 0;
   const majorStagesQty = journey.majorStages?.length || 0;

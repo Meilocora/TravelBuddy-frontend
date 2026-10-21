@@ -6,11 +6,12 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Indicators, StagesContext } from '../../store/stages-context';
 import {
   formatAmount,
+  daysUntil,
   formatCountdown,
-  formatCountdownDays,
   formatDuration,
-  parseDate,
+  formatRemainingDays,
   parseEndDate,
+  toUtcTimestamp,
 } from '../../utils';
 import CurrentElement from './CurrentElement';
 import {
@@ -105,7 +106,10 @@ const CurrentElementList: React.FC<
         longitude: nextTransportation?.departure_longitude!,
       },
       done: nextTransportation
-        ? parseDate(nextTransportation.start_time) < new Date()
+        ? toUtcTimestamp(
+            nextTransportation.start_time,
+            nextTransportation.start_time_offset,
+          ) < Date.now()
         : false,
     };
 
@@ -118,8 +122,13 @@ const CurrentElementList: React.FC<
 
   if (!currentJourney) {
     if (nextJourney) {
-      const countDown = formatCountdownDays(nextJourney!.scheduled_start_time);
-      const description = `Starts in ${countDown} days`;
+      const countDown = daysUntil(nextJourney!.scheduled_start_time);
+      const description =
+        countDown <= 0
+          ? 'Starts today'
+          : countDown === 1
+            ? 'Starts tomorrow'
+            : `Starts in ${countDown} days`;
 
       content = (
         <CurrentElement
@@ -132,7 +141,7 @@ const CurrentElementList: React.FC<
       );
     }
   } else {
-    const duration = formatCountdownDays(currentMinorStage?.scheduled_end_time);
+    const duration = formatRemainingDays(currentMinorStage?.scheduled_end_time);
     const countDownTransportation = formatCountdown(
       nextTransportation?.start_time,
       nextTransportation?.start_time_offset!,

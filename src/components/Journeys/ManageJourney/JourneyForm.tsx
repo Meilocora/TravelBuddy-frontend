@@ -149,8 +149,6 @@ const JourneyForm: React.FC<JourneyFormProps> = ({
       currentCountryNames.filter((name) => name !== countryName),
     );
 
-    const updatedCountryNames = [...currentCountryNames];
-
     setInputs((prevValues) => {
       return {
         ...prevValues,
