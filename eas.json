@@ -5,6 +5,7 @@
   },
   "build": {
     "development": {
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
       "android": {
@@ -12,12 +13,14 @@
       }
     },
     "preview": {
+      "environment": "preview",
       "android": {
         "buildType": "apk"
       },
       "distribution": "internal"
     },
     "production": {
+      "environment": "production",
       "autoIncrement": true
     }
   },

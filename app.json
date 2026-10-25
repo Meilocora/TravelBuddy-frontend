@@ -18,9 +18,6 @@
     "ios": {
       "buildNumber": "1.0.0",
       "supportsTablet": true,
-      "config": {
-        "googleMapsApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
-      },
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
         "NSCameraUsageDescription": "This app needs access to your camera to take photos."
@@ -28,11 +25,6 @@
     },
     "android": {
       "icon": "./assets/adaptive-icon.png",
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
-        }
-      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#dee2e6"
@@ -50,8 +42,7 @@
     "extra": {
       "eas": {
         "projectId": "c02b6a9a-2450-44c4-bfe2-685858789bf9"
-      },
-      "googleApiKey": "AIzaSyAg8EyXHz76BfB0R3K_oO6cnT0kGzQoC60"
+      }
     },
     "plugins": [
       "expo-font",
