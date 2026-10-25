@@ -30,3 +30,5 @@ Thumbs.db
 # Temporary archives
 *.zip
 *.stackdump
+# Test coverage
+coverage/
